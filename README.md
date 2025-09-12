@@ -1,13 +1,3 @@
-👌 Kalau untuk deskripsi brand CittaFun, sebaiknya kita siapkan dua versi langsung:
-
-Bahasa Indonesia → target awal lokal, audience lebih relate.
-
-Bahasa Inggris → biar siap go international nanti (mudah dipakai di domain global, pitch investor, app store, dsb).
-
-
-
----
-
 🌐 Deskripsi Brand – CittaFun
 
 🇮🇩 Bahasa Indonesia
