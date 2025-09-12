@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1600" height="480" viewBox="0 0 1600 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CittaFun logo">
+  <!-- transparent background -->
+  <rect width="1600" height="480" fill="none"/>
+  <!-- icon group (scaled version of icon at left) -->
+  <g transform="translate(40,40) scale(0.45)">
+    <rect x="0" y="0" width="1024" height="1024" rx="170" ry="170" fill="#3B82F6"/>
+    <circle cx="512" cy="512" r="300" fill="none" stroke="#F97316" stroke-width="160" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="650" y="300" width="400" height="424" fill="#3B82F6" rx="30"/>
+    <circle cx="430" cy="458" r="34" fill="#FFFFFF"/>
+    <circle cx="594" cy="458" r="34" fill="#FFFFFF"/>
+    <path d="M400 600 Q512 700 624 600" stroke="#FFFFFF" stroke-width="48" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+
+  <!-- Brand name -->
+  <g transform="translate(520,120)">
+    <!-- main brand -->
+    <text x="0" y="120" font-family="Poppins, Arial, sans-serif" font-weight="700" font-size="120" fill="#F97316">CittaFun</text>
+    <!-- tagline -->
+    <text x="0" y="190" font-family="Inter, Arial, sans-serif" font-weight="500" font-size="36" fill="#3B82F6">Learn · Play · Earn</text>
+  </g>
+</svg>
