@@ -55,6 +55,19 @@ a {
 }
 
 /* Navbar */
+
+/* Default: hamburger hidden on desktop */
+.hamburger {
+  display: none;
+}
+
+/* Responsive: show hamburger only on mobile */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+}
+
 .navbar {
   background: white;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
