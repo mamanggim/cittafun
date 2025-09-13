@@ -5,7 +5,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;      /* ✅ fix tinggi full layar */
+  height: 100vh;
   margin: 0;
   overflow: hidden;   /* ✅ lock scroll */
 }
@@ -16,8 +16,8 @@ body {
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   text-align: center;
-  width: 100%;
-  max-width: 380px;
+  width: 90%;
+  max-width: 340px;   /* ✅ biar gak terlalu besar */
   animation: fadeIn 0.8s ease-in-out;
 }
 
@@ -28,10 +28,14 @@ body {
   animation: bounce 1.5s infinite;
 }
 
-h2 {
+/* === Teks judul dengan wave animasi === */
+.wave-text {
   margin-bottom: 1.5rem;
   color: #333;
   font-size: 1.4rem;
+  display: inline-block;
+  position: relative;
+  animation: wave 2s infinite ease-in-out;
 }
 
 .policy-check {
@@ -98,14 +102,20 @@ h2 {
   50% { transform: translateY(-6px); }
 }
 
+@keyframes wave {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-4px); }
+  75% { transform: translateY(4px); }
+}
+
 /* ✅ Responsif untuk mobile */
 @media (max-width: 480px) {
   .login-container {
     padding: 1.5rem;
-    max-width: 100%;
+    max-width: 95%;
   }
 
-  h2 {
+  .wave-text {
     font-size: 1.2rem;
   }
 
