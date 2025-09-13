@@ -12,9 +12,34 @@
   <div class="login-container">
     <img src="assets/logo.png" alt="Logo" class="logo">
     <h2>Masuk ke CittaFun</h2>
-    <button id="google-login" class="google-btn">Login dengan Google</button>
+
+    <div class="policy-check">
+      <label>
+        <input type="checkbox" id="privacy-check">
+        Saya setuju dengan <a href="privacy.html" target="_blank">Privacy Policy</a>
+      </label>
+      <label>
+        <input type="checkbox" id="terms-check">
+        Saya setuju dengan <a href="terms.html" target="_blank">Terms of Service</a>
+      </label>
+    </div>
+
+    <button id="google-login" class="google-btn" disabled>Login dengan Google</button>
   </div>
 
   <script src="js/auth.js"></script>
+  <script>
+    // Enable button jika 2 checkbox dicentang
+    const privacyCheck = document.getElementById("privacy-check");
+    const termsCheck = document.getElementById("terms-check");
+    const loginBtn = document.getElementById("google-login");
+
+    function toggleLoginBtn() {
+      loginBtn.disabled = !(privacyCheck.checked && termsCheck.checked);
+    }
+
+    privacyCheck.addEventListener("change", toggleLoginBtn);
+    termsCheck.addEventListener("change", toggleLoginBtn);
+  </script>
 </body>
 </html>
