@@ -7,7 +7,6 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 20px;
-  overflow: hidden; /* halaman terkunci */
 }
 
 .login-container {
@@ -17,14 +16,14 @@ body {
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   text-align: center;
   width: 100%;
-  max-width: 380px;   /* ✅ pas di mobile dan desktop */
+  max-width: 380px;
   animation: fadeIn 0.8s ease-in-out;
 }
 
 .logo {
-  width: 95px;       /* ✅ diperbesar biar lebih proporsional */
+  width: 90px;
   margin-bottom: 1rem;
-  animation: bounce 1.5s infinite;
+  animation: bounce 1.8s infinite;
 }
 
 h2 {
@@ -33,12 +32,21 @@ h2 {
   font-weight: bold;
 }
 
+h2 .black {
+  color: #333;
+}
+
 h2 .blue {
   color: #2575fc;
+  display: inline-block;
+  animation: wave 2s infinite ease-in-out;
 }
 
 h2 .orange {
   color: #ff7f00;
+  display: inline-block;
+  animation: wave 2s infinite ease-in-out;
+  animation-delay: 0.2s;
 }
 
 .policy-check {
@@ -51,19 +59,22 @@ h2 .orange {
 
 .policy-item {
   display: flex;
-  align-items: center;
-  margin-bottom: 0.6rem;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 0.8rem;
 }
 
 .policy-item input {
-  margin-right: 10px;
+  margin-top: 2px;
   cursor: pointer;
 }
 
-.policy-item span {
+.policy-item label {
   font-size: 14px;
   color: #444;
-  line-height: 1.4;
+  line-height: 1.5;
+  flex: 1;
+  word-break: break-word;
 }
 
 .policy-item a {
@@ -90,7 +101,6 @@ h2 .orange {
   transition: all 0.3s ease;
 }
 
-/* ✅ Aktif setelah dicentang */
 .google-btn:enabled {
   background: #2575fc;
   border-color: #2575fc;
@@ -98,7 +108,6 @@ h2 .orange {
   cursor: pointer;
 }
 
-/* ✅ Hover & klik aktif → balik warna */
 .google-btn:enabled:hover {
   background: #fff;
   color: #2575fc;
@@ -118,13 +127,18 @@ h2 .orange {
   to   { opacity: 1; transform: scale(1); }
 }
 
-/* Animasi bounce logo */
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-12px); }
+  60% { transform: translateY(-6px); }
 }
 
-/* Responsif untuk mobile */
+@keyframes wave {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Responsif */
 @media (max-width: 480px) {
   .login-container {
     padding: 1.5rem;
@@ -133,7 +147,7 @@ h2 .orange {
   }
 
   .logo {
-    width: 85px;
+    width: 80px;
   }
 
   h2 {
