@@ -7,6 +7,7 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 20px;
+  overflow: hidden; /* halaman terkunci */
 }
 
 .login-container {
@@ -21,14 +22,23 @@ body {
 }
 
 .logo {
-  width: 90px;       /* ✅ diperbesar biar lebih proporsional */
+  width: 95px;       /* ✅ diperbesar biar lebih proporsional */
   margin-bottom: 1rem;
+  animation: bounce 1.5s infinite;
 }
 
 h2 {
   margin-bottom: 1.5rem;
-  color: #333;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
+h2 .blue {
+  color: #2575fc;
+}
+
+h2 .orange {
+  color: #ff7f00;
 }
 
 .policy-check {
@@ -39,23 +49,6 @@ h2 {
   line-height: 1.4;
 }
 
-.policy-check label {
-  display: block;
-  margin-bottom: 0.6rem;
-  cursor: pointer;
-}
-
-.policy-check a {
-  color: #2575fc;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.policy-check a:hover {
-  color: #6a11cb;
-}
-
 .policy-item {
   display: flex;
   align-items: center;
@@ -63,7 +56,7 @@ h2 {
 }
 
 .policy-item input {
-  margin-right: 8px;
+  margin-right: 10px;
   cursor: pointer;
 }
 
@@ -113,13 +106,6 @@ h2 {
   box-shadow: 0 8px 20px rgba(37,117,252,0.4);
 }
 
-.google-btn:hover:not(:disabled) {
-  background: #2575fc;
-  color: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(37,117,252,0.4);
-}
-
 .google-btn:disabled {
   background: #e0e0e0;
   border-color: #ccc;
@@ -132,7 +118,13 @@ h2 {
   to   { opacity: 1; transform: scale(1); }
 }
 
-/* ✅ Responsif untuk mobile */
+/* Animasi bounce logo */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Responsif untuk mobile */
 @media (max-width: 480px) {
   .login-container {
     padding: 1.5rem;
@@ -141,11 +133,11 @@ h2 {
   }
 
   .logo {
-    width: 80px;
+    width: 85px;
   }
 
   h2 {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
   }
 
   .google-btn {
