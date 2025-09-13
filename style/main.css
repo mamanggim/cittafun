@@ -100,6 +100,7 @@ a {
   list-style: none;
   gap: 20px;
   transition: all 0.3s ease;
+  z-index: 1100;
 }
 
 .nav-links a {
@@ -123,7 +124,7 @@ a {
   flex-direction: column;
   cursor: pointer;
   gap: 5px;
-  z-index: 1101;
+  z-index: 1200; /* tombol burger paling atas */
 }
 
 .hamburger span {
@@ -165,7 +166,6 @@ a {
     gap: 20px;
     box-shadow: -4px 0 12px rgba(0,0,0,0.15);
     transition: right 0.4s ease;
-    z-index: 1100;
   }
 
   .nav-links.active {
@@ -178,7 +178,7 @@ a {
 }
 
 /* =======================
-   Overlay background
+   Overlay background (FIX)
 ======================= */
 .overlay {
   position: fixed;
@@ -191,7 +191,7 @@ a {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  z-index: 1050;
+  z-index: 900; /* ⬅️ lebih rendah dari nav-links */
 }
 
 .overlay.active {
