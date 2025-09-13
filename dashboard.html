@@ -1,1 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - CittaFun</title>
+  <link rel="stylesheet" href="style/dashboard.css">
+  <!-- Firebase SDKs (auth + firestore) -->
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
+  <!-- Firebase config (fill your config in this file) -->
+  <script src="js/firebase-config.js"></script>
+</head>
+<body>
+  <!-- overlay mobile -->
+  <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
 
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="sidebar">
+    <div class="sidebar-top">
+      <img src="assets/logo.png" alt="CittaFun" class="sidebar-logo">
+      <h1 class="sr-only">CittaFun</h1>
+    </div>
+
+    <nav class="sidebar-nav" role="navigation">
+      <ul>
+        <li><a href="#" data-section="overview" class="nav-link active">🏠 Dashboard</a></li>
+        <li><a href="#" data-section="rewards" class="nav-link">🎁 Rewards</a></li>
+        <li><a href="#" data-section="referral" class="nav-link">👥 Referral</a></li>
+        <li><a href="#" data-section="stats" class="nav-link">📊 Statistik</a></li>
+        <li><a href="#" data-section="history" class="nav-link">📜 Riwayat</a></li>
+        <li><a href="#" data-section="settings" class="nav-link">⚙️ Pengaturan</a></li>
+        <li><button id="logout-btn" class="nav-logout">🚪 Logout</button></li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <small>Versi: 0.1 • CittaFun</small>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Topbar -->
+    <header class="topbar">
+      <button id="sidebar-toggle" class="btn-icon" aria-label="Toggle menu">☰</button>
+
+      <div class="topbar-left">
+        <h2 class="page-title">Dashboard</h2>
+      </div>
+
+      <div class="topbar-right">
+        <div class="notif-icon" title="Notifikasi">🔔<span class="badge" id="notif-count">0</span></div>
+
+        <div class="profile" id="profile">
+          <img id="user-photo" src="assets/icons/user-placeholder.png" alt="user" class="profile-photo">
+          <div class="profile-info">
+            <div id="user-name">Tamu</div>
+            <small id="user-email">-</small>
+          </div>
+          <button id="profile-menu-toggle" class="btn-icon" aria-label="Open profile menu">▾</button>
+
+          <div id="profile-menu" class="profile-menu" aria-hidden="true">
+            <a href="referral.html">Referral</a>
+            <a href="dashboard.html#settings">Pengaturan</a>
+            <button id="logout-btn-2" class="btn-link">Logout</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content area -->
+    <main class="content" id="content">
+      <!-- Section: Overview (default) -->
+      <section id="section-overview" class="section active">
+        <div class="cards-row">
+          <div class="card balance-card">
+            <h3>Saldo Poin</h3>
+            <p class="big" id="points-balance">0</p>
+            <small id="points-rupiah">Rp0</small>
+          </div>
+          <div class="card referral-card">
+            <h3>Referral</h3>
+            <p id="ref-count">0</p>
+            <small>Referral sukses</small>
+          </div>
+          <div class="card actions-card">
+            <h3>Quick Actions</h3>
+            <div class="actions">
+              <button id="btn-withdraw" class="btn">Tarik Saldo</button>
+              <button id="btn-copy-ref" class="btn-outline">Salin Link Referral</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h4>Aktivitas Terbaru</h4>
+          <ul id="recent-activity" class="list-muted">
+            <li>Tidak ada aktivitas.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Other sections placeholders -->
+      <section id="section-rewards" class="section">
+        <h3>Rewards (placeholder)</h3>
+      </section>
+
+      <section id="section-referral" class="section">
+        <h3>Referral (placeholder)</h3>
+      </section>
+
+      <section id="section-stats" class="section">
+        <h3>Statistik (placeholder)</h3>
+      </section>
+
+      <section id="section-history" class="section">
+        <h3>Riwayat (placeholder)</h3>
+      </section>
+
+      <section id="section-settings" class="section">
+        <h3>Pengaturan (placeholder)</h3>
+      </section>
+    </main>
+  </div>
+
+  <!-- Per-section JS -->
+  <script src="js/dashboard-ui.js"></script>
+</body>
+</html>
