@@ -56,6 +56,34 @@ h2 {
   color: #6a11cb;
 }
 
+.policy-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.policy-item input {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.policy-item span {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.4;
+}
+
+.policy-item a {
+  color: #2575fc;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.policy-item a:hover {
+  color: #6a11cb;
+}
+
 .google-btn {
   background: #e0e0e0;
   border: 2px solid #ccc;
