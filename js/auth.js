@@ -1,9 +1,5 @@
-// Import Firebase SDK
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider } 
-  from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+// CHAT-0910B: auth.js (Google Login + Referral ID)
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCkgqAz5OrTZgYoU_8LEH6WMhdOz_dy1sM",
   authDomain: "cittafun.firebaseapp.com",
@@ -13,48 +9,58 @@ const firebaseConfig = {
   appId: "1:419661983255:web:382aaa98136e13f1a9b652"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-// Providers
-const googleProvider = new GoogleAuthProvider();
-const facebookProvider = new FacebookAuthProvider();
-const twitterProvider = new TwitterAuthProvider();
+// LOGIN GOOGLE
+document.addEventListener("DOMContentLoaded", () => {
+  const loginBtn = document.getElementById("google-login");
 
-// Buttons
-document.getElementById("googleLogin").addEventListener("click", () => {
-  signInWithPopup(auth, googleProvider)
-    .then((result) => {
-      const user = result.user;
-      console.log("Google login success:", user);
-      window.location.href = "dashboard.html";
-    })
-    .catch((error) => {
-      console.error(error);
+  if (loginBtn) {
+    loginBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const provider = new firebase.auth.GoogleAuthProvider();
+
+      try {
+        const result = await firebase.auth().signInWithPopup(provider);
+        const user = result.user;
+        const userRef = db.collection("users").doc(user.uid);
+        const doc = await userRef.get();
+
+        // Cek referral dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const referredBy = urlParams.get("ref") || null;
+
+        if (!doc.exists) {
+          // Ambil referralId terakhir
+          const lastUser = await db.collection("users")
+            .orderBy("referralId", "desc")
+            .limit(1)
+            .get();
+
+          let newReferralId = 1;
+          if (!lastUser.empty) {
+            newReferralId = lastUser.docs[0].data().referralId + 1;
+          }
+
+          await userRef.set({
+            name: user.displayName,
+            email: user.email,
+            photo: user.photoURL,
+            referralId: newReferralId,
+            referredBy: referredBy ? parseInt(referredBy) : null,
+            points: 0,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+
+        // Redirect ke dashboard
+        window.location.href = "dashboard.html";
+
+      } catch (err) {
+        console.error("Login gagal:", err);
+        alert("Login gagal, coba lagi.");
+      }
     });
-});
-
-document.getElementById("facebookLogin").addEventListener("click", () => {
-  signInWithPopup(auth, facebookProvider)
-    .then((result) => {
-      const user = result.user;
-      console.log("Facebook login success:", user);
-      window.location.href = "dashboard.html";
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-});
-
-document.getElementById("twitterLogin").addEventListener("click", () => {
-  signInWithPopup(auth, twitterProvider)
-    .then((result) => {
-      const user = result.user;
-      console.log("Twitter login success:", user);
-      window.location.href = "dashboard.html";
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  }
 });
