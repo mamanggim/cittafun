@@ -1,1 +1,92 @@
+/* CHAT-0910B-DASH-SEC1-CSS */
+/* Vars */
+:root{
+  --bg: #f6f9ff;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --primary: #2575fc;
+  --accent: #ff7f00;
+  --sidebar-w: 260px;
+}
 
+/* Reset minimal */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
+
+/* Page layout */
+body{background:var(--bg);color:#111}
+.sidebar-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.35);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40
+}
+
+/* Sidebar */
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);
+  background:linear-gradient(180deg,#fff,#fbfbff);
+  border-right:1px solid rgba(0,0,0,0.04);
+  padding:24px 16px;display:flex;flex-direction:column;gap:18px;z-index:50;
+  transform:translateX(0);transition:transform .28s ease;
+}
+.sidebar.closed{transform:translateX(-110%)}
+
+/* Sidebar content */
+.sidebar-logo{width:48px;height:48px;border-radius:10px;display:block;margin:0 auto 6px}
+.sidebar-nav ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.sidebar-nav a{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:#333;text-decoration:none;font-weight:600;
+}
+.sidebar-nav a.active{background:linear-gradient(90deg,var(--primary),#00b1ff);color:#fff}
+.sidebar-footer{margin-top:auto;text-align:center;font-size:12px;color:var(--muted)}
+
+/* Main area */
+.main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column;transition:margin-left .28s}
+.sidebar.closed + .main{margin-left:0}
+
+/* Topbar */
+.topbar{
+  height:64px;background:rgba(255,255,255,0.9);backdrop-filter: blur(6px);
+  display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid rgba(0,0,0,0.04);position:sticky;top:0;z-index:30
+}
+.btn-icon{background:transparent;border:0;font-size:20px;padding:8px;border-radius:8px;cursor:pointer}
+.page-title{margin:0;font-weight:700;color:#111}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.notif-icon{position:relative;font-size:18px}
+.badge{position:absolute;top:-6px;right:-8px;background:var(--accent);color:#fff;padding:2px 6px;border-radius:20px;font-size:11px}
+
+/* Profile */
+.profile{display:flex;align-items:center;gap:10px;position:relative}
+.profile-photo{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,0.08)}
+.profile-info{display:flex;flex-direction:column;text-align:left}
+.profile-info #user-name{font-weight:700;font-size:14px}
+.profile-info small{font-size:12px;color:var(--muted)}
+.profile-menu{position:absolute;right:0;top:64px;background:var(--card);border-radius:10px;box-shadow:0 8px 24px rgba(16,24,40,0.08);padding:8px;display:none;min-width:160px}
+.profile-menu a, .profile-menu button{display:block;padding:8px 12px;text-decoration:none;color:#222;border:0;background:transparent;text-align:left;width:100%}
+.profile-menu.show{display:block}
+
+/* Content */
+.content{padding:20px;flex:1}
+.section{display:none}
+.section.active{display:block}
+
+/* Cards row */
+.cards-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:18px}
+.card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,40,0.04)}
+.card .big{font-size:1.8rem;font-weight:800;margin:8px 0;color:var(--primary)}
+.card h3{margin:0;font-size:14px;color:var(--muted)}
+.actions .btn{display:inline-block;padding:8px 12px;background:var(--primary);color:#fff;border-radius:8px;border:0;cursor:pointer}
+.actions .btn-outline{background:transparent;border:1px solid rgba(37,117,252,0.18);color:var(--primary);border-radius:8px;padding:8px 12px}
+
+/* Panel (activity, tables) */
+.panel{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 8px 20px rgba(16,24,40,0.04)}
+.list-muted{list-style:none;padding:0;margin:0}
+.list-muted li{padding:8px 0;border-bottom:1px dashed rgba(0,0,0,0.04);color:var(--muted)}
+
+/* Responsive */
+@media (max-width: 900px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-110%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .cards-row{grid-template-columns:repeat(1,1fr)}
+  .sidebar-overlay{opacity:0;pointer-events:none}
+  .sidebar-overlay.show{opacity:1;pointer-events:auto}
+  }
