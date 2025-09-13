@@ -14,18 +14,23 @@
 <body>
   <div class="login-container">
     <img src="assets/logo.png" alt="Logo" class="logo">
-    <h2 class="wave-text">
+    <h2>
+      <span class="black">Masuk ke </span>
       <span class="blue">Citta</span><span class="orange">Fun</span>
     </h2>
 
     <div class="policy-check">
       <div class="policy-item">
         <input type="checkbox" id="privacy-check">
-        <span>Saya setuju dengan <a href="privacy.html" target="_blank">Kebijakan Privasi</a></span>
+        <label for="privacy-check">
+          Saya setuju dengan <a href="privacy.html" target="_blank">Kebijakan Privasi</a>
+        </label>
       </div>
       <div class="policy-item">
         <input type="checkbox" id="terms-check">
-        <span>Saya setuju dengan <a href="terms.html" target="_blank">Syarat & Ketentuan</a></span>
+        <label for="terms-check">
+          Saya setuju dengan <a href="terms.html" target="_blank">Syarat &amp; Ketentuan</a>
+        </label>
       </div>
     </div>
 
@@ -34,7 +39,6 @@
 
   <script src="js/auth.js"></script>
   <script>
-    // Enable button jika 2 checkbox dicentang
     const privacyCheck = document.getElementById("privacy-check");
     const termsCheck = document.getElementById("terms-check");
     const loginBtn = document.getElementById("google-login");
