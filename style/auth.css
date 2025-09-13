@@ -6,43 +6,43 @@ body {
   align-items: center;
   min-height: 100vh;
   margin: 0;
-  padding: 20px;
+  padding: 10px; /* Mengurangi padding body untuk layar kecil */
 }
 
 .login-container {
   background: #fff;
-  padding: 2rem;
+  padding: 1.5rem; /* Padding lebih fleksibel */
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   text-align: center;
-  width: 90%;
-  max-width: 380px;
-  min-width: 280px; /* Prevents it from becoming too small */
+  width: 85%; /* Lebar lebih fleksibel */
+  max-width: 400px; /* Sedikit lebih besar untuk ruang */
+  min-width: 250px; /* Minimum lebih kecil untuk adaptasi */
   animation: fadeIn 0.8s ease-in-out;
 }
 
 .logo {
-  width: 90px;
+  width: 80px; /* Logo sedikit lebih kecil awalnya */
   margin-bottom: 1rem;
 }
 
 h2 {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
   color: #333;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
 }
 
 .policy-check {
   text-align: left;
-  margin-bottom: 1.5rem;
-  font-size: 14px;
+  margin-bottom: 1.2rem;
+  font-size: 13px; /* Font sedikit lebih kecil untuk ruang */
   color: #444;
   line-height: 1.4;
 }
 
 .policy-check label {
   display: block;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.5rem;
   cursor: pointer;
 }
 
@@ -61,10 +61,10 @@ h2 {
   background: #fff;
   border: 2px solid #2575fc;
   color: #2575fc;
-  padding: 14px;
+  padding: 12px;
   width: 100%;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -92,24 +92,25 @@ h2 {
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .login-container {
-    padding: 1.5rem;
-    width: 85%;
+    padding: 1rem;
+    width: 90%;
   }
 
   h2 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
 
   .google-btn {
-    font-size: 15px;
-    padding: 12px;
+    font-size: 14px;
+    padding: 10px;
   }
 }
 
 @media (max-width: 320px) {
   .login-container {
-    padding: 1rem;
-    width: 80%;
+    padding: 0.8rem;
+    width: 95%;
+    min-width: 220px;
   }
 
   h2 {
@@ -117,11 +118,15 @@ h2 {
   }
 
   .google-btn {
-    font-size: 14px;
-    padding: 10px;
+    font-size: 13px;
+    padding: 8px;
   }
 
   .logo {
-    width: 70px;
+    width: 60px;
+  }
+
+  .policy-check {
+    font-size: 12px;
   }
 }
