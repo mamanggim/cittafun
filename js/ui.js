@@ -26,3 +26,26 @@ window.addEventListener("scroll", () => {
     navbar.classList.remove("scrolled");
   }
 });
+
+// Toggle open/close
+menuToggle.addEventListener("click", () => {
+  menuToggle.classList.toggle("active");
+  navLinks.classList.toggle("active");
+  overlay.classList.toggle("active");
+});
+
+// Close saat overlay diklik
+overlay.addEventListener("click", () => {
+  menuToggle.classList.remove("active");
+  navLinks.classList.remove("active");
+  overlay.classList.remove("active");
+});
+
+// Close saat salah satu link diklik
+document.querySelectorAll("#nav-links a").forEach(link => {
+  link.addEventListener("click", () => {
+    menuToggle.classList.remove("active");
+    navLinks.classList.remove("active");
+    overlay.classList.remove("active");
+  });
+});
