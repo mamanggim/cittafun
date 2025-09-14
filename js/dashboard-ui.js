@@ -12,7 +12,23 @@
   const navLinks = document.querySelectorAll('.nav-link');
   const sections = document.querySelectorAll('.section');
 
-  // sidebar open/close for mobile
+  // --- INIT STATE ---
+  // pastikan sidebar tertutup di mobile, terbuka di desktop
+  function setInitialSidebarState() {
+    if (window.innerWidth <= 900) {
+      sidebar.classList.add('closed');
+      sidebar.classList.remove('open');
+    } else {
+      sidebar.classList.add('open');
+      sidebar.classList.remove('closed');
+    }
+  }
+  setInitialSidebarState();
+
+  // update state kalau resize
+  window.addEventListener('resize', setInitialSidebarState);
+
+  // --- SIDEBAR OPEN/CLOSE ---
   function openSidebar() {
     sidebar.classList.remove('closed');
     sidebar.classList.add('open');
@@ -24,28 +40,29 @@
     overlay.classList.remove('show');
   }
 
-  // toggle button
   sidebarToggle?.addEventListener('click', () => {
-    const closed = sidebar.classList.contains('closed');
-    if (closed) openSidebar(); else closeSidebar();
+    if (sidebar.classList.contains('open')) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
   });
 
   overlay?.addEventListener('click', closeSidebar);
 
-  // profile menu toggle
+  // --- PROFILE MENU ---
   profileToggle?.addEventListener('click', (e) => {
     e.stopPropagation();
     profileMenu.classList.toggle('show');
   });
 
-  // close profile menu on outside click
   document.addEventListener('click', (e) => {
     if (!profileMenu.contains(e.target) && e.target !== profileToggle) {
       profileMenu.classList.remove('show');
     }
   });
 
-  // nav link switching (single-page simple)
+  // --- NAVIGATION ---
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -57,12 +74,12 @@
         sec.classList.toggle('active', sec.id === `section-${target}`);
       });
 
-      // close sidebar on mobile after navigation
+      // close sidebar on mobile
       if (window.innerWidth <= 900) closeSidebar();
     });
   });
 
-  // logout handlers (if firebase available)
+  // --- LOGOUT ---
   logoutBtns.forEach(btn => {
     btn.addEventListener('click', async () => {
       if (window.firebase && firebase.auth) {
@@ -72,12 +89,11 @@
           console.warn('Logout error', err);
         }
       }
-      // redirect to index (login)
       window.location.href = 'index.html';
     });
   });
 
-  // AUTH check & populate user info if firebase is initialized
+  // --- USER DATA ---
   function populateUser(user) {
     if (!user) return;
     const nameEl = document.getElementById('user-name');
@@ -89,29 +105,25 @@
     if (photoEl && user.photoURL) photoEl.src = user.photoURL;
   }
 
-  // If firebase exists, attach auth listener and load user data (and small Firestore read for extra)
   if (window.firebase && firebase.auth) {
     firebase.auth().onAuthStateChanged(async (user) => {
       if (!user) {
-        // not logged in -> back to landing
         window.location.href = 'index.html';
         return;
       }
       populateUser(user);
 
-      // example: load basic user doc (if you use Firestore users collection)
       try {
         if (firebase.firestore) {
           const db = firebase.firestore();
           const doc = await db.collection('users').doc(user.uid).get();
           if (doc.exists) {
             const data = doc.data();
-            // populate points & referral count if available
             const pointsEl = document.getElementById('points-balance');
             const rupEl = document.getElementById('points-rupiah');
             const refEl = document.getElementById('ref-count');
             if (pointsEl && data.points != null) pointsEl.textContent = data.points;
-            if (rupEl && data.points != null) rupEl.textContent = `Rp${(data.points/10).toLocaleString('id-ID')}`; // example: 10 poin = Rp1
+            if (rupEl && data.points != null) rupEl.textContent = `Rp${(data.points/10).toLocaleString('id-ID')}`;
             if (refEl && data.referralCount != null) refEl.textContent = data.referralCount;
           }
         }
@@ -120,31 +132,12 @@
       }
     });
   } else {
-    // If firebase not configured, still allow developer to preview layout (no redirect).
-    console.warn('Firebase not detected. For full functionality, add firebase-config.js with initialization.');
+    console.warn('Firebase not detected. Add firebase-config.js for full functionality.');
   }
 })();
 
-// Dark/Light Mode Toggle dari Dropdown
-const themeToggle = document.getElementById("theme-toggle");
-
-if (themeToggle) {
-  themeToggle.addEventListener("click", (e) => {
-    e.preventDefault();
-    document.body.classList.toggle("dark-mode");
-
-    // Ganti teks tombol sesuai mode
-    if (document.body.classList.contains("dark-mode")) {
-      themeToggle.textContent = "☀️ Light Mode";
-    } else {
-      themeToggle.textContent = "🌙 Dark Mode";
-    }
-  });
-}
-
-// 🌗 Dark mode toggle + persist
-const toggleDarkMode = document.getElementById("toggle-darkmode"); 
-// pastikan tombol dropdown punya id="toggle-darkmode"
+// --- DARK/LIGHT MODE TOGGLE ---
+const toggleDarkMode = document.getElementById("toggle-darkmode");
 
 function applyMode(isDark) {
   if (isDark) {
@@ -158,12 +151,12 @@ function applyMode(isDark) {
   }
 }
 
-// Load theme dari localStorage
-const savedTheme = localStorage.getItem("theme");
-applyMode(savedTheme === "dark");
+if (toggleDarkMode) {
+  const savedTheme = localStorage.getItem("theme");
+  applyMode(savedTheme === "dark");
 
-// Klik toggle
-toggleDarkMode.addEventListener("click", () => {
-  const isDark = !document.body.classList.contains("dark-mode");
-  applyMode(isDark);
-});
+  toggleDarkMode.addEventListener("click", () => {
+    const isDark = !document.body.classList.contains("dark-mode");
+    applyMode(isDark);
+  });
+}
