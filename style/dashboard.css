@@ -7,6 +7,10 @@
   --primary: #2575fc;
   --accent: #ff7f00;
   --sidebar-w: 260px;
+  --text: #111;
+  --text-muted: #6b7280;
+  --sidebar-bg: linear-gradient(180deg,#fff,#f8fbff);
+  --topbar-bg: rgba(255,255,255,0.9);
 }
 
 /* Reset minimal */
@@ -14,12 +18,15 @@
 html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
 
 /* Page layout */
-body{background:var(--bg);color:#111}
+body{background:var(--bg);color:var(--text)}
 .sidebar-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.35);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40
+  position:fixed;inset:0;background:rgba(0,0,0,0.35);
+  opacity:0;pointer-events:none;
+  transition:opacity .35s ease;
+  z-index:40;
 }
 
-/* Sidebar animasi */
+/* Sidebar */
 .sidebar {
   position:fixed;
   left:0;top:0;bottom:0;
@@ -31,29 +38,15 @@ body{background:var(--bg);color:#111}
   flex-direction:column;
   gap:18px;
   z-index:50;
-
-  transform:translateX(-110%);
-  opacity:0;
-  transition:transform 0.35s ease, opacity 0.35s ease; /* cukup 0.35s */
+  transition:transform 0.35s ease, opacity 0.35s ease;
 }
-
-.sidebar.open {
-  transform:translateX(0);
-  opacity:1;
-}
-
 .sidebar.closed {
   transform:translateX(-110%);
   opacity:0;
 }
-
-.sidebar-overlay {
-  position:fixed;inset:0;
-  background:rgba(0,0,0,0.35);
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .0.35s ease; /* lebih halus */
-  z-index:40;
+.sidebar.open {
+  transform:translateX(0);
+  opacity:1;
 }
 .sidebar-overlay.show {
   opacity:1;
@@ -64,22 +57,24 @@ body{background:var(--bg);color:#111}
 .sidebar-logo{width:48px;height:48px;border-radius:10px;display:block;margin:0 auto 6px}
 .sidebar-nav ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
 .sidebar-nav a{
-  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:#333;text-decoration:none;font-weight:600;
+  display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border-radius:10px;color:var(--text);text-decoration:none;font-weight:600;
 }
 .sidebar-nav a.active{background:linear-gradient(90deg,var(--primary),#00b1ff);color:#fff}
 .sidebar-footer{margin-top:auto;text-align:center;font-size:12px;color:var(--muted)}
 
 /* Main area */
 .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column;transition:margin-left .28s}
-.sidebar.closed + .main{margin-left:0}
 
 /* Topbar */
 .topbar{
-  height:64px;background:rgba(255,255,255,0.9);backdrop-filter: blur(6px);
-  display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid rgba(0,0,0,0.04);position:sticky;top:0;z-index:30
+  height:64px;background:var(--topbar-bg);backdrop-filter: blur(6px);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;border-bottom:1px solid rgba(0,0,0,0.04);
+  position:sticky;top:0;z-index:30
 }
 .btn-icon{background:transparent;border:0;font-size:20px;padding:8px;border-radius:8px;cursor:pointer}
-.page-title{margin:0;font-weight:700;color:#111}
+.page-title{margin:0;font-weight:700;color:var(--text)}
 .topbar-right{display:flex;align-items:center;gap:14px}
 .notif-icon{position:relative;font-size:18px}
 .badge{position:absolute;top:-6px;right:-8px;background:var(--accent);color:#fff;padding:2px 6px;border-radius:20px;font-size:11px}
@@ -91,7 +86,7 @@ body{background:var(--bg);color:#111}
 .profile-info #user-name{font-weight:700;font-size:14px}
 .profile-info small{font-size:12px;color:var(--muted)}
 .profile-menu{position:absolute;right:0;top:64px;background:var(--card);border-radius:10px;box-shadow:0 8px 24px rgba(16,24,40,0.08);padding:8px;display:none;min-width:160px}
-.profile-menu a, .profile-menu button{display:block;padding:8px 12px;text-decoration:none;color:#222;border:0;background:transparent;text-align:left;width:100%}
+.profile-menu a, .profile-menu button{display:block;padding:8px 12px;text-decoration:none;color:var(--text);border:0;background:transparent;text-align:left;width:100%}
 .profile-menu.show{display:block}
 
 /* Content */
@@ -113,43 +108,26 @@ body{background:var(--bg);color:#111}
 .list-muted li{padding:8px 0;border-bottom:1px dashed rgba(0,0,0,0.04);color:var(--muted)}
 
 /* Responsive */
+#sidebar-toggle { display:none; }
+
 @media (max-width: 900px){
+  #sidebar-toggle { display:inline-block; }
+
   .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-  } /* ✅ tambahan penutup di sini */
-
-  .main {
-    margin-left: 0;
-  }
-
-  .cards-row {
-    grid-template-columns: repeat(1,1fr);
-  }
-
-  .sidebar-overlay {
+    transform: translateX(-110%);
     opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.35s ease; /* biar halus */
   }
-  .sidebar-overlay.show {
+  .sidebar.open {
+    transform: translateX(0);
     opacity: 1;
-    pointer-events: auto;
   }
+  .main { margin-left:0; }
+  .cards-row { grid-template-columns:repeat(1,1fr); }
 }
 
-/* 🌞 Light Mode (default) */
-:root {
-  --bg: #f6f9ff;
-  --card: #ffffff;
-  --text: #111;
-  --text-muted: #6b7280;
-  --primary: #2575fc;
-  --accent: #ff7f00;
-  --sidebar-bg: linear-gradient(180deg,#fff,#f8fbff);
-  --topbar-bg: rgba(255,255,255,0.9);
+@media (min-width: 901px){
+  .sidebar { transform:none !important; opacity:1 !important; }
+  .main { margin-left:var(--sidebar-w); }
 }
 
 /* 🌙 Dark Mode */
@@ -161,85 +139,22 @@ body.dark-mode {
   --sidebar-bg: linear-gradient(180deg,#2a2a3b,#1f1c2c);
   --topbar-bg: rgba(30, 30, 45, 0.9);
 }
-
-/* Perbaikan kontras elemen tertentu di Dark Mode */
 body.dark-mode .btn-icon,
 body.dark-mode .notif-icon,
 body.dark-mode .profile-menu a,
-body.dark-mode .profile-menu button {
-  color: var(--text); /* ikut warna teks terang */
-}
-
+body.dark-mode .profile-menu button { color: var(--text); }
 body.dark-mode .profile-menu a:hover,
-body.dark-mode .profile-menu button:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-}
-
+body.dark-mode .profile-menu button:hover { background: rgba(255,255,255,0.08); color:#fff; }
 body.dark-mode .profile-menu a:last-child,
-body.dark-mode .profile-menu button:last-child {
-  color: #f87171; /* merah untuk tombol keluar */
-  font-weight: 600;
-}
+body.dark-mode .profile-menu button:last-child { color:#f87171;font-weight:600; }
 
 /* Terapkan variable warna */
-body {
-  background: var(--bg);
-  color: var(--text);
-}
-
-.sidebar {
-  background: var(--sidebar-bg);
-}
-
-.topbar {
-  background: var(--topbar-bg);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-.page-title {
-  color: var(--text);
-}
-
-.sidebar-nav a {
-  color: var(--text);
-}
-
-.sidebar-nav a.active {
-  background: linear-gradient(90deg, var(--primary), #00b1ff);
-  color: #fff;
-}
-
-.card, .panel {
-  background: var(--card);
-  color: var(--text);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-}
-
-.card h3, .panel h3 {
-  color: var(--text-muted);
-}
-
-.list-muted li {
-  color: var(--text-muted);
-  border-bottom: 1px dashed rgba(255,255,255,0.08);
-}
-
-.profile-menu {
-  background: var(--card);
-}
-
-.profile-menu a {
-  color: var(--text);
-}
-
-.profile-info #user-name {
-  color: var(--text);
-}
-
-.profile-info small {
-  color: var(--text-muted);
-}
+.card, .panel { background:var(--card); color:var(--text); box-shadow:0 8px 24px rgba(0,0,0,0.25); }
+.card h3, .panel h3 { color:var(--text-muted); }
+.list-muted li { color:var(--text-muted); border-bottom:1px dashed rgba(255,255,255,0.08); }
+.profile-menu { background:var(--card); }
+.profile-info #user-name { color:var(--text); }
+.profile-info small { color:var(--text-muted); }
 
 /* 🌗 Smooth transition */
 body, .sidebar, .topbar, .card, .panel, .profile-menu {
@@ -247,43 +162,27 @@ body, .sidebar, .topbar, .card, .panel, .profile-menu {
 }
 
 /* 💫 Logo animasi bounce */
-.sidebar-logo {
-  animation: bounce 2s infinite;
-}
+.sidebar-logo { animation: bounce 2s infinite; }
+@keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
 
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-
-/* 🎨 CittaFun brand warna */
+/* 🎨 CittaFun brand */
 .brand {
-  font-size: 1.2rem;
-  font-weight: 800;
-}
-
-.brand .citta { color: #2575fc; }  /* Biru */
-.brand .fun { color: #ff7f00; }    /* Oranye */
-
-/* CittaFun brand positioning */
-.brand {
-  font-size: 1.4rem;
-  font-weight: 800;
-  text-align: center;      /* teks rata tengah */
-  margin: 8px 0 16px;      /* kasih jarak atas & bawah */
-  display: block;
+  font-size:1.4rem;
+  font-weight:800;
+  text-align:center;
+  margin:8px 0 16px;
+  display:block;
   animation: fadeIn 1.2s ease, colorShift 4s infinite alternate;
 }
+.brand .citta { color:#2575fc; }
+.brand .fun { color:#ff7f00; }
 
-/* Animasi masuk */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {opacity:0;transform:translateY(-10px);}
+  to {opacity:1;transform:translateY(0);}
 }
-
-/* Animasi warna bergantian */
 @keyframes colorShift {
-  0%   { letter-spacing: 0px; }
-  50%  { letter-spacing: 2px; }
-  100% { letter-spacing: 0px; }
-}
+  0%{letter-spacing:0px;}
+  50%{letter-spacing:2px;}
+  100%{letter-spacing:0px;}
+      }
