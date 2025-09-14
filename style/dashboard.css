@@ -27,22 +27,21 @@ body{background:var(--bg);color:#111}
   background:var(--sidebar-bg);
   border-right:1px solid rgba(0,0,0,0.04);
   padding:24px 16px;
-  display:flex;flex-direction:column;gap:18px;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
   z-index:50;
 
-  /* Animasi */
   transform:translateX(-110%);
   opacity:0;
-  transition:transform 1s ease, opacity 1s ease;
+  transition:transform 0.35s ease, opacity 0.35s ease; /* cukup 0.35s */
 }
 
-/* Saat terbuka */
 .sidebar.open {
   transform:translateX(0);
   opacity:1;
 }
 
-/* Saat tertutup */
 .sidebar.closed {
   transform:translateX(-110%);
   opacity:0;
@@ -53,7 +52,7 @@ body{background:var(--bg);color:#111}
   background:rgba(0,0,0,0.35);
   opacity:0;
   pointer-events:none;
-  transition:opacity .1s ease; /* lebih halus */
+  transition:opacity .0.35s ease; /* lebih halus */
   z-index:40;
 }
 .sidebar-overlay.show {
@@ -115,13 +114,30 @@ body{background:var(--bg);color:#111}
 
 /* Responsive */
 @media (max-width: 900px){
-  .sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-110%)}
-  .sidebar.open{transform:translateX(0)}
-  .main{margin-left:0}
-  .cards-row{grid-template-columns:repeat(1,1fr)}
-  .sidebar-overlay{opacity:0;pointer-events:none}
-  .sidebar-overlay.show{opacity:1;pointer-events:auto}
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+  .main {
+    margin-left: 0;
   }
+
+  .cards-row {
+    grid-template-columns: repeat(1,1fr);
+  }
+
+  .sidebar-overlay {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease; /* biar halus */
+  }
+  .sidebar-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
 
 /* 🌞 Light Mode (default) */
 :root {
@@ -226,7 +242,7 @@ body {
 
 /* 🌗 Smooth transition */
 body, .sidebar, .topbar, .card, .panel, .profile-menu {
-  transition: background 2s ease, color 2s ease;
+  transition: background 0.5s ease, color 0.5s ease;
 }
 
 /* 💫 Logo animasi bounce */
