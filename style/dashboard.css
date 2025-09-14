@@ -119,7 +119,7 @@ body{background:var(--bg);color:#111}
     left: 0;
     top: 0;
     bottom: 0;
-  }
+  } /* ✅ tambahan penutup di sini */
 
   .main {
     margin-left: 0;
