@@ -91,29 +91,83 @@ body{background:var(--bg);color:#111}
   .sidebar-overlay.show{opacity:1;pointer-events:auto}
   }
 
-/* Light/Dark Mode */
+/* 🌞 Light Mode (default) */
+:root {
+  --bg: #f6f9ff;
+  --card: #ffffff;
+  --text: #111;
+  --text-muted: #6b7280;
+  --primary: #2575fc;
+  --accent: #ff7f00;
+  --sidebar-bg: linear-gradient(180deg,#fff,#f8fbff);
+  --topbar-bg: rgba(255,255,255,0.9);
+}
+
+/* 🌙 Dark Mode */
 body.dark-mode {
-  background: #1e1e2f;
-  color: #eee;
+  --bg: linear-gradient(135deg, #1f1c2c, #2a2a72);
+  --card: linear-gradient(145deg, #2b2d42, #1a1b2e);
+  --text: #f3f4f6;
+  --text-muted: #9ca3af;
+  --sidebar-bg: linear-gradient(180deg,#2a2a3b,#1f1c2c);
+  --topbar-bg: rgba(30, 30, 45, 0.9);
 }
 
-body.dark-mode .sidebar {
-  background: #2a2a3b;
+/* Terapkan variable warna */
+body {
+  background: var(--bg);
+  color: var(--text);
 }
 
-body.dark-mode .sidebar a {
-  color: #ccc;
+.sidebar {
+  background: var(--sidebar-bg);
 }
 
-body.dark-mode .sidebar a:hover {
-  background: #3a3a4d;
+.topbar {
+  background: var(--topbar-bg);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.page-title {
+  color: var(--text);
+}
+
+.sidebar-nav a {
+  color: var(--text);
+}
+
+.sidebar-nav a.active {
+  background: linear-gradient(90deg, var(--primary), #00b1ff);
   color: #fff;
 }
 
-body.dark-mode .dropdown-menu {
-  background: #2a2a3b;
+.card, .panel {
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
 }
 
-body.dark-mode .dropdown-menu a {
-  color: #ddd;
+.card h3, .panel h3 {
+  color: var(--text-muted);
+}
+
+.list-muted li {
+  color: var(--text-muted);
+  border-bottom: 1px dashed rgba(255,255,255,0.08);
+}
+
+.profile-menu {
+  background: var(--card);
+}
+
+.profile-menu a {
+  color: var(--text);
+}
+
+.profile-info #user-name {
+  color: var(--text);
+}
+
+.profile-info small {
+  color: var(--text-muted);
 }
