@@ -33,7 +33,7 @@ body{background:var(--bg);color:#111}
   /* Animasi */
   transform:translateX(-110%);
   opacity:0;
-  transition:transform 0.35s ease, opacity 0.35s ease;
+  transition:transform 1s ease, opacity 1s ease;
 }
 
 /* Saat terbuka */
@@ -53,7 +53,7 @@ body{background:var(--bg);color:#111}
   background:rgba(0,0,0,0.35);
   opacity:0;
   pointer-events:none;
-  transition:opacity .35s ease; /* lebih halus */
+  transition:opacity .1s ease; /* lebih halus */
   z-index:40;
 }
 .sidebar-overlay.show {
@@ -226,7 +226,7 @@ body {
 
 /* 🌗 Smooth transition */
 body, .sidebar, .topbar, .card, .panel, .profile-menu {
-  transition: background 1s ease, color 1s ease;
+  transition: background 2s ease, color 2s ease;
 }
 
 /* 💫 Logo animasi bounce */
