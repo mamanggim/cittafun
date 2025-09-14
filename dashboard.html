@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dashboard - CittaFun</title>
   <link rel="stylesheet" href="style/dashboard.css">
-  <!-- Firebase SDKs (auth + firestore) -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
-  <!-- Firebase config (fill your config in this file) -->
+  <!-- Firebase config -->
   <script src="js/firebase-config.js"></script>
 </head>
 <body>
@@ -17,7 +17,7 @@
   <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
 
   <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar" aria-label="sidebar">
+  <aside class="sidebar closed" id="sidebar" aria-label="sidebar">
     <div class="sidebar-top">
       <img src="assets/logo.png" alt="Logo" class="sidebar-logo">
       <div class="brand"><span class="citta">Citta</span><span class="fun">Fun</span></div>
@@ -26,6 +26,11 @@
     <nav class="sidebar-nav" role="navigation">
       <ul>
         <li><a href="#" data-section="overview" class="nav-link active">🏠 Dashboard</a></li>
+        <li><a href="#" data-section="lessons" class="nav-link">📚 Pelajaran</a></li>
+        <li><a href="#" data-section="quiz" class="nav-link">❓ Quiz</a></li>
+        <li><a href="#" data-section="games" class="nav-link">🎮 Game Edukatif</a></li>
+        <li><a href="#" data-section="leaderboard" class="nav-link">🏆 Leaderboard</a></li>
+        <li><a href="#" data-section="missions" class="nav-link">🎯 Misi Harian</a></li>
         <li><a href="#" data-section="rewards" class="nav-link">🎁 Rewards</a></li>
         <li><a href="#" data-section="referral" class="nav-link">👥 Referral</a></li>
         <li><a href="#" data-section="stats" class="nav-link">📊 Statistik</a></li>
@@ -35,7 +40,7 @@
     </nav>
 
     <div class="sidebar-footer">
-      <small>Versi: 0.1 • CittaFun</small>
+      <small>Versi: 0.2 • CittaFun</small>
     </div>
   </aside>
 
@@ -72,7 +77,7 @@
 
     <!-- Content area -->
     <main class="content" id="content">
-      <!-- Section: Overview (default) -->
+      <!-- Section: Overview -->
       <section id="section-overview" class="section active">
         <div class="cards-row">
           <div class="card balance-card">
@@ -102,25 +107,64 @@
         </div>
       </section>
 
-      <!-- Other sections placeholders -->
+      <!-- Section: Lessons -->
+      <section id="section-lessons" class="section">
+        <h3>📚 Pelajaran</h3>
+        <p>Daftar materi belajar interaktif akan tampil di sini.</p>
+      </section>
+
+      <!-- Section: Quiz -->
+      <section id="section-quiz" class="section">
+        <h3>❓ Quiz</h3>
+        <p>Kumpulan kuis seru untuk menguji kemampuanmu.</p>
+      </section>
+
+      <!-- Section: Games -->
+      <section id="section-games" class="section">
+        <h3>🎮 Game Edukatif</h3>
+        <p>Mini games edukatif akan tersedia di sini.</p>
+      </section>
+
+      <!-- Section: Leaderboard -->
+      <section id="section-leaderboard" class="section">
+        <h3>🏆 Leaderboard</h3>
+        <p>Peringkat pengguna berdasarkan poin & aktivitas.</p>
+      </section>
+
+      <!-- Section: Missions -->
+      <section id="section-missions" class="section">
+        <h3>🎯 Misi Harian</h3>
+        <p>Lengkapi challenge harian untuk dapatkan poin ekstra!</p>
+      </section>
+
+      <!-- Section: Rewards -->
       <section id="section-rewards" class="section">
-        <h3>Rewards (placeholder)</h3>
+        <h3>🎁 Rewards</h3>
+        <p>Katalog hadiah & penukaran poin.</p>
       </section>
 
+      <!-- Section: Referral -->
       <section id="section-referral" class="section">
-        <h3>Referral (placeholder)</h3>
+        <h3>👥 Referral</h3>
+        <p>Bagikan link referral dan dapatkan bonus poin.</p>
       </section>
 
+      <!-- Section: Stats -->
       <section id="section-stats" class="section">
-        <h3>Statistik (placeholder)</h3>
+        <h3>📊 Statistik</h3>
+        <p>Data lengkap penggunaan dan progressmu.</p>
       </section>
 
+      <!-- Section: History -->
       <section id="section-history" class="section">
-        <h3>Riwayat (placeholder)</h3>
+        <h3>📜 Riwayat</h3>
+        <p>Riwayat aktivitas & transaksi poin.</p>
       </section>
 
-      <section id="section-event" class="section">
-        <h3>Segera..(placeholder)</h3>
+      <!-- Section: Events -->
+      <section id="section-events" class="section">
+        <h3>🎉 Event & Promo</h3>
+        <p>Informasi acara & promo terbaru.</p>
       </section>
     </main>
   </div>
@@ -128,4 +172,4 @@
   <!-- Per-section JS -->
   <script src="js/dashboard-ui.js"></script>
 </body>
-</html>
+          </html>
