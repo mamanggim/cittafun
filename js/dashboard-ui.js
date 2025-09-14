@@ -24,11 +24,6 @@
     overlay.classList.remove('show');
   }
 
-  // init state: closed on small screens
-  if (window.innerWidth <= 900) {
-    sidebar.classList.add('closed');
-  }
-
   // toggle button
   sidebarToggle?.addEventListener('click', () => {
     const closed = sidebar.classList.contains('closed');
