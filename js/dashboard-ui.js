@@ -129,3 +129,20 @@
     console.warn('Firebase not detected. For full functionality, add firebase-config.js with initialization.');
   }
 })();
+
+// Dark/Light Mode Toggle dari Dropdown
+const themeToggle = document.getElementById("theme-toggle");
+
+if (themeToggle) {
+  themeToggle.addEventListener("click", (e) => {
+    e.preventDefault();
+    document.body.classList.toggle("dark-mode");
+
+    // Ganti teks tombol sesuai mode
+    if (document.body.classList.contains("dark-mode")) {
+      themeToggle.textContent = "☀️ Light Mode";
+    } else {
+      themeToggle.textContent = "🌙 Dark Mode";
+    }
+  });
+}
