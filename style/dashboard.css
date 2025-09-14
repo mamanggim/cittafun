@@ -40,8 +40,8 @@ body{background:var(--bg);color:var(--text)}
   z-index:50;
   transform:translateX(0); /* default tampil (desktop) */
   opacity:1;
-  transition:transform 0.5s cubic-bezier(0.4,0,0.2,1), 
-             opacity 0.5s cubic-bezier(0.4,0,0.2,1);
+  .sidebar {
+  transition: transform 0.6s ease, opacity 0.4s ease 0.1s;
 }
 .sidebar.closed {
   transform:translateX(-110%);
