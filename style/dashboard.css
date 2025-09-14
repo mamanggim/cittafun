@@ -215,3 +215,26 @@ body, .sidebar, .topbar, .card, .panel, .profile-menu {
 
 .brand .citta { color: #2575fc; }  /* Biru */
 .brand .fun { color: #ff7f00; }    /* Oranye */
+
+/* CittaFun brand positioning */
+.brand {
+  font-size: 1.4rem;
+  font-weight: 800;
+  text-align: center;      /* teks rata tengah */
+  margin: 8px 0 16px;      /* kasih jarak atas & bawah */
+  display: block;
+  animation: fadeIn 1.2s ease, colorShift 4s infinite alternate;
+}
+
+/* Animasi masuk */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Animasi warna bergantian */
+@keyframes colorShift {
+  0%   { letter-spacing: 0px; }
+  50%  { letter-spacing: 2px; }
+  100% { letter-spacing: 0px; }
+}
