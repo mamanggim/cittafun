@@ -25,11 +25,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.innerWidth <= 900) {
       sidebar.classList.add('closed');
       sidebar.classList.remove('open');
-      if (overlay) overlay.classList.remove('show');
+      if (overlay) {
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
     } else {
       sidebar.classList.add('open');
       sidebar.classList.remove('closed');
-      if (overlay) overlay.classList.remove('show');
+      if (overlay) {
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
     }
   }
   setInitialSidebarState();
@@ -45,14 +51,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!sidebar) return;
     sidebar.classList.remove('closed');
     sidebar.classList.add('open');
-    if (overlay) overlay.classList.add('show');
+    if (overlay) {
+      overlay.classList.add('show');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
   }
 
   function closeSidebar() {
     if (!sidebar) return;
     sidebar.classList.remove('open');
     sidebar.classList.add('closed');
-    if (overlay) overlay.classList.remove('show');
+    if (overlay) {
+      overlay.classList.remove('show');
+      overlay.setAttribute('aria-hidden', 'true');
+    }
   }
 
   function toggleSidebar() {
@@ -75,7 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
   safeAddEvent(profileToggle, 'click', (e) => {
     e.stopPropagation();
     if (!profileMenu) return;
-    profileMenu.classList.toggle('show');
+    const isShown = profileMenu.classList.toggle('show');
+    profileMenu.setAttribute('aria-hidden', !isShown);
   });
 
   // Close profile menu when clicking outside
@@ -83,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!profileMenu) return;
     if (!profileMenu.contains(e.target) && e.target !== profileToggle) {
       profileMenu.classList.remove('show');
+      profileMenu.setAttribute('aria-hidden', 'true');
     }
   });
 
@@ -127,6 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // if still not matched, show first section
         if (!matched) {
           sections.forEach((sec, idx) => sec.classList.toggle('active', idx === 0));
+          console.warn(`No section found for data-section="${key}". Falling back to first section.`);
         }
 
         // auto-close sidebar on mobile
@@ -140,14 +155,17 @@ document.addEventListener('DOMContentLoaded', () => {
     logoutBtns.forEach(btn => {
       safeAddEvent(btn, 'click', async (e) => {
         e.preventDefault();
-        try {
-          if (window.firebase && firebase.auth) {
+        if (window.firebase && firebase.auth) {
+          try {
             await firebase.auth().signOut();
+            window.location.href = 'index.html';
+          } catch (err) {
+            console.warn('Logout error', err);
+            window.location.href = 'index.html';
           }
-        } catch (err) {
-          console.warn('Logout error', err);
+        } else {
+          console.warn('Firebase not detected. Skipping logout action (dev preview).');
         }
-        window.location.href = 'index.html';
       });
     });
   }
@@ -167,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.firebase && firebase.auth) {
     firebase.auth().onAuthStateChanged(async (user) => {
       if (!user) {
-        // only redirect if firebase is configured and user is unauthenticated
         window.location.href = 'index.html';
         return;
       }
@@ -193,8 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   } else {
-    // firebase not present => do not redirect, just warn (helps dev preview)
-    console.warn('Firebase not detected. Skipping auth check (dev preview allowed).');
+    console.warn('Firebase not detected. Authentication and Firestore functionality unavailable. Running in dev preview mode.');
   }
 
   // --- Theme (dark / light) toggle & persist ---
