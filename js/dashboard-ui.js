@@ -1,5 +1,5 @@
 // js/dashboard-ui.js
-// CHAT-0910B-DASH-SEC1-JS (robust, DOM-ready, debounced resize)
+// CHAT-0910B-DASH-SEC1-JS (robust, DOM-ready, debounced resize, enhanced logout)
 
 document.addEventListener('DOMContentLoaded', () => {
   // Elements (may be null — code handles absence gracefully)
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const overlay = document.getElementById('sidebar-overlay');
   const profileToggle = document.getElementById('profile-menu-toggle');
   const profileMenu = document.getElementById('profile-menu');
-  const logoutBtns = Array.from(document.querySelectorAll('#logout-btn, #logout-btn-2'));
+  const logoutBtn = document.getElementById('logout-btn-2'); // Only #logout-btn-2 exists in HTML
   const navLinks = Array.from(document.querySelectorAll('.nav-link'));
   const sections = Array.from(document.querySelectorAll('.section'));
   const themeToggle = document.getElementById('theme-toggle');
@@ -150,24 +150,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Logout handlers ---
-  if (logoutBtns.length) {
-    logoutBtns.forEach(btn => {
-      safeAddEvent(btn, 'click', async (e) => {
-        e.preventDefault();
-        if (window.firebase && firebase.auth) {
-          try {
+  // --- Logout handler ---
+  if (logoutBtn) {
+    let isLoggingOut = false; // Debounce flag
+    safeAddEvent(logoutBtn, 'click', async (e) => {
+      e.preventDefault();
+      if (isLoggingOut) return; // Prevent multiple clicks
+      isLoggingOut = true;
+      console.log('[Logout] Initiating logout process...');
+
+      if (window.firebase && firebase.auth) {
+        try {
+          if (firebase.auth().currentUser) {
+            console.log('[Logout] User is authenticated, signing out...');
             await firebase.auth().signOut();
+            console.log('[Logout] Firebase sign-out successful.');
             window.location.href = 'index.html';
-          } catch (err) {
-            console.warn('Logout error', err);
+          } else {
+            console.warn('[Logout] No authenticated user found. Redirecting to index.html.');
             window.location.href = 'index.html';
           }
-        } else {
-          console.warn('Firebase not detected. Skipping logout action (dev preview).');
+        } catch (err) {
+          console.error('[Logout] Firebase sign-out failed:', err.message);
+          window.location.href = 'index.html'; // Redirect even on error to avoid staying on dashboard
         }
-      });
+      } else {
+        console.warn('[Logout] Firebase not detected. Simulating logout in dev preview mode (no redirect).');
+      }
+      isLoggingOut = false;
     });
+  } else {
+    console.warn('[Logout] Logout button (#logout-btn-2) not found in DOM.');
   }
 
   // --- Populate user (if firebase available) ---
@@ -185,9 +198,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.firebase && firebase.auth) {
     firebase.auth().onAuthStateChanged(async (user) => {
       if (!user) {
+        console.log('[Auth] No user authenticated. Redirecting to index.html.');
         window.location.href = 'index.html';
         return;
       }
+      console.log('[Auth] User authenticated:', user.email);
       populateUser(user);
 
       // optional firestore read (safe)
@@ -206,11 +221,11 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       } catch (err) {
-        console.warn('Firestore read error', err);
+        console.warn('[Firestore] Read error:', err.message);
       }
     });
   } else {
-    console.warn('Firebase not detected. Authentication and Firestore functionality unavailable. Running in dev preview mode.');
+    console.warn('[Auth] Firebase not detected. Authentication and Firestore functionality unavailable. Running in dev preview mode.');
   }
 
   // --- Theme (dark / light) toggle & persist ---
@@ -237,5 +252,5 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --- finished init ---
-  // console.log('[dashboard-ui] initialized');
+  console.log('[dashboard-ui] Initialized');
 });
