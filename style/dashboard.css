@@ -90,3 +90,30 @@ body{background:var(--bg);color:#111}
   .sidebar-overlay{opacity:0;pointer-events:none}
   .sidebar-overlay.show{opacity:1;pointer-events:auto}
   }
+
+/* Light/Dark Mode */
+body.dark-mode {
+  background: #1e1e2f;
+  color: #eee;
+}
+
+body.dark-mode .sidebar {
+  background: #2a2a3b;
+}
+
+body.dark-mode .sidebar a {
+  color: #ccc;
+}
+
+body.dark-mode .sidebar a:hover {
+  background: #3a3a4d;
+  color: #fff;
+}
+
+body.dark-mode .dropdown-menu {
+  background: #2a2a3b;
+}
+
+body.dark-mode .dropdown-menu a {
+  color: #ddd;
+}
