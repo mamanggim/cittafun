@@ -113,6 +113,26 @@ body.dark-mode {
   --topbar-bg: rgba(30, 30, 45, 0.9);
 }
 
+/* Perbaikan kontras elemen tertentu di Dark Mode */
+body.dark-mode .btn-icon,
+body.dark-mode .notif-icon,
+body.dark-mode .profile-menu a,
+body.dark-mode .profile-menu button {
+  color: var(--text); /* ikut warna teks terang */
+}
+
+body.dark-mode .profile-menu a:hover,
+body.dark-mode .profile-menu button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+body.dark-mode .profile-menu a:last-child,
+body.dark-mode .profile-menu button:last-child {
+  color: #f87171; /* merah untuk tombol keluar */
+  font-weight: 600;
+}
+
 /* Terapkan variable warna */
 body {
   background: var(--bg);
