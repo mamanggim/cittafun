@@ -146,3 +146,29 @@ if (themeToggle) {
     }
   });
 }
+
+// 🌗 Dark mode toggle + persist
+const toggleDarkMode = document.getElementById("toggle-darkmode"); 
+// pastikan tombol dropdown punya id="toggle-darkmode"
+
+function applyMode(isDark) {
+  if (isDark) {
+    document.body.classList.add("dark-mode");
+    localStorage.setItem("theme", "dark");
+    toggleDarkMode.innerHTML = "☀️ Light Mode";
+  } else {
+    document.body.classList.remove("dark-mode");
+    localStorage.setItem("theme", "light");
+    toggleDarkMode.innerHTML = "🌙 Dark Mode";
+  }
+}
+
+// Load theme dari localStorage
+const savedTheme = localStorage.getItem("theme");
+applyMode(savedTheme === "dark");
+
+// Klik toggle
+toggleDarkMode.addEventListener("click", () => {
+  const isDark = !document.body.classList.contains("dark-mode");
+  applyMode(isDark);
+});
