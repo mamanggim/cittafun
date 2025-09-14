@@ -119,6 +119,7 @@ body{background:var(--bg);color:#111}
     left: 0;
     top: 0;
     bottom: 0;
+  }
 
   .main {
     margin-left: 0;
