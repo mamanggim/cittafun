@@ -191,3 +191,27 @@ body {
 .profile-info small {
   color: var(--text-muted);
 }
+
+/* 🌗 Smooth transition */
+body, .sidebar, .topbar, .card, .panel, .profile-menu {
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* 💫 Logo animasi bounce */
+.sidebar-logo {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* 🎨 CittaFun brand warna */
+.brand {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.brand .citta { color: #2575fc; }  /* Biru */
+.brand .fun { color: #ff7f00; }    /* Oranye */
