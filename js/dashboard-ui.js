@@ -137,17 +137,17 @@
 })();
 
 // --- DARK/LIGHT MODE TOGGLE ---
-const toggleDarkMode = document.getElementById("toggle-darkmode");
+const toggleDarkMode = document.getElementById("theme-toggle");
 
 function applyMode(isDark) {
   if (isDark) {
     document.body.classList.add("dark-mode");
     localStorage.setItem("theme", "dark");
-    toggleDarkMode.innerHTML = "☀️ Light Mode";
+    toggleDarkMode.textContent = "☀️ Light Mode";
   } else {
     document.body.classList.remove("dark-mode");
     localStorage.setItem("theme", "light");
-    toggleDarkMode.innerHTML = "🌙 Dark Mode";
+    toggleDarkMode.textContent = "🌙 Dark Mode";
   }
 }
 
@@ -155,7 +155,8 @@ if (toggleDarkMode) {
   const savedTheme = localStorage.getItem("theme");
   applyMode(savedTheme === "dark");
 
-  toggleDarkMode.addEventListener("click", () => {
+  toggleDarkMode.addEventListener("click", (e) => {
+    e.preventDefault();
     const isDark = !document.body.classList.contains("dark-mode");
     applyMode(isDark);
   });
