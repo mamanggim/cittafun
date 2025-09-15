@@ -97,19 +97,16 @@ body.dark .navbar.scrolled {
 
 /* Logo */
 .logo {
-  width: 90px;
-  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.logo-img {
+  height: 40px;
+  margin-right: 10px;
   animation: bounce 1.8s infinite;
-}
-
-h2 {
-  margin-bottom: 1.5rem;
-  font-size: 1.6rem;
-  font-weight: bold;
-}
-
-h2 .black {
-  color: #333;
 }
 
 h2 .blue {
