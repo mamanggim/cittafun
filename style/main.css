@@ -19,42 +19,8 @@ body {
 
 /* Dark mode */
 body.dark {
-  background: #1a1a2e;
-  color: #e0e0e0;
-}
-
-body.dark .navbar {
-  background: rgba(30, 30, 47, 0.9);
-}
-
-body.dark .nav-links a {
-  color: #e0e0e0;
-}
-
-body.dark .nav-links a:hover {
-  background: #6a5af9;
-  color: white;
-}
-
-body.dark .features,
-body.dark .referral {
-  background: #22223b;
-  color: #ddd;
-}
-
-body.dark .step {
-  background: #2a2a45;
-  color: #ddd;
-}
-
-body.dark .feature-card {
-  background: #2a2a45;
-  color: #ddd;
-}
-
-body.dark .footer {
-  background: #0d0d1a;
-  color: #aaa;
+  background: #121212;
+  color: #f1f1f1;
 }
 
 /* Container */
@@ -109,9 +75,17 @@ a {
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
+body.dark .navbar {
+  background: rgba(18, 18, 18, 0.9);
+}
+
 .navbar.scrolled {
   background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+body.dark .navbar.scrolled {
+  background: rgba(18, 18, 18, 0.95);
 }
 
 .navbar .container {
@@ -132,27 +106,17 @@ a {
 .logo-img {
   height: 40px;
   margin-right: 10px;
-  animation: pulse 2.5s infinite;
+  animation: bounce 1.8s infinite;
 }
 
 .logo-text {
-  display: flex;
-  gap: 4px;
   font-weight: 800;
   font-size: 1.4rem;
-}
-
-.logo-text .blue {
-  color: #00a8ff;
+  background: linear-gradient(45deg, #00a8ff, #ff7f50);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   display: inline-block;
-  animation: bounce 1.2s infinite alternate;
-}
-
-.logo-text .orange {
-  color: #ff7f50;
-  display: inline-block;
-  animation: bounce 1.2s infinite alternate;
-  animation-delay: 0.6s; /* bergantian */
+  animation: wave 2s infinite ease-in-out;
 }
 
 /* Nav links desktop */
@@ -172,22 +136,13 @@ a {
   color: #333;
 }
 
+body.dark .nav-links a {
+  color: #f1f1f1;
+}
+
 .nav-links a:hover {
   background: #6a5af9;
   color: white;
-}
-
-/* Darkmode toggle button */
-.btn-darkmode {
-  border: none;
-  background: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: transform 0.3s;
-}
-
-.btn-darkmode:hover {
-  transform: rotate(20deg);
 }
 
 /* =======================
@@ -209,6 +164,11 @@ a {
   transition: all 0.3s ease;
 }
 
+body.dark .hamburger span {
+  background: #fff;
+}
+
+/* Animasi jadi X */
 .hamburger.active span:nth-child(1) {
   transform: rotate(45deg) translate(6px, 6px);
 }
@@ -242,6 +202,10 @@ a {
     overflow-y: auto;
   }
 
+  body.dark .nav-links {
+    background: rgba(18, 18, 18, 0.95);
+  }
+
   .nav-links.active {
     right: 0;
   }
@@ -249,14 +213,10 @@ a {
   .hamburger {
     display: flex;
   }
-
-  body.dark .nav-links {
-    background: rgba(30, 30, 47, 0.95);
-  }
 }
 
 /* =======================
-   Overlay
+   Overlay background
 ======================= */
 .overlay {
   position: fixed;
@@ -312,6 +272,10 @@ a {
   text-align: center;
 }
 
+body.dark .features {
+  background: #1e1e2f;
+}
+
 .features h2 {
   font-size: 2rem;
 }
@@ -330,6 +294,21 @@ a {
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
+body.dark .feature-card {
+  background: #2b2b3f;
+  color: #f1f1f1;
+}
+
+.feature-card h3 {
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+}
+
+.feature-card p {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
 .feature-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 10px 20px rgba(0,0,0,0.1);
@@ -340,6 +319,11 @@ a {
   background: linear-gradient(120deg, #f9fbff, #eaf2ff);
   padding: 80px 20px;
   text-align: center;
+}
+
+body.dark .how {
+  background: #1e1e35;
+  color: #f1f1f1;
 }
 
 .steps {
@@ -361,6 +345,11 @@ a {
   transition: transform 0.3s;
 }
 
+body.dark .step {
+  background: #2b2b3f;
+  color: #f1f1f1;
+}
+
 .step:hover {
   transform: scale(1.05);
 }
@@ -370,6 +359,11 @@ a {
   padding: 80px 20px;
   text-align: center;
   background: #fff;
+}
+
+body.dark .referral {
+  background: #1e1e2f;
+  color: #f1f1f1;
 }
 
 /* CTA */
@@ -416,11 +410,18 @@ a {
 }
 
 @keyframes pulse {
-  0%, 100% {transform: scale(1);}
-  50% {transform: scale(1.1);}
+  0%, 100% {box-shadow: 0 0 0 0 rgba(106,90,249,0.6);}
+  50% {box-shadow: 0 0 30px 10px rgba(106,90,249,0.2);}
 }
 
 @keyframes bounce {
-  0%, 100% {transform: translateY(0);}
-  50% {transform: translateY(-8px);}
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes wave {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-4px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(4px); }
+}
