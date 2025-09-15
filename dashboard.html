@@ -153,24 +153,46 @@
       <!-- Section: Referral -->
       <section id="section-referral" class="section">
         <h3>👥 Referral</h3>
-        <p>Ajak temanmu untuk gabung dan dapatkan bonus poin.</p>
+        <p>Bagikan link referral dan dapatkan bonus poin.</p>
 
-        <div class="referral-box">
-          <h4>🔄 Pasif 10%</h4>
-          <p>Klaim 10% poin dari misi reguler referral setiap waktu:</p>
-          <div class="claim-buttons">
-            <button class="btn-outline">Klaim Pagi</button>
-            <button class="btn-outline">Klaim Siang</button>
-            <button class="btn-outline">Klaim Sore</button>
-            <button class="btn-outline">Klaim Malam</button>
-            <button class="btn-outline">Klaim Tengah Malam</button>
+        <!-- Pasif 10% (5 waktu klaim) -->
+        <div class="referral-missions">
+          <div class="referral-slot" data-start="06:00" data-end="08:59">
+            <h4>🌅 Pagi 1 – 06.00 s/d 08.59 WIB</h4>
+            <button class="btn-claim">Wajib Klaim</button>
+            <div class="countdown">⏳ …</div>
+          </div>
+
+          <div class="referral-slot" data-start="09:00" data-end="11:59">
+            <h4>🌄 Pagi 2 – 09.00 s/d 11.59 WIB</h4>
+            <button class="btn-claim">Wajib Klaim</button>
+            <div class="countdown">⏳ …</div>
+          </div>
+
+          <div class="referral-slot" data-start="12:00" data-end="14:59">
+            <h4>🌞 Siang – 12.00 s/d 14.59 WIB</h4>
+            <button class="btn-claim">Wajib Klaim</button>
+            <div class="countdown">⏳ …</div>
+          </div>
+
+          <div class="referral-slot" data-start="15:00" data-end="17:59">
+            <h4>🌇 Sore – 15.00 s/d 17.59 WIB</h4>
+            <button class="btn-claim">Wajib Klaim</button>
+            <div class="countdown">⏳ …</div>
+          </div>
+
+          <div class="referral-slot" data-start="18:00" data-end="20:59">
+            <h4>🌙 Malam – 18.00 s/d 20.59 WIB</h4>
+            <button class="btn-claim">Wajib Klaim</button>
+            <div class="countdown">⏳ …</div>
           </div>
         </div>
 
-        <div class="referral-box">
-          <h4>🎁 Bonus Referral</h4>
-          <p>Dapatkan 50.000 poin jika referral menyelesaikan misi reguler penuh selama 7 hari.</p>
-          <button class="btn">Cek Progress & Klaim</button>
+      <!-- Bonus Referral 50.000 poin -->
+        <div class="referral-bonus">
+          <h4>🎁 Bonus Referral 50.000 Poin</h4>
+          <button class="btn-claim">Cek Progress Harian</button>
+          <p>Pastikan referral aktif 7 hari penuh untuk klaim.</p>
         </div>
       </section>
 
