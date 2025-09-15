@@ -171,3 +171,135 @@ body, .sidebar, .topbar, .card, .panel, .profile-menu {
   50% { opacity: 0.7; }
   100% { opacity: 1; }
 }
+
+/* 🎯 Section: Misi Harian & Referral */
+#section-missions, #section-referral, #section-rewards {
+  margin-top: 20px;
+}
+#section-missions h3, 
+#section-referral h3,
+#section-rewards h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--primary);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* 🔹 Mission Cards */
+.missions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+  gap: 16px;
+}
+.mission-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.mission-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+}
+.mission-card h4 { margin: 0 0 8px; font-size: 16px; }
+.mission-card p { font-size: 14px; color: var(--text-muted); margin: 0 0 12px; }
+
+/* 🎮 Tombol interaktif */
+.mission-card .btn,
+.referral-box .btn,
+.reward-box .btn-claim {
+  background: linear-gradient(90deg, var(--primary), #00c6ff);
+  color: #fff;
+  border: 0;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.mission-card .btn:hover,
+.reward-box .btn-claim:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+/* ⏰ Reward box */
+.reward-box {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.reward-time {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.reward-timer {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 8px 0;
+}
+
+/* 💸 Floating Points Animation */
+.floating-points {
+  position: absolute;
+  font-size: 16px;
+  font-weight: 700;
+  color: #22c55e;
+  animation: floatUp 1s ease forwards;
+  pointer-events: none;
+  z-index: 100;
+}
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  70% { opacity: 1; transform: translateY(-30px) scale(1.2); }
+  100% { opacity: 0; transform: translateY(-50px) scale(0.9); }
+}
+
+/* 🤝 Referral box */
+.referral-box {
+  background: var(--card);
+  padding: 16px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.referral-code {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--primary);
+  margin: 10px 0;
+  padding: 8px 12px;
+  background: rgba(37,117,252,0.08);
+  border-radius: 8px;
+  display: inline-block;
+}
+.referral-info {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+/* 🔊 Small coin animation (optional) */
+@keyframes coinSpin {
+  0% { transform: rotateY(0deg); }
+  50% { transform: rotateY(180deg); }
+  100% { transform: rotateY(360deg); }
+}
+.coin-icon {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 16px;
+  animation: coinSpin 1.5s linear infinite;
+}
