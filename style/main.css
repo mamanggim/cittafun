@@ -35,17 +35,24 @@ a { text-decoration: none; color: inherit; }
 
 /* Logo */
 .logo { display: flex; align-items: center; font-size: 1.5rem; font-weight: 800; }
-.logo-img { height: 40px; margin-right: 10px; animation: bounce 2s infinite; }
+.logo-img { height: 40px; margin-right: 10px; animation: bounce 1.8s infinite; }
 
 .logo-text { font-size: 1.5rem; font-weight: 800; }
 .citta { color: #2575fc; display: inline-block; animation: wave 2s infinite ease-in-out; }
-.fun { color: #ff7f00; display: inline-block; animation: wave 2s infinite ease-in-out 1s; }
+.fun { color: #ff7f00; display: inline-block; animation: wave 2s infinite ease-in-out; animation-delay: 0.2s; }
 
-@keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-@keyframes wave { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-12px); }
+  60% { transform: translateY(-6px); }
+}
+@keyframes wave {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
 
 /* Nav links */
-.nav-links { display: flex; list-style: none; gap: 20px; z-index: 1100; }
+.nav-links { display: flex; list-style: none; gap: 20px; z-index: 1100; align-items: center; }
 .nav-links a { padding: 6px 12px; font-weight: 600; border-radius: 20px; transition: background 0.3s, color 0.3s; color: #333; }
 .nav-links a:hover { background: #6a5af9; color: white; }
 
@@ -75,9 +82,9 @@ a { text-decoration: none; color: inherit; }
 }
 .overlay.active { opacity: 1; pointer-events: auto; }
 
-/* Theme Toggle */
+/* Theme Toggle (sekarang di dalam nav-links) */
 .toggle-theme {
-  font-size: 1.3rem; cursor: pointer; margin-left: 16px;
+  font-size: 1.4rem; cursor: pointer;
   transition: transform 0.3s;
 }
 .toggle-theme:hover { transform: rotate(20deg) scale(1.2); }
