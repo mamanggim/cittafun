@@ -14,6 +14,50 @@ body {
   line-height: 1.6;
   color: #333;
   background: #f9fbff;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Variabel Warna */
+:root {
+  --citta-blue: #0052cc;
+  --fun-orange: #ff6200;
+  --bg-light: #f9fbff;
+  --bg-dark: #1e1e2f;
+  --text-light: #333;
+  --text-dark: #ddd;
+}
+
+/* Dark Mode */
+body.dark {
+  background: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+body.dark .navbar {
+  background: rgba(30, 30, 47, 0.95);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .nav-links {
+  background: rgba(30, 30, 47, 0.95);
+}
+
+body.dark .features,
+body.dark .referral {
+  background: #2a2a3c;
+}
+
+body.dark .feature-card {
+  background: #35354f;
+}
+
+body.dark .step {
+  background: #35354f;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .footer {
+  background: #151522;
 }
 
 /* Container */
@@ -42,7 +86,7 @@ a {
 .btn-primary {
   display: inline-block;
   padding: 12px 24px;
-  background: linear-gradient(45deg, #6a5af9, #00d2ff);
+  background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
   color: white;
   font-weight: 700;
   border-radius: 30px;
@@ -51,16 +95,14 @@ a {
 
 .btn-primary:hover {
   transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(106, 90, 249, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 82, 204, 0.3);
 }
 
-/* =======================
-   Navbar Styling Modern
-======================= */
+/* Navbar Styling */
 .navbar {
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
   position: fixed;
   top: 0;
   width: 100%;
@@ -70,7 +112,7 @@ a {
 
 .navbar.scrolled {
   background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .navbar .container {
@@ -86,12 +128,40 @@ a {
   align-items: center;
   font-size: 1.5rem;
   font-weight: 800;
-  color: #6a5af9;
 }
 
 .logo-img {
   height: 40px;
   margin-right: 10px;
+  animation: bounce 1s ease-in-out;
+}
+
+.logo:hover .logo-img,
+.logo:hover #citta,
+.logo:hover #fun {
+  animation: bounce 0.5s ease-in-out;
+}
+
+.blue, #citta, #citta-hero, #citta-about, #citta-referral, #citta-footer {
+  color: var(--citta-blue);
+  animation: wave 1.5s infinite;
+}
+
+.orange, #fun, #fun-hero, #fun-about, #fun-referral, #fun-footer {
+  color: var(--fun-orange);
+  animation: wave 1.5s infinite 0.75s; /* Delay untuk efek bergantian */
+}
+
+/* Animasi Bounce */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Animasi Wave untuk Citta dan Fun */
+@keyframes wave {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 /* Nav links desktop */
@@ -108,31 +178,51 @@ a {
   font-weight: 600;
   border-radius: 20px;
   transition: background 0.3s, color 0.3s;
-  color: #333;
+  color: var(--text-light);
 }
 
 .nav-links a:hover {
-  background: #6a5af9;
+  background: var(--citta-blue);
   color: white;
 }
 
-/* =======================
-   Hamburger Menu
-======================= */
+body.dark .nav-links a {
+  color: var(--text-dark);
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 6px;
+  transition: transform 0.3s;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.2);
+}
+
+/* Hamburger Menu */
 .hamburger {
   display: none;
   flex-direction: column;
   cursor: pointer;
   gap: 5px;
-  z-index: 1200; /* tombol burger paling atas */
+  z-index: 1200;
 }
 
 .hamburger span {
   width: 28px;
   height: 3px;
-  background: #333;
+  background: var(--text-light);
   border-radius: 2px;
   transition: all 0.3s ease;
+}
+
+body.dark .hamburger span {
+  background: var(--text-dark);
 }
 
 /* Animasi jadi X */
@@ -148,15 +238,13 @@ a {
   transform: rotate(-45deg) translate(6px, -6px);
 }
 
-/* =======================
-   Responsive Menu
-======================= */
+/* Responsive Menu */
 @media (max-width: 768px) {
   .nav-links {
     position: fixed;
     top: 0;
     right: -260px;
-    height: 100vh;            /* full layar */
+    height: 100vh;
     width: 240px;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(14px);
@@ -164,9 +252,9 @@ a {
     align-items: flex-start;
     padding: 80px 20px;
     gap: 20px;
-    box-shadow: -4px 0 12px rgba(0,0,0,0.15);
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
     transition: right 0.4s ease;
-    overflow-y: auto;         /* biar bisa scroll kalau konten kepanjangan */
+    overflow-y: auto;
   }
 
   .nav-links.active {
@@ -178,21 +266,19 @@ a {
   }
 }
 
-/* =======================
-   Overlay background (FIX)
-======================= */
+/* Overlay */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  z-index: 900; /* ⬅️ lebih rendah dari nav-links */
+  z-index: 900;
 }
 
 .overlay.active {
@@ -202,7 +288,7 @@ a {
 
 /* Hero Section */
 .hero {
-  background: linear-gradient(135deg, #6a5af9, #00d2ff);
+  background: linear-gradient(135deg, var(--citta-blue), #00d2ff);
   color: white;
   text-align: center;
   padding: 120px 20px 100px;
@@ -265,7 +351,7 @@ a {
 
 .feature-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* How It Works */
@@ -290,7 +376,7 @@ a {
   background: white;
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s;
 }
 
@@ -307,7 +393,7 @@ a {
 
 /* CTA */
 .cta {
-  background: linear-gradient(135deg, #6a5af9, #00d2ff);
+  background: linear-gradient(135deg, var(--citta-blue), #00d2ff);
   color: white;
   text-align: center;
   padding: 80px 20px;
@@ -321,7 +407,7 @@ a {
 
 /* Footer */
 .footer {
-  background: #1e1e2f;
+  background: var(--bg-dark);
   color: #bbb;
   text-align: center;
   padding: 30px 20px;
@@ -329,7 +415,7 @@ a {
 }
 
 .footer a {
-  color: #6a5af9;
+  color: var(--citta-blue);
   transition: color 0.3s;
 }
 
@@ -339,16 +425,16 @@ a {
 
 /* Animations */
 @keyframes fadeIn {
-  from {opacity: 0; transform: translateY(-20px);}
-  to {opacity: 1; transform: translateY(0);}
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideUp {
-  from {opacity: 0; transform: translateY(50px);}
-  to {opacity: 1; transform: translateY(0);}
+  from { opacity: 0; transform: translateY(50px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pulse {
-  0%, 100% {box-shadow: 0 0 0 0 rgba(106,90,249,0.6);}
-  50% {box-shadow: 0 0 30px 10px rgba(106,90,249,0.2);}
-}
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 82, 204, 0.6); }
+  50% { box-shadow: 0 0 30px 10px rgba(0, 82, 204, 0.2); }
+  }
