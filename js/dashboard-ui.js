@@ -254,3 +254,51 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- finished init ---
   console.log('[dashboard-ui] Initialized');
 });
+
+// --- REFERRAL COUNTDOWN ---
+function updateCountdowns() {
+  const slots = document.querySelectorAll(".referral-slot");
+  const now = new Date();
+
+  slots.forEach(slot => {
+    const startStr = slot.getAttribute("data-start");
+    const endStr = slot.getAttribute("data-end");
+    const countdownEl = slot.querySelector(".countdown");
+
+    if (!countdownEl) return;
+
+    // Buat jam hari ini
+    const [sh, sm] = startStr.split(":").map(Number);
+    const [eh, em] = endStr.split(":").map(Number);
+
+    const start = new Date(now);
+    start.setHours(sh, sm, 0, 0);
+
+    const end = new Date(now);
+    end.setHours(eh, em, 59, 999);
+
+    if (now < start) {
+      // Belum mulai
+      const diff = start - now;
+      countdownEl.textContent = "⏳ Mulai dalam " + formatTime(diff);
+    } else if (now >= start && now <= end) {
+      // Sedang berlangsung
+      const diff = end - now;
+      countdownEl.textContent = "⏳ Sisa waktu " + formatTime(diff);
+    } else {
+      // Sudah lewat
+      countdownEl.textContent = "❌ Sudah berakhir";
+    }
+  });
+}
+
+function formatTime(ms) {
+  const totalSec = Math.floor(ms / 1000);
+  const h = String(Math.floor(totalSec / 3600)).padStart(2, "0");
+  const m = String(Math.floor((totalSec % 3600) / 60)).padStart(2, "0");
+  const s = String(totalSec % 60).padStart(2, "0");
+  return `${h}:${m}:${s}`;
+}
+
+setInterval(updateCountdowns, 1000);
+updateCountdowns();
