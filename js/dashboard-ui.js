@@ -255,6 +255,95 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('[dashboard-ui] Initialized');
 });
 
+// contoh poin per misi (bisa ambil real dari masing-masing page lesson.html, quiz.html dll)
+const missionPoints = {
+  lesson: 10,
+  quiz: 20,
+  video: 15,
+  exam: 30,
+  game: 25
+};
+
+// simpan progres user (anggapannya setiap halaman misi set ini ke localStorage kalau selesai)
+function getUserProgress() {
+  return JSON.parse(localStorage.getItem("userProgress") || "{}");
+}
+function setUserProgress(p) {
+  localStorage.setItem("userProgress", JSON.stringify(p));
+}
+
+// saldo user
+function getSaldo() {
+  return parseInt(localStorage.getItem("saldo") || "0", 10);
+}
+function setSaldo(v) {
+  localStorage.setItem("saldo", v);
+}
+
+// parse jam slot
+function parseTimeToday(str) {
+  const [hh, mm] = str.split(":").map(Number);
+  const d = new Date();
+  d.setHours(hh, mm, 0, 0);
+  return d;
+}
+
+function formatTime(ms) {
+  if (ms < 0) ms = 0;
+  const sec = Math.floor(ms / 1000);
+  const h = String(Math.floor(sec / 3600)).padStart(2,"0");
+  const m = String(Math.floor((sec % 3600) / 60)).padStart(2,"0");
+  const s = String(sec % 60).padStart(2,"0");
+  return `${h}:${m}:${s}`;
+}
+
+function updateSlots() {
+  const now = new Date();
+  document.querySelectorAll(".mission-slot").forEach(slot => {
+    const start = parseTimeToday(slot.dataset.start);
+    const end = parseTimeToday(slot.dataset.end);
+    end.setSeconds(59, 999);
+
+    const cdEl = slot.querySelector(".countdown");
+    const btn = slot.querySelector(".btn-claim");
+    const missionKey = slot.dataset.mission;
+    const progress = getUserProgress();
+
+    if (now < start) {
+      cdEl.textContent = "⏳ Mulai dalam " + formatTime(start - now);
+      btn.textContent = "Kerjakan Misi";
+      btn.disabled = true;
+    } else if (now >= start && now <= end) {
+      cdEl.textContent = "⏳ Sisa waktu " + formatTime(end - now);
+      btn.textContent = "Kerjakan Misi";
+      btn.disabled = false;
+    } else {
+      cdEl.textContent = "⌛ Slot sudah berakhir";
+      // hitung total poin yang sudah dikumpulkan user dari 5 misi
+      let totalPoin = 0;
+      for (let k in missionPoints) {
+        if (progress[k]) totalPoin += missionPoints[k];
+      }
+      btn.textContent = `Klaim ${totalPoin} Poin`;
+      btn.disabled = progress[`claimed_${missionKey}`]; // disable kalau sudah klaim
+
+      btn.onclick = () => {
+        if (!progress[`claimed_${missionKey}`]) {
+          const saldoBaru = getSaldo() + totalPoin;
+          setSaldo(saldoBaru);
+          progress[`claimed_${missionKey}`] = true;
+          setUserProgress(progress);
+          alert(`✅ Berhasil klaim ${totalPoin} poin!\nSaldo sekarang: ${saldoBaru}`);
+          btn.disabled = true;
+        }
+      };
+    }
+  });
+}
+
+setInterval(updateSlots, 1000);
+updateSlots();
+
 // --- REFERRAL COUNTDOWN ---
 function updateCountdowns() {
   const slots = document.querySelectorAll(".referral-slot");
