@@ -109,6 +109,16 @@ body.dark .navbar.scrolled {
   animation: bounce 1.8s infinite;
 }
 
+h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
+h2 .black {
+  color: #333;
+}
+
 h2 .blue {
   color: #2575fc;
   display: inline-block;
