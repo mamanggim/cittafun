@@ -97,26 +97,32 @@ body.dark .navbar.scrolled {
 
 /* Logo */
 .logo {
-  display: flex;
-  align-items: center;
-  font-size: 1.5rem;
-  font-weight: 800;
-}
-
-.logo-img {
-  height: 40px;
-  margin-right: 10px;
+  width: 90px;
+  margin-bottom: 1rem;
   animation: bounce 1.8s infinite;
 }
 
-.logo-text {
-  font-weight: 800;
-  font-size: 1.4rem;
-  background: linear-gradient(45deg, #00a8ff, #ff7f50);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
+h2 .black {
+  color: #333;
+}
+
+h2 .blue {
+  color: #2575fc;
   display: inline-block;
   animation: wave 2s infinite ease-in-out;
+}
+
+h2 .orange {
+  color: #ff7f00;
+  display: inline-block;
+  animation: wave 2s infinite ease-in-out;
+  animation-delay: 0.2s;
 }
 
 /* Nav links desktop */
