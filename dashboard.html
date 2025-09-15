@@ -26,9 +26,6 @@
     <nav class="sidebar-nav" role="navigation">
       <ul>
         <li><a href="#" data-section="overview" class="nav-link active">🏠 Dashboard</a></li>
-        <li><a href="#" data-section="lessons" class="nav-link">📚 Pelajaran</a></li>
-        <li><a href="#" data-section="quiz" class="nav-link">❓ Quiz</a></li>
-        <li><a href="#" data-section="games" class="nav-link">🎮 Game Edukatif</a></li>
         <li><a href="#" data-section="leaderboard" class="nav-link">🏆 Leaderboard</a></li>
         <li><a href="#" data-section="missions" class="nav-link">🎯 Misi Harian</a></li>
         <li><a href="#" data-section="rewards" class="nav-link">🎁 Rewards</a></li>
@@ -40,7 +37,7 @@
     </nav>
 
     <div class="sidebar-footer">
-      <small>Versi: 0.2 • CittaFun</small>
+      <small>Versi: 0.3 • CittaFun</small>
     </div>
   </aside>
 
@@ -107,24 +104,6 @@
         </div>
       </section>
 
-      <!-- Section: Lessons -->
-      <section id="section-lessons" class="section">
-        <h3>📚 Pelajaran</h3>
-        <p>Daftar materi belajar interaktif akan tampil di sini.</p>
-      </section>
-
-      <!-- Section: Quiz -->
-      <section id="section-quiz" class="section">
-        <h3>❓ Quiz</h3>
-        <p>Kumpulan kuis seru untuk menguji kemampuanmu.</p>
-      </section>
-
-      <!-- Section: Games -->
-      <section id="section-games" class="section">
-        <h3>🎮 Game Edukatif</h3>
-        <p>Mini games edukatif akan tersedia di sini.</p>
-      </section>
-
       <!-- Section: Leaderboard -->
       <section id="section-leaderboard" class="section">
         <h3>🏆 Leaderboard</h3>
@@ -134,7 +113,35 @@
       <!-- Section: Missions -->
       <section id="section-missions" class="section">
         <h3>🎯 Misi Harian</h3>
-        <p>Lengkapi challenge harian untuk dapatkan poin ekstra!</p>
+        <p>Pilih misi yang ingin kamu kerjakan hari ini:</p>
+
+        <div class="missions-grid">
+          <div class="mission-card">
+            <h4>📚 Pelajaran</h4>
+            <p>Baca materi belajar dari 10 mata pelajaran.</p>
+            <a href="lesson.html" class="btn">Mulai</a>
+          </div>
+          <div class="mission-card">
+            <h4>❓ Quiz</h4>
+            <p>Jawab pertanyaan kuis pilihan ganda seru.</p>
+            <a href="quiz.html" class="btn">Mulai</a>
+          </div>
+          <div class="mission-card">
+            <h4>🎥 Video Edukasi</h4>
+            <p>Tonton video pembelajaran singkat.</p>
+            <a href="video.html" class="btn">Mulai</a>
+          </div>
+          <div class="mission-card">
+            <h4>📝 Ujian</h4>
+            <p>Kerjakan soal & jawaban singkat.</p>
+            <a href="exam.html" class="btn">Mulai</a>
+          </div>
+          <div class="mission-card">
+            <h4>🎮 Game Edukatif</h4>
+            <p>Mainkan mini games untuk melatih otak.</p>
+            <a href="game.html" class="btn">Mulai</a>
+          </div>
+        </div>
       </section>
 
       <!-- Section: Rewards -->
@@ -146,7 +153,25 @@
       <!-- Section: Referral -->
       <section id="section-referral" class="section">
         <h3>👥 Referral</h3>
-        <p>Bagikan link referral dan dapatkan bonus poin.</p>
+        <p>Ajak temanmu untuk gabung dan dapatkan bonus poin.</p>
+
+        <div class="referral-box">
+          <h4>🔄 Pasif 10%</h4>
+          <p>Klaim 10% poin dari misi reguler referral setiap waktu:</p>
+          <div class="claim-buttons">
+            <button class="btn-outline">Klaim Pagi</button>
+            <button class="btn-outline">Klaim Siang</button>
+            <button class="btn-outline">Klaim Sore</button>
+            <button class="btn-outline">Klaim Malam</button>
+            <button class="btn-outline">Klaim Tengah Malam</button>
+          </div>
+        </div>
+
+        <div class="referral-box">
+          <h4>🎁 Bonus Referral</h4>
+          <p>Dapatkan 50.000 poin jika referral menyelesaikan misi reguler penuh selama 7 hari.</p>
+          <button class="btn">Cek Progress & Klaim</button>
+        </div>
       </section>
 
       <!-- Section: Stats -->
