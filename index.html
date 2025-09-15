@@ -6,35 +6,85 @@
   <title>CittaFun - Learn · Play · Earn</title>
   <link rel="stylesheet" href="style/main.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Animasi warna CittaFun */
+    .logo-text {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-left: 6px;
+      display: inline-block;
+    }
+    .logo-text .blue { color: #4285F4; animation: pulseBlue 2s infinite; }
+    .logo-text .orange { color: #FB8C00; animation: pulseOrange 2s infinite alternate; }
+    .logo-text .black { color: #222; }
+
+    @keyframes pulseBlue {
+      0% { color: #4285F4; }
+      50% { color: #1E88E5; }
+      100% { color: #4285F4; }
+    }
+    @keyframes pulseOrange {
+      0% { color: #FB8C00; }
+      50% { color: #F4511E; }
+      100% { color: #FB8C00; }
+    }
+
+    /* Dark Mode */
+    body.dark {
+      background: #121212;
+      color: #eee;
+    }
+    body.dark header,
+    body.dark .navbar,
+    body.dark footer {
+      background: #1d1d1d;
+      color: #eee;
+    }
+    body.dark a { color: #90caf9; }
+    body.dark .btn-primary { background: #1e88e5; color: #fff; }
+
+    /* Toggle button */
+    .theme-toggle {
+      cursor: pointer;
+      font-size: 1.2rem;
+      margin-left: 12px;
+      border: none;
+      background: none;
+      color: inherit;
+    }
+  </style>
 </head>
 <body>
   
   <!-- Navbar -->
   <header>
-  <nav class="navbar">
-  <div class="container">
-    <a href="index.html" class="logo">
-      <img src="assets/logo.png" alt="CittaFun Logo" class="logo-img" />
-      CittaFun
-    </a>
+    <nav class="navbar">
+      <div class="container">
+        <a href="index.html" class="logo">
+          <img src="assets/logo.png" alt="CittaFun Logo" class="logo-img" />
+          <span class="logo-text">
+            <span class="black">Citta</span><span class="blue">Fun</span>
+          </span>
+        </a>
 
-    <!-- Hamburger menu -->
-    <div class="hamburger" id="menu-toggle">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
+        <!-- Hamburger menu -->
+        <div class="hamburger" id="menu-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
 
-    <!-- Nav links -->
-    <ul class="nav-links" id="nav-links">
-      <li><a href="#about">Tentang</a></li>
-      <li><a href="#features">Fitur</a></li>
-      <li><a href="#how">Cara Kerja</a></li>
-      <li><a href="#referral">Referral</a></li>
-      <li><a href="#cta">Mulai</a></li>
-    </ul>
-  </div>
-  </nav>
+        <!-- Nav links -->
+        <ul class="nav-links" id="nav-links">
+          <li><a href="#about">Tentang</a></li>
+          <li><a href="#features">Fitur</a></li>
+          <li><a href="#how">Cara Kerja</a></li>
+          <li><a href="#referral">Referral</a></li>
+          <li><a href="#cta">Mulai</a></li>
+          <li><button id="theme-toggle" class="theme-toggle">🌙</button></li>
+        </ul>
+      </div>
+    </nav>
   </header>
 
   <!-- Hero Section -->
@@ -140,10 +190,27 @@
   <!-- Overlay -->
   <div class="overlay" id="overlay"></div>
 
-  <!-- Script harus di akhir -->
+  <!-- Script -->
   <script src="js/ui.js"></script>
-</body>
-</html>
+  <script>
+    // Toggle dark/light
+    const themeBtn = document.getElementById("theme-toggle");
+    themeBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      if (document.body.classList.contains("dark")) {
+        themeBtn.textContent = "☀️";
+        localStorage.setItem("theme", "dark");
+      } else {
+        themeBtn.textContent = "🌙";
+        localStorage.setItem("theme", "light");
+      }
+    });
 
+    // Load theme on page load
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark");
+      themeBtn.textContent = "☀️";
+    }
+  </script>
 </body>
 </html>
