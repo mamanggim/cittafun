@@ -13,10 +13,11 @@
   <header>
     <nav class="navbar">
       <div class="container">
+        <!-- Logo -->
         <a href="index.html" class="logo">
           <img src="assets/logo.png" alt="CittaFun Logo" class="logo-img" />
           <span class="logo-text">
-            <span class="citta">Citta</span><span class="fun">Fun</span>
+            <span class="blue">Citta</span><span class="orange">Fun</span>
           </span>
         </a>
 
@@ -34,10 +35,13 @@
           <li><a href="#how">Cara Kerja</a></li>
           <li><a href="#referral">Referral</a></li>
           <li><a href="#cta">Mulai</a></li>
+          <li>
+            <!-- Dark/Light Mode Toggle -->
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">
+              🌙
+            </button>
+          </li>
         </ul>
-
-        <!-- Dark / Light Toggle -->
-        <div class="toggle-theme" id="toggle-theme">🌙</div>
       </div>
     </nav>
   </header>
@@ -136,7 +140,7 @@
       <p>Ikuti kami di 
         <a href="#">Facebook</a> · 
         <a href="#">Twitter</a> · 
-        <a href="#">TikTok</a> ·
+        <a href="#">TikTok</a>
         <a href="#">YouTube</a>
       </p>
     </div>
@@ -147,13 +151,5 @@
 
   <!-- Script -->
   <script src="js/ui.js"></script>
-  <script>
-    // Dark/Light Mode Toggle
-    const toggle = document.getElementById("toggle-theme");
-    toggle.addEventListener("click", () => {
-      document.body.classList.toggle("dark-mode");
-      toggle.textContent = document.body.classList.contains("dark-mode") ? "☀️" : "🌙";
-    });
-  </script>
 </body>
-</html>
+  </html>
