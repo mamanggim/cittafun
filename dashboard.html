@@ -111,38 +111,96 @@
       </section>
 
       <!-- Section: Missions -->
-      <section id="section-missions" class="section">
-        <h3>🎯 Misi Harian</h3>
-        <p>Pilih misi yang ingin kamu kerjakan hari ini:</p>
+<section id="section-missions" class="section">
+  <h3>🎯 Misi Harian</h3>
+  <p>Pilih misi yang ingin kamu kerjakan hari ini:</p>
 
-        <div class="missions-grid">
-          <div class="mission-card">
-            <h4>📚 Pelajaran</h4>
-            <p>Baca materi belajar dari 10 mata pelajaran.</p>
-            <a href="lesson.html" class="btn">Mulai</a>
-          </div>
-          <div class="mission-card">
-            <h4>❓ Quiz</h4>
-            <p>Jawab pertanyaan kuis pilihan ganda seru.</p>
-            <a href="quiz.html" class="btn">Mulai</a>
-          </div>
-          <div class="mission-card">
-            <h4>🎥 Video Edukasi</h4>
-            <p>Tonton video pembelajaran singkat.</p>
-            <a href="video.html" class="btn">Mulai</a>
-          </div>
-          <div class="mission-card">
-            <h4>📝 Ujian</h4>
-            <p>Kerjakan soal & jawaban singkat.</p>
-            <a href="exam.html" class="btn">Mulai</a>
-          </div>
-          <div class="mission-card">
-            <h4>🎮 Game Edukatif</h4>
-            <p>Mainkan mini games untuk melatih otak.</p>
-            <a href="game.html" class="btn">Mulai</a>
-          </div>
-        </div>
-      </section>
+  <!-- mission cards (link ke halaman khusus masing-masing misi) -->
+  <div class="missions-grid">
+    <div class="mission-card">
+      <h4>📚 Pelajaran</h4>
+      <p>Baca materi belajar dari 10 mata pelajaran.</p>
+      <a href="lesson.html" class="btn">Mulai</a>
+    </div>
+    <div class="mission-card">
+      <h4>❓ Quiz</h4>
+      <p>Jawab pertanyaan kuis pilihan ganda seru.</p>
+      <a href="quiz.html" class="btn">Mulai</a>
+    </div>
+    <div class="mission-card">
+      <h4>🎥 Video Edukasi</h4>
+      <p>Tonton video pembelajaran singkat.</p>
+      <a href="video.html" class="btn">Mulai</a>
+    </div>
+    <div class="mission-card">
+      <h4>📝 Ujian</h4>
+      <p>Kerjakan soal & jawaban singkat.</p>
+      <a href="exam.html" class="btn">Mulai</a>
+    </div>
+    <div class="mission-card">
+      <h4>🎮 Game Edukatif</h4>
+      <p>Mainkan mini games untuk melatih otak.</p>
+      <a href="game.html" class="btn">Mulai</a>
+    </div>
+  </div>
+
+  <hr style="margin:20px 0;border:none;border-top:1px dashed rgba(0,0,0,0.06)">
+
+  <!-- mission time slots (5 slot) -->
+  <div class="missions-slots">
+    <h4 style="margin-bottom:12px">Slot Waktu Misi Harian (Kerjakan 1x per slot)</h4>
+
+    <div class="mission-slot" data-mission="pagi1" data-start="06:00" data-end="08:59">
+      <div class="slot-head">
+        <strong>🌅 Klaim Pagi 1</strong> — <small>06.00 s/d 08.59 WIB</small>
+      </div>
+      <div class="slot-body">
+        <button class="btn-claim" data-mission="pagi1">Kerjakan Misi</button>
+        <div class="countdown" id="countdown-pagi1">⏳ …</div>
+      </div>
+    </div>
+
+    <div class="mission-slot" data-mission="pagi2" data-start="09:00" data-end="11:59">
+      <div class="slot-head">
+        <strong>🌄 Klaim Pagi 2</strong> — <small>09.00 s/d 11.59 WIB</small>
+      </div>
+      <div class="slot-body">
+        <button class="btn-claim" data-mission="pagi2">Kerjakan Misi</button>
+        <div class="countdown" id="countdown-pagi2">⏳ …</div>
+      </div>
+    </div>
+
+    <div class="mission-slot" data-mission="siang" data-start="12:00" data-end="14:59">
+      <div class="slot-head">
+        <strong>🌞 Klaim Siang</strong> — <small>12.00 s/d 14.59 WIB</small>
+      </div>
+      <div class="slot-body">
+        <button class="btn-claim" data-mission="siang">Kerjakan Misi</button>
+        <div class="countdown" id="countdown-siang">⏳ …</div>
+      </div>
+    </div>
+
+    <div class="mission-slot" data-mission="sore" data-start="15:00" data-end="17:59">
+      <div class="slot-head">
+        <strong>🌇 Klaim Sore</strong> — <small>15.00 s/d 17.59 WIB</small>
+      </div>
+      <div class="slot-body">
+        <button class="btn-claim" data-mission="sore">Kerjakan Misi</button>
+        <div class="countdown" id="countdown-sore">⏳ …</div>
+      </div>
+    </div>
+
+    <div class="mission-slot" data-mission="malam" data-start="18:00" data-end="20:59">
+      <div class="slot-head">
+        <strong>🌙 Klaim Malam</strong> — <small>18.00 s/d 20.59 WIB</small>
+      </div>
+      <div class="slot-body">
+        <button class="btn-claim" data-mission="malam">Kerjakan Misi</button>
+        <div class="countdown" id="countdown-malam">⏳ …</div>
+      </div>
+    </div>
+  </div>
+  </section>
 
       <!-- Section: Rewards -->
       <section id="section-rewards" class="section">
