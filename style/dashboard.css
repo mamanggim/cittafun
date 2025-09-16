@@ -812,3 +812,44 @@ body.dark .slot-head small {
   pointer-events: none;
   z-index: 1000;
   }
+
+/* Search Bar */
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-bar input,
+.search-bar select {
+  padding: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: 'Nunito', sans-serif;
+}
+
+.search-bar input {
+  flex: 1;
+}
+
+body.dark .search-bar input,
+body.dark .search-bar select {
+  background: #35354f;
+  color: var(--text-dark);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination .btn-outline {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+}
