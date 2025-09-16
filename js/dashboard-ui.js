@@ -445,3 +445,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   console.log('[dashboard-ui] Initialized');
 });
+
+// Tambahan di akhir dashboard-ui.js (sudah ada di jawaban sebelumnya)
+function updateRecentActivities() {
+  const activityList = document.getElementById('recent-activity');
+  if (!activityList) return;
+
+  const activities = JSON.parse(localStorage.getItem('recentActivities') || '[]');
+  activityList.innerHTML = '';
+  if (activities.length === 0) {
+    activityList.innerHTML = '<li>Tidak ada aktivitas.</li>';
+  } else {
+    activities.forEach(activity => {
+      const li = document.createElement('li');
+      li.textContent = `${activity.action} - ${activity.time}`;
+      activityList.appendChild(li);
+    });
+  }
+}
+
+safeAddEvent(document, 'DOMContentLoaded', updateRecentActivities);
