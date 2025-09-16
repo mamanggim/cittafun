@@ -25,7 +25,7 @@ body {
   --bg-dark: #1e1e2f;
   --text-light: #333;
   --text-dark: #ddd;
-  --how-bg-dark: #2a2a3c; /* Background untuk section Cara Kerja di dark mode */
+  --how-bg-dark: #2a2a3c;
 }
 
 /* Dark Mode */
@@ -138,23 +138,23 @@ a {
 .logo-img {
   height: 40px;
   margin-right: 10px;
-  animation: bounce 1.8s infinite; /* Sama dengan auth.css */
+  animation: bounce 1.8s infinite;
 }
 
 .logo:hover .logo-img,
 .logo:hover #citta,
 .logo:hover #fun {
-  animation: bounce 0.5s ease-in-out; /* Bounce saat hover */
+  animation: bounce 0.5s ease-in-out;
 }
 
-.blue, #citta, #citta-hero, #citta-about, #citta-referral, #citta-footer {
+.blue, #citta, #citta-hero, #citta-about, #citta-referral, #citta-footer, #citta-about-lower {
   color: var(--citta-blue);
-  animation: wave 2s infinite ease-in-out; /* Wave sama dengan auth.css */
+  animation: wave 2s infinite ease-in-out;
 }
 
-.orange, #fun, #fun-hero, #fun-about, #fun-referral, #fun-footer {
+.orange, #fun, #fun-hero, #fun-about, #fun-referral, #fun-footer, #fun-about-lower {
   color: var(--fun-orange);
-  animation: wave 2s infinite ease-in-out 0.2s; /* Wave dengan delay 0.2s */
+  animation: wave 2s infinite ease-in-out 0.2s;
 }
 
 /* Animasi Bounce */
@@ -420,6 +420,10 @@ body.dark .hamburger span {
   font-size: 0.9rem;
 }
 
+.footer p:nth-child(2) {
+  font-size: 0.8rem; /* Perkecil font untuk "Ikuti kami" */
+}
+
 .footer a {
   color: var(--citta-blue);
   transition: color 0.3s;
@@ -443,4 +447,15 @@ body.dark .hamburger span {
 @keyframes pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(0, 82, 204, 0.6); }
   50% { box-shadow: 0 0 30px 10px rgba(0, 82, 204, 0.2); }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-12px); }
+  60% { transform: translateY(-6px); }
+}
+
+@keyframes wave {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
