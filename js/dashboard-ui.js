@@ -375,23 +375,31 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.disabled = true;
         btn.onclick = null;
       } else if (now >= start && now <= end) {
-        countdownEl.textContent = `⏳ Sisa waktu ${formatTime(end - now)}`;
-        btn.textContent = 'Wajib Klaim';
-        btn.disabled = false;
-        btn.onclick = () => {
-          if (!progress[`claimed_${missionKey}`]) {
-            const bonusPoints = 100; // Misalnya, 100 poin per klaim
-            const saldoBaru = getSaldo() + bonusPoints;
-            setSaldo(saldoBaru);
-            progress[`claimed_${missionKey}`] = true;
-            setUserProgress(progress);
-            alert(`✅ Berhasil klaim ${bonusPoints} poin referral!\nSaldo sekarang: ${saldoBaru}`);
-            btn.disabled = true;
-          }
-        };
+        if (progress[`claimed_${missionKey}`]) {
+          countdownEl.textContent = `⏳ Sisa waktu ${formatTime(end - now)}`;
+          btn.textContent = 'Sudah Klaim';
+          btn.disabled = true;
+          btn.onclick = null;
+        } else {
+          countdownEl.textContent = `⏳ Sisa waktu ${formatTime(end - now)}`;
+          btn.textContent = 'Wajib Klaim';
+          btn.disabled = false;
+          btn.onclick = () => {
+            if (!progress[`claimed_${missionKey}`]) {
+              const bonusPoints = 100; // Misalnya, 100 poin per klaim
+              const saldoBaru = getSaldo() + bonusPoints;
+              setSaldo(saldoBaru);
+              progress[`claimed_${missionKey}`] = true;
+              setUserProgress(progress);
+              alert(`✅ Berhasil klaim ${bonusPoints} poin referral!\nSaldo sekarang: ${saldoBaru}`);
+              btn.textContent = 'Sudah Klaim';
+              btn.disabled = true;
+            }
+          };
+        }
       } else {
         countdownEl.textContent = '❌ Sudah berakhir';
-        btn.textContent = 'Wajib Klaim';
+        btn.textContent = progress[`claimed_${missionKey}`] ? 'Sudah Klaim' : 'Wajib Klaim';
         btn.disabled = true;
         btn.onclick = null;
       }
