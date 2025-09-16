@@ -311,6 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cdEl.textContent = `⏳ Sisa waktu ${formatTime(end - now)}`;
         btn.textContent = 'Kerjakan Misi';
         btn.disabled = false;
+        document.getElementById('section-missions').scrollIntoView({ behavior: 'smooth' });
         btn.onclick = () => {
           if (!progress[`claimed_${missionKey}`]) {
             const saldoBaru = getSaldo() + totalPoin;
