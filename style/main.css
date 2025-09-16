@@ -144,27 +144,27 @@ a {
   color: var(--citta-blue);
   display: inline-block;
   animation: wave 2s infinite ease-in-out;
-  font-size: inherit; /* Menyesuaikan dengan parent */
+  font-size: inherit; /* Mengikuti ukuran font parent */
 }
 
 .orange, #fun, #fun-hero, #fun-about, #fun-referral, #fun-footer, #fun-about-lower {
   color: var(--fun-orange);
   display: inline-block;
   animation: wave 2s infinite ease-in-out 0.2s;
-  font-size: inherit; /* Menyesuaikan dengan parent */
+  font-size: inherit; /* Mengikuti ukuran font parent */
 }
 
-/* Pastikan font-size responsif */
+/* Menyesuaikan ukuran font CittaFun agar seragam dengan header dan footer */
 @media (min-width: 769px) {
   .logo .blue, .logo .orange {
-    font-size: 1.5rem; /* Sesuai dengan .logo */
+    font-size: 1.5rem; /* Sesuai dengan .logo di navbar */
   }
   .hero .blue, .hero .orange {
-    font-size: 1.15rem; /* Sesuai dengan .hero p */
+    font-size: 0.9rem; /* Diperkecil untuk sesuai dengan footer */
   }
   .about .blue, .about .orange,
   .referral .blue, .referral .orange {
-    font-size: 1.05rem; /* Sesuai dengan p di about dan referral */
+    font-size: 0.9rem; /* Diperkecil untuk sesuai dengan footer */
   }
   .footer .blue, .footer .orange {
     font-size: 0.9rem; /* Sesuai dengan .footer */
@@ -173,17 +173,17 @@ a {
 
 @media (max-width: 768px) {
   .logo .blue, .logo .orange {
-    font-size: 1.3rem; /* Sesuai responsif di mobile */
+    font-size: 1.3rem; /* Sesuai dengan .logo di mobile */
   }
   .hero .blue, .hero .orange {
-    font-size: 1rem; /* Sesuai responsif di mobile */
+    font-size: 0.85rem; /* Diperkecil untuk sesuai dengan footer di mobile */
   }
   .about .blue, .about .orange,
   .referral .blue, .referral .orange {
-    font-size: 0.95rem; /* Sesuai responsif di mobile */
+    font-size: 0.85rem; /* Diperkecil untuk sesuai dengan footer di mobile */
   }
   .footer .blue, .footer .orange {
-    font-size: 0.85rem; /* Sesuai responsif di mobile */
+    font-size: 0.85rem; /* Sesuai dengan .footer di mobile */
   }
 }
 
@@ -369,7 +369,7 @@ body.dark .hamburger span {
 
 @media (min-width: 769px) {
   .features-grid {
-    grid-template-columns: repeat(3, 1fr); /* 3 kolom horizontal di desktop */
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -381,21 +381,21 @@ body.dark .hamburger span {
 
 .feature-card {
   background: #f1f5ff;
-  padding: 25px; /* Dikurangi sedikit untuk muat horizontal */
+  padding: 25px;
   border-radius: 16px;
-  min-width: 260px; /* Dikurangi untuk desktop */
-  max-width: 300px; /* Dikurangi untuk muat horizontal */
+  min-width: 260px;
+  max-width: 300px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .feature-card h3 {
-  font-size: 1.3rem; /* Diperkecil untuk konsistensi */
+  font-size: 1.3rem;
   margin-bottom: 12px;
 }
 
 .feature-card p {
-  font-size: 0.95rem; /* Diperkecil untuk konsistensi */
+  font-size: 0.95rem;
   line-height: 1.5;
 }
 
@@ -423,7 +423,7 @@ body.dark .how {
 
 @media (min-width: 769px) {
   .steps {
-    grid-template-columns: repeat(3, 1fr); /* 3 kolom horizontal di desktop */
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -435,21 +435,21 @@ body.dark .how {
 
 .step {
   background: white;
-  padding: 25px; /* Seragam dengan .feature-card */
+  padding: 25px;
   border-radius: 16px;
-  min-width: 260px; /* Seragam dengan .feature-card */
-  max-width: 300px; /* Seragam dengan .feature-card */
+  min-width: 260px;
+  max-width: 300px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .step h3 {
-  font-size: 1.3rem; /* Seragam dengan .feature-card */
+  font-size: 1.3rem;
   margin-bottom: 12px;
 }
 
 .step p {
-  font-size: 0.95rem; /* Seragam dengan .feature-card */
+  font-size: 0.95rem;
   line-height: 1.5;
 }
 
