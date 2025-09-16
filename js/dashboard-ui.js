@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const navLinks = Array.from(document.querySelectorAll('.nav-link'));
   const sections = Array.from(document.querySelectorAll('.section'));
   const themeToggle = document.getElementById('theme-toggle');
+  const checkProgressBtn = document.getElementById('check-progress-btn');
 
   // Helper: Safe addEvent
   function safeAddEvent(el, ev, fn) {
@@ -266,6 +267,29 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${h}:${m}:${s}`;
   }
 
+  // Reset daily progress at 00:00 WIB
+  function resetDailyProgress() {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    const timeUntilReset = tomorrow - now;
+
+    setTimeout(() => {
+      const progress = getUserProgress();
+      for (let key in progress) {
+        if (key.startsWith('claimed_') || key === 'progress_checked') {
+          delete progress[key];
+        }
+      }
+      setUserProgress(progress);
+      if (checkProgressBtn) checkProgressBtn.disabled = false;
+      console.log('[Daily Reset] Progress reset at 00:00 WIB');
+      setInterval(resetDailyProgress, 24 * 60 * 60 * 1000); // Repeat daily
+    }, timeUntilReset);
+  }
+  resetDailyProgress();
+
   // Update mission slots
   function updateSlots() {
     const now = new Date();
@@ -287,15 +311,6 @@ document.addEventListener('DOMContentLoaded', () => {
         cdEl.textContent = `⏳ Sisa waktu ${formatTime(end - now)}`;
         btn.textContent = 'Kerjakan Misi';
         btn.disabled = false;
-      } else {
-        cdEl.textContent = '⌛ Slot sudah berakhir';
-        let totalPoin = 0;
-        for (let k in missionPoints) {
-          if (progress[k]) totalPoin += missionPoints[k];
-        }
-        btn.textContent = `Klaim ${totalPoin} Poin`;
-        btn.disabled = progress[`claimed_${missionKey}`];
-
         btn.onclick = () => {
           if (!progress[`claimed_${missionKey}`]) {
             const saldoBaru = getSaldo() + totalPoin;
@@ -304,6 +319,28 @@ document.addEventListener('DOMContentLoaded', () => {
             setUserProgress(progress);
             alert(`✅ Berhasil klaim ${totalPoin} poin!\nSaldo sekarang: ${saldoBaru}`);
             btn.disabled = true;
+            // Auto-scroll to #section-missions
+            document.getElementById('section-missions').scrollIntoView({ behavior: 'smooth' });
+          }
+        };
+      } else {
+        cdEl.textContent = '⌛ Slot sudah berakhir';
+        let totalPoin = 0;
+        for (let k in missionPoints) {
+          if (progress[k]) totalPoin += missionPoints[k];
+        }
+        btn.textContent = `Klaim ${totalPoin} Poin`;
+        btn.disabled = progress[`claimed_${missionKey}`];
+        btn.onclick = () => {
+          if (!progress[`claimed_${missionKey}`]) {
+            const saldoBaru = getSaldo() + totalPoin;
+            setSaldo(saldoBaru);
+            progress[`claimed_${missionKey}`] = true;
+            setUserProgress(progress);
+            alert(`✅ Berhasil klaim ${totalPoin} poin!\nSaldo sekarang: ${saldoBaru}`);
+            btn.disabled = true;
+            // Auto-scroll to #section-missions
+            document.getElementById('section-missions').scrollIntoView({ behavior: 'smooth' });
           }
         };
       }
@@ -322,8 +359,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const startStr = slot.getAttribute('data-start');
       const endStr = slot.getAttribute('data-end');
       const countdownEl = slot.querySelector('.countdown');
+      const btn = slot.querySelector('.btn-claim');
+      const missionKey = slot.dataset.mission;
+      const progress = getUserProgress();
 
-      if (!countdownEl) return;
+      if (!countdownEl || !btn) return;
 
       const [sh, sm] = startStr.split(':').map(Number);
       const [eh, em] = endStr.split(':').map(Number);
@@ -336,16 +376,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (now < start) {
         countdownEl.textContent = `⏳ Mulai dalam ${formatTime(start - now)}`;
+        btn.textContent = 'Wajib Klaim';
+        btn.disabled = true;
       } else if (now >= start && now <= end) {
         countdownEl.textContent = `⏳ Sisa waktu ${formatTime(end - now)}`;
+        btn.textContent = 'Wajib Klaim';
+        btn.disabled = false;
+        btn.onclick = () => {
+          if (!progress[`claimed_${missionKey}`]) {
+            const bonusPoints = 100; // Misalnya, 100 poin per klaim
+            const saldoBaru = getSaldo() + bonusPoints;
+            setSaldo(saldoBaru);
+            progress[`claimed_${missionKey}`] = true;
+            setUserProgress(progress);
+            alert(`✅ Berhasil klaim ${bonusPoints} poin referral!\nSaldo sekarang: ${saldoBaru}`);
+            btn.disabled = true;
+          }
+        };
       } else {
         countdownEl.textContent = '❌ Sudah berakhir';
+        btn.textContent = 'Wajib Klaim';
+        btn.disabled = true;
       }
     });
   }
 
   setInterval(updateCountdowns, 1000);
   updateCountdowns();
+
+  // Check progress button
+  safeAddEvent(checkProgressBtn, 'click', () => {
+    const progress = getUserProgress();
+    if (!progress.progress_checked) {
+      progress.progress_checked = true;
+      setUserProgress(progress);
+      checkProgressBtn.disabled = true;
+      alert('✅ Progress harian diperiksa!');
+    }
+  });
+
+  // Initialize check progress button state
+  const progress = getUserProgress();
+  if (checkProgressBtn && progress.progress_checked) {
+    checkProgressBtn.disabled = true;
+  }
 
   console.log('[dashboard-ui] Initialized');
 });
