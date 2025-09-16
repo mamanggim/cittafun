@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       pageData.forEach(lesson => {
         const card = document.createElement('div');
-        card.className = 'mission-card';
+        card.className = 'lesson-card'; // Changed from mission-card to lesson-card
         card.innerHTML = `
           <h4>${lesson.title}</h4>
           <p><strong>${lesson.category}</strong> - ${lesson.jenjang}</p>
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         lesson.title.toLowerCase().includes(searchTerm) || 
         lesson.category.toLowerCase().includes(searchTerm)
       )
-      .slice(0, 5) // Batasi 5 saran
+      .slice(0, 5) // Limit to 5 suggestions
       .map(lesson => `${lesson.title} - ${lesson.category} (${lesson.jenjang})`);
 
     if (suggestions.length > 0) {
