@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       pageData.forEach(lesson => {
         const card = document.createElement('div');
-        card.className = 'lesson-card'; // Changed from mission-card to lesson-card
+        card.className = 'lesson-card';
         card.innerHTML = `
           <h4>${lesson.title}</h4>
           <p><strong>${lesson.category}</strong> - ${lesson.jenjang}</p>
