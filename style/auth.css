@@ -3,7 +3,7 @@
 
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, var(--citta-blue), #00d2ff); /* Samakan dengan landing page */
+  background: linear-gradient(135deg, var(--citta-blue), #00d2ff); /* Sama dengan landing page */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -53,7 +53,7 @@ body.dark h2 .black {
 .logo {
   width: 90px;
   margin-bottom: 1rem;
-  animation: sharpBounce 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; /* Bounce tajam */
+  animation: bounce 1.8s infinite; /* Animasi bounce asli */
 }
 
 h2 {
@@ -69,13 +69,13 @@ h2 .black {
 h2 .blue, h2 #citta-login {
   color: var(--citta-blue);
   display: inline-block;
-  animation: smoothWave 2s ease-in-out infinite; /* Wave smooth */
+  animation: wave 2s infinite ease-in-out; /* Wave asli */
 }
 
 h2 .orange, h2 #fun-login {
   color: var(--fun-orange);
   display: inline-block;
-  animation: smoothWave 2s ease-in-out infinite; /* Wave smooth, tanpa delay */
+  animation: wave 2s infinite ease-in-out 0.2s; /* Wave dengan delay 0.2s */
 }
 
 .policy-check {
@@ -156,12 +156,13 @@ h2 .orange, h2 #fun-login {
   to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes sharpBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-12px); }
+  60% { transform: translateY(-6px); }
 }
 
-@keyframes smoothWave {
+@keyframes wave {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
 }
