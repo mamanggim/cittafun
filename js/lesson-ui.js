@@ -2,6 +2,12 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Elements
   const lessonButtons = document.querySelectorAll('.btn-lesson');
+  const lessonListSection = document.getElementById('lesson-list');
+  const lessonReadSection = document.getElementById('lesson-read');
+  const readingTitle = document.getElementById('reading-title');
+  const readingContent = document.getElementById('reading-content');
+  const timerEl = document.getElementById('timer');
+  const continueReadingBtn = document.getElementById('btn-continue-reading');
   const userNameEl = document.getElementById('user-name');
   const userEmailEl = document.getElementById('user-email');
   const userPhotoEl = document.getElementById('user-photo');
@@ -28,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function addRecentActivity(action, time) {
     const activities = JSON.parse(localStorage.getItem('recentActivities') || '[]');
     activities.unshift({ action, time: new Date(time).toLocaleString('id-ID') });
-    if (activities.length > 5) activities.pop(); // Limit to 5 activities
+    if (activities.length > 5) activities.pop();
     localStorage.setItem('recentActivities', JSON.stringify(activities));
   }
 
@@ -56,53 +62,132 @@ document.addEventListener('DOMContentLoaded', () => {
     populateUser({ displayName: 'Tamu', email: 'tamu@example.com' });
   }
 
-  // Initialize lesson buttons
-  function updateLessonButtons() {
-    const progress = getUserProgress();
-    const now = new Date();
-    const today = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-    let lessonCompletedToday = false;
+  // Timer logic
+  let timerInterval = null;
+  let timeRemaining = 10 * 60 * 1000; // 10 menit dalam ms
+  let minutesCompleted = 0;
+  let currentSubject = null;
+  let slotEndTime = null;
 
-    // Check if any lesson was completed today
-    for (let key in progress) {
-      if (key.startsWith('lesson_') && progress[key].date === today) {
-        lessonCompletedToday = true;
-        break;
-      }
+  function formatTime(ms) {
+    if (ms < 0) ms = 0;
+    const minutes = Math.floor(ms / 1000 / 60);
+    const seconds = Math.floor((ms / 1000) % 60);
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+
+  function triggerAd() {
+    // Placeholder untuk iklan popunder Monetag
+    console.log('[Monetag] Iklan popunder ditampilkan');
+    // Ganti dengan skrip Monetag sebenarnya, misalnya:
+    // window.open('https://monetag-ad-url', '_blank');
+  }
+
+  function startReading(subject, subjectName, slotStart, slotEnd) {
+    currentSubject = subject;
+    slotEndTime = new Date(slotEnd);
+    lessonListSection.classList.remove('active');
+    lessonReadSection.classList.add('active');
+    readingTitle.textContent = `Membaca: ${subjectName}`;
+    readingContent.textContent = `Ini adalah konten placeholder untuk ${subjectName}. Bacalah materi ini selama 10 menit untuk mendapatkan poin.`;
+
+    const progress = getUserProgress();
+    const today = new Date().toISOString().split('T')[0];
+    const lessonProgress = progress[`lesson_${subject}`] || { minutes: 0, date: today, slotStart };
+
+    if (lessonProgress.date === today && lessonProgress.slotStart === slotStart) {
+      minutesCompleted = lessonProgress.minutes;
+      timeRemaining = Math.max(0, (10 - lessonProgress.minutes) * 60 * 1000);
+    } else {
+      minutesCompleted = 0;
+      timeRemaining = 10 * 60 * 1000;
     }
 
-    lessonButtons.forEach(btn => {
-      const subject = btn.getAttribute('data-subject');
-      const isCompleted = progress[`lesson_${subject}`]?.date === today;
+    timerEl.textContent = formatTime(timeRemaining);
+    continueReadingBtn.textContent = timeRemaining > 0 ? 'Lanjutkan Membaca' : 'Baca Lagi (Tanpa Poin)';
+    continueReadingBtn.disabled = false;
 
-      if (lessonCompletedToday || isCompleted) {
-        btn.textContent = 'Sudah Selesai';
-        btn.disabled = true;
-      } else {
-        btn.textContent = 'Selesaikan';
-        btn.disabled = false;
-        btn.onclick = () => {
-          if (!btn.disabled) {
-            const points = 10; // 10 poin per pelajaran
-            const saldoBaru = getSaldo() + points;
-            setSaldo(saldoBaru);
-            progress[`lesson_${subject}`] = { date: today, completed: true };
-            setUserProgress(progress);
-            addRecentActivity(`Selesai Mata Pelajaran: ${btn.parentElement.querySelector('h4').textContent}`, now);
-            alert(`✅ Berhasil menyelesaikan ${btn.parentElement.querySelector('h4').textContent}! (+${points} poin)\nSaldo sekarang: ${saldoBaru}`);
-            btn.textContent = 'Sudah Selesai';
-            btn.disabled = true;
-            lessonButtons.forEach(b => {
-              if (b !== btn) {
-                b.textContent = 'Sudah Selesai';
-                b.disabled = true;
-              }
-            });
-          }
-        };
-      }
-    });
+    if (timeRemaining > 0 && new Date() <= slotEndTime) {
+      timerInterval = setInterval(() => {
+        timeRemaining -= 1000;
+        timerEl.textContent = formatTime(timeRemaining);
+
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          minutesCompleted = 10;
+          progress[`lesson_${subject}`] = { minutes: 10, date: today, slotStart, points: 500 };
+          setUserProgress(progress);
+          addRecentActivity(`Selesai Membaca: ${subjectName} (+500 poin)`, new Date());
+          alert(`✅ Selesai membaca ${subjectName}! (+500 poin)`);
+          continueReadingBtn.textContent = 'Baca Lagi (Tanpa Poin)';
+          continueReadingBtn.disabled = false;
+        } else if (timeRemaining % (60 * 1000) === 0) {
+          minutesCompleted++;
+          triggerAd();
+          const points = minutesCompleted * 50;
+          progress[`lesson_${subject}`] = { minutes: minutesCompleted, date: today, slotStart, points };
+          setUserProgress(progress);
+          addRecentActivity(`Membaca ${subjectName} (${minutesCompleted} menit, +${points} poin)`, new Date());
+          alert(`✅ ${minutesCompleted} menit selesai untuk ${subjectName}! (+50 poin)`);
+        }
+
+        // Cek apakah slot waktu masih aktif
+        if (new Date() > slotEndTime) {
+          clearInterval(timerInterval);
+          continueReadingBtn.textContent = 'Slot Waktu Berakhir';
+          continueReadingBtn.disabled = true;
+        }
+      }, 1000);
+    } else if (new Date() > slotEndTime) {
+      continueReadingBtn.textContent = 'Slot Waktu Berakhir';
+      continueReadingBtn.disabled = true;
+    }
   }
+
+  // Continue reading (tanpa poin setelah selesai)
+  continueReadingBtn.addEventListener('click', () => {
+    if (timeRemaining > 0 && new Date() <= slotEndTime) {
+      // Timer sudah berjalan, biarkan berlanjut
+      return;
+    } else {
+      // Membaca bebas tanpa poin
+      readingContent.textContent = `Anda membaca ${readingTitle.textContent.replace('Membaca: ', '')} tanpa poin tambahan.`;
+      timerEl.textContent = 'Bebas';
+      continueReadingBtn.disabled = true;
+    }
+  });
+
+  // Initialize lesson buttons
+  lessonButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const subject = btn.getAttribute('data-subject');
+      const subjectName = btn.parentElement.querySelector('h4').textContent;
+
+      // Ambil slot waktu aktif dari dashboard (contoh: slot Malam)
+      const now = new Date();
+      const slotTimes = [
+        { key: 'pagi1', start: '07:00', end: '09:59' },
+        { key: 'pagi2', start: '10:00', end: '12:59' },
+        { key: 'siang', start: '13:00', end: '14:59' },
+        { key: 'sore', start: '15:00', end: '17:59' },
+        { key: 'malam', start: '18:00', end: '20:59' }
+      ];
+
+      const activeSlot = slotTimes.find(slot => {
+        const [sh, sm] = slot.start.split(':').map(Number);
+        const [eh, em] = slot.end.split(':').map(Number);
+        const start = new Date(now).setHours(sh, sm, 0, 0);
+        const end = new Date(now).setHours(eh, em, 59, 999);
+        return now >= start && now <= end;
+      }) || slotTimes[slotTimes.length - 1]; // Fallback ke slot terakhir jika tidak ada yang aktif
+
+      const slotStart = activeSlot.start;
+      const [eh, em] = activeSlot.end.split(':').map(Number);
+      const slotEnd = new Date(now).setHours(eh, em, 59, 999);
+
+      startReading(subject, subjectName, slotStart, slotEnd);
+    });
+  });
 
   // Reset daily progress at 00:00 WIB
   function resetDailyProgress() {
@@ -120,14 +205,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
       setUserProgress(progress);
-      updateLessonButtons();
       console.log('[Daily Reset] Lesson progress reset at 00:00 WIB');
-      setInterval(resetDailyProgress, 24 * 60 * 60 * 1000); // Repeat daily
+      setInterval(resetDailyProgress, 24 * 60 * 60 * 1000);
     }, timeUntilReset);
   }
   resetDailyProgress();
 
-  // Initialize
-  updateLessonButtons();
   console.log('[lesson-ui] Initialized');
 });
