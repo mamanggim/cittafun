@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
           btn.textContent = 'Klaim 2%';
           btn.disabled = false;
           btn.onclick = () => {
-            if (!progress[`claimed_${missionKey}`]) {
+            if (!btn.disabled) {
               const bonusPoints = 100; // Placeholder: 100 poin per 2% klaim
               const saldoBaru = getSaldo() + bonusPoints;
               setSaldo(saldoBaru);
