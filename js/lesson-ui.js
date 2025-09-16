@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let lessonsData = [];
   let currentPage = 1;
   const itemsPerPage = 10;
-  let currentSlotKey = '';
+  let currentSlotKey = localStorage.getItem('currentSlotKey') || '';
   let timeRemaining = 10 * 60 * 1000; // 10 menit dalam ms
   let timerInterval = null;
 
@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('data/lessons.json');
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       lessonsData = await response.json();
+      errorMessage.style.display = 'none';
       renderLessons();
     } catch (err) {
       console.error('[Lessons] Failed to load lessons:', err.message);
@@ -53,7 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const jenjang = jenjangFilter ? jenjangFilter.value : '';
     const filteredData = lessonsData.filter(lesson => {
       return (
-        lesson.title.toLowerCase().includes(searchTerm) &&
+        (lesson.title.toLowerCase().includes(searchTerm) ||
+         lesson.category.toLowerCase().includes(searchTerm)) &&
         (jenjang === '' || lesson.jenjang === jenjang)
       );
     });
@@ -68,9 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       pageData.forEach(lesson => {
         const card = document.createElement('div');
-        card.className = 'mission-card'; // Reuse mission-card style
+        card.className = 'mission-card';
         card.innerHTML = `
           <h4>${lesson.title}</h4>
+          <p><strong>${lesson.category}</strong> - ${lesson.jenjang}</p>
           <p>${lesson.description}</p>
           <button class="btn btn-lesson" data-id="${lesson.id}" data-slot="${currentSlotKey}">Baca</button>
         `;
@@ -105,9 +108,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const suggestions = lessonsData
-      .filter(lesson => lesson.title.toLowerCase().includes(searchTerm))
+      .filter(lesson => 
+        lesson.title.toLowerCase().includes(searchTerm) || 
+        lesson.category.toLowerCase().includes(searchTerm)
+      )
       .slice(0, 5) // Batasi 5 saran
-      .map(lesson => `${lesson.title} - ${lesson.jenjang}`);
+      .map(lesson => `${lesson.title} - ${lesson.category} (${lesson.jenjang})`);
 
     if (suggestions.length > 0) {
       suggestions.forEach(suggestion => {
@@ -139,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const popup = document.createElement('div');
     popup.className = 'reading-popup';
     popup.innerHTML = `
-      <h3>${lesson.title}</h3>
+      <h3>${lesson.title} (${lesson.category})</h3>
       <p>Sisa waktu: <span class="timer">${formatTime(timeRemaining)}</span></p>
       <p>${lesson.content}</p>
       <button class="btn" id="close-popup">Tutup</button>
