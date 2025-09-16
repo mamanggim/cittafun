@@ -307,21 +307,17 @@ document.addEventListener('DOMContentLoaded', () => {
         cdEl.textContent = `⏳ Mulai dalam ${formatTime(start - now)}`;
         btn.textContent = 'Kerjakan Misi';
         btn.disabled = true;
+        btn.onclick = null; // Clear any previous onclick
       } else if (now >= start && now <= end) {
         cdEl.textContent = `⏳ Sisa waktu ${formatTime(end - now)}`;
         btn.textContent = 'Kerjakan Misi';
         btn.disabled = false;
-        document.getElementById('section-missions').scrollIntoView({ behavior: 'smooth' });
         btn.onclick = () => {
-          if (!progress[`claimed_${missionKey}`]) {
-            const saldoBaru = getSaldo() + totalPoin;
-            setSaldo(saldoBaru);
-            progress[`claimed_${missionKey}`] = true;
-            setUserProgress(progress);
-            alert(`✅ Berhasil klaim ${totalPoin} poin!\nSaldo sekarang: ${saldoBaru}`);
-            btn.disabled = true;
+          if (!btn.disabled) {
             // Auto-scroll to #section-missions
             document.getElementById('section-missions').scrollIntoView({ behavior: 'smooth' });
+            // Simulate mission action (e.g., redirect to mission page or trigger action)
+            alert('Memulai misi...'); // Ganti dengan logika misi jika ada
           }
         };
       } else {
@@ -340,8 +336,6 @@ document.addEventListener('DOMContentLoaded', () => {
             setUserProgress(progress);
             alert(`✅ Berhasil klaim ${totalPoin} poin!\nSaldo sekarang: ${saldoBaru}`);
             btn.disabled = true;
-            // Auto-scroll to #section-missions
-            document.getElementById('section-missions').scrollIntoView({ behavior: 'smooth' });
           }
         };
       }
@@ -361,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const endStr = slot.getAttribute('data-end');
       const countdownEl = slot.querySelector('.countdown');
       const btn = slot.querySelector('.btn-claim');
-      const missionKey = slot.dataset.mission;
+      const missionKey = slot.getAttribute('data-mission');
       const progress = getUserProgress();
 
       if (!countdownEl || !btn) return;
@@ -379,6 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
         countdownEl.textContent = `⏳ Mulai dalam ${formatTime(start - now)}`;
         btn.textContent = 'Wajib Klaim';
         btn.disabled = true;
+        btn.onclick = null;
       } else if (now >= start && now <= end) {
         countdownEl.textContent = `⏳ Sisa waktu ${formatTime(end - now)}`;
         btn.textContent = 'Wajib Klaim';
@@ -398,6 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
         countdownEl.textContent = '❌ Sudah berakhir';
         btn.textContent = 'Wajib Klaim';
         btn.disabled = true;
+        btn.onclick = null;
       }
     });
   }
