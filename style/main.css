@@ -48,14 +48,7 @@ body.dark .referral {
   background: #2a2a3c;
 }
 
-body.dark .feature-card {
-  background: #35354f;
-}
-
-body.dark .how {
-  background: var(--how-bg-dark);
-}
-
+body.dark .feature-card,
 body.dark .step {
   background: #35354f;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -149,11 +142,13 @@ a {
 
 .blue, #citta, #citta-hero, #citta-about, #citta-referral, #citta-footer, #citta-about-lower {
   color: var(--citta-blue);
+  display: inline-block; /* Pastikan animasi wave bekerja */
   animation: wave 2s infinite ease-in-out;
 }
 
 .orange, #fun, #fun-hero, #fun-about, #fun-referral, #fun-footer, #fun-about-lower {
   color: var(--fun-orange);
+  display: inline-block; /* Pastikan animasi wave bekerja */
   animation: wave 2s infinite ease-in-out 0.2s;
 }
 
@@ -341,7 +336,10 @@ body.dark .hamburger span {
 .feature-card {
   background: #f1f5ff;
   padding: 30px;
-  border-radius: 20px;
+  border-radius: 16px; /* Diseragamkan dengan .step */
+  min-width: 280px;
+  max-width: 320px; /* Seragam dengan .step */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* Seragam dengan .step */
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
@@ -377,17 +375,28 @@ body.dark .hamburger span {
 
 .step {
   flex: 1;
-  min-width: 260px;
+  min-width: 280px;
   max-width: 320px;
   background: white;
+  padding: 30px; /* Seragam dengan .feature-card */
   border-radius: 16px;
-  padding: 20px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s;
 }
 
+.step h3 {
+  font-size: 1.4rem; /* Seragam dengan .feature-card */
+  margin-bottom: 15px;
+}
+
+.step p {
+  font-size: 1rem; /* Seragam dengan .feature-card */
+  line-height: 1.5;
+}
+
 .step:hover {
-  transform: scale(1.05);
+  transform: translateY(-8px); /* Seragam dengan .feature-card */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* Referral */
@@ -421,7 +430,7 @@ body.dark .hamburger span {
 }
 
 .footer p:nth-child(2) {
-  font-size: 0.8rem; /* Perkecil font untuk "Ikuti kami" */
+  font-size: 0.8rem;
 }
 
 .footer a {
