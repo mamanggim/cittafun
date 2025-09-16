@@ -66,13 +66,26 @@ body.dark .footer {
 }
 
 /* Utility */
-h1, h2, h3 {
+h1 {
   font-weight: 800;
   margin-bottom: 15px;
+  font-size: 2.2rem; /* Diperkecil dari 2.6rem untuk proporsi */
+}
+
+h2 {
+  font-weight: 800;
+  margin-bottom: 15px;
+  font-size: 1.8rem; /* Diperkecil dari 2rem untuk proporsi */
+}
+
+h3 {
+  font-weight: 800;
+  margin-bottom: 12px;
+  font-size: 1.2rem; /* Diperkecil dari 1.3rem untuk proporsi */
 }
 
 p {
-  font-size: 1.05rem;
+  font-size: 0.9rem; /* Diseragamkan dengan footer di desktop */
   margin-bottom: 10px;
 }
 
@@ -88,6 +101,7 @@ a {
   color: white;
   font-weight: 700;
   border-radius: 30px;
+  font-size: 0.9rem; /* Sesuai dengan teks biasa */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -144,46 +158,46 @@ a {
   color: var(--citta-blue);
   display: inline-block;
   animation: wave 2s infinite ease-in-out;
-  font-size: inherit; /* Mengikuti ukuran font parent */
+  font-size: inherit;
 }
 
 .orange, #fun, #fun-hero, #fun-about, #fun-referral, #fun-footer, #fun-about-lower {
   color: var(--fun-orange);
   display: inline-block;
   animation: wave 2s infinite ease-in-out 0.2s;
-  font-size: inherit; /* Mengikuti ukuran font parent */
+  font-size: inherit;
 }
 
-/* Menyesuaikan ukuran font CittaFun agar seragam dengan header dan footer */
+/* Menyesuaikan ukuran font CittaFun (tetap seperti sebelumnya) */
 @media (min-width: 769px) {
   .logo .blue, .logo .orange {
-    font-size: 1.5rem; /* Sesuai dengan .logo di navbar */
+    font-size: 1.5rem;
   }
   .hero .blue, .hero .orange {
-    font-size: 0.9rem; /* Diperkecil untuk sesuai dengan footer */
+    font-size: 0.9rem;
   }
   .about .blue, .about .orange,
   .referral .blue, .referral .orange {
-    font-size: 0.9rem; /* Diperkecil untuk sesuai dengan footer */
+    font-size: 0.9rem;
   }
   .footer .blue, .footer .orange {
-    font-size: 0.9rem; /* Sesuai dengan .footer */
+    font-size: 0.9rem;
   }
 }
 
 @media (max-width: 768px) {
   .logo .blue, .logo .orange {
-    font-size: 1.3rem; /* Sesuai dengan .logo di mobile */
+    font-size: 1.3rem;
   }
   .hero .blue, .hero .orange {
-    font-size: 0.85rem; /* Diperkecil untuk sesuai dengan footer di mobile */
+    font-size: 0.85rem;
   }
   .about .blue, .about .orange,
   .referral .blue, .referral .orange {
-    font-size: 0.85rem; /* Diperkecil untuk sesuai dengan footer di mobile */
+    font-size: 0.85rem;
   }
   .footer .blue, .footer .orange {
-    font-size: 0.85rem; /* Sesuai dengan .footer di mobile */
+    font-size: 0.85rem;
   }
 }
 
@@ -215,6 +229,7 @@ a {
   border-radius: 20px;
   transition: background 0.3s, color 0.3s;
   color: var(--text-light);
+  font-size: 1rem; /* Tetap untuk header */
 }
 
 .nav-links a:hover {
@@ -300,6 +315,10 @@ body.dark .hamburger span {
   .hamburger {
     display: flex;
   }
+
+  .nav-links a {
+    font-size: 0.9rem; /* Sesuai footer di mobile */
+  }
 }
 
 /* Overlay */
@@ -332,7 +351,7 @@ body.dark .hamburger span {
 }
 
 .hero h1 {
-  font-size: 2.6rem;
+  font-size: 2.2rem; /* Diperkecil */
   margin-bottom: 20px;
 }
 
@@ -340,7 +359,7 @@ body.dark .hamburger span {
   max-width: 700px;
   margin: auto;
   margin-bottom: 30px;
-  font-size: 1.15rem;
+  font-size: 0.9rem; /* Diseragamkan dengan footer */
 }
 
 /* About Section */
@@ -358,7 +377,7 @@ body.dark .hamburger span {
 }
 
 .features h2 {
-  font-size: 2rem;
+  font-size: 1.8rem; /* Diperkecil */
 }
 
 .features-grid {
@@ -390,12 +409,12 @@ body.dark .hamburger span {
 }
 
 .feature-card h3 {
-  font-size: 1.3rem;
+  font-size: 1.2rem; /* Diperkecil */
   margin-bottom: 12px;
 }
 
 .feature-card p {
-  font-size: 0.95rem;
+  font-size: 0.9rem; /* Diseragamkan dengan footer */
   line-height: 1.5;
 }
 
@@ -444,12 +463,12 @@ body.dark .how {
 }
 
 .step h3 {
-  font-size: 1.3rem;
+  font-size: 1.2rem; /* Diperkecil */
   margin-bottom: 12px;
 }
 
 .step p {
-  font-size: 0.95rem;
+  font-size: 0.9rem; /* Diseragamkan dengan footer */
   line-height: 1.5;
 }
 
@@ -465,6 +484,10 @@ body.dark .how {
   background: #fff;
 }
 
+.referral p {
+  font-size: 0.9rem; /* Diseragamkan dengan footer */
+}
+
 /* CTA */
 .cta {
   background: linear-gradient(135deg, var(--citta-blue), #00d2ff);
@@ -476,6 +499,7 @@ body.dark .how {
 }
 
 .cta h2 {
+  font-size: 1.8rem; /* Diperkecil */
   margin-bottom: 20px;
 }
 
@@ -499,6 +523,35 @@ body.dark .how {
 
 .footer a:hover {
   color: #00d2ff;
+}
+
+/* Responsivitas untuk mobile */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.8rem;
+  }
+  h2 {
+    font-size: 1.6rem;
+  }
+  h3 {
+    font-size: 1.1rem;
+  }
+  p {
+    font-size: 0.85rem; /* Sesuai footer di mobile */
+  }
+  .btn-primary {
+    font-size: 0.85rem;
+  }
+  .hero p,
+  .about p,
+  .referral p,
+  .feature-card p,
+  .step p {
+    font-size: 0.85rem;
+  }
+  .cta h2 {
+    font-size: 1.6rem;
+  }
 }
 
 /* Animations */
@@ -526,4 +579,4 @@ body.dark .how {
 @keyframes wave {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
-  }
+}
