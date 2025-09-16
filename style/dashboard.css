@@ -29,6 +29,7 @@ body {
   --topbar-bg: rgba(255, 255, 255, 0.8);
   --card-bg: #f1f5ff;
   --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  --bonus-green: #22c55e; /* Warna hijau untuk total bonus */
 }
 
 /* Dark Mode */
@@ -661,6 +662,17 @@ body.dark .slot-head small {
   cursor: not-allowed;
 }
 
+/* Bonus Passive Text */
+.bonus-passive {
+  font-size: 0.9rem !important;
+  margin: 10px 0;
+}
+
+.bonus-passive #total-bonus-percentage {
+  color: var(--bonus-green);
+  font-weight: 700;
+}
+
 /* Referral Bonus */
 .referral-bonus {
   background: var(--card-bg);
@@ -759,4 +771,4 @@ body.dark .slot-head small {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
-    }
+  }
