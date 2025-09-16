@@ -1,1 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mata Pelajaran - CittaFun</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style/dashboard.css"> <!-- Menggunakan CSS dashboard untuk konsistensi -->
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
+  <!-- Firebase config -->
+  <script src="js/firebase-config.js"></script>
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+    <a href="dashboard.html#section-missions" class="btn-icon" aria-label="Kembali ke dashboard">⬅️</a>
+    <div class="topbar-left">
+      <h2 class="page-title">Mata Pelajaran</h2>
+    </div>
+    <div class="topbar-right">
+      <div class="profile">
+        <img id="user-photo" src="assets/icons/user-placeholder.png" alt="user" class="profile-photo">
+        <div class="profile-info">
+          <div id="user-name">Tamu</div>
+          <small id="user-email">-</small>
+        </div>
+      </div>
+    </div>
+  </header>
 
+  <!-- Content -->
+  <main class="content">
+    <section class="section active">
+      <h3>📚 Pilih Mata Pelajaran</h3>
+      <p>Pilih satu mata pelajaran untuk diselesaikan hari ini (10 poin per pelajaran).</p>
+      <div class="lessons-grid">
+        <div class="lesson-card" data-subject="agama">
+          <h4>Pendidikan Agama dan Budi Pekerti</h4>
+          <p>Pelajari nilai-nilai agama dan budi pekerti.</p>
+          <button class="btn-lesson" data-subject="agama">Selesaikan</button>
+        </div>
+        <div class="lesson-card" data-subject="ppkn">
+          <h4>Pendidikan Pancasila dan Kewarganegaraan</h4>
+          <p>Pahami Pancasila dan kewarganegaraan.</p>
+          <button class="btn-lesson" data-subject="ppkn">Selesaikan</button>
+        </div>
+        <div class="lesson-card" data-subject="bahasa">
+          <h4>Bahasa Indonesia</h4>
+          <p>Asah kemampuan berbahasa Indonesia.</p>
+          <button class="btn-lesson" data-subject="bahasa">Selesaikan</button>
+        </div>
+        <div class="lesson-card" data-subject="matematika">
+          <h4>Matematika</h4>
+          <p>Latih logika dengan soal matematika.</p>
+          <button class="btn-lesson" data-subject="matematika">Selesaikan</button>
+        </div>
+        <div class="lesson-card" data-subject="ipa">
+          <h4>IPA</h4>
+          <p>Eksplorasi Fisika, Biologi, dan Kimia.</p>
+          <button class="btn-lesson" data-subject="ipa">Selesaikan</button>
+        </div>
+        <div class="lesson-card" data-subject="ips">
+          <h4>IPS</h4>
+          <p>Pelajari Ekonomi, Geografi, Sejarah, dan Sosiologi.</p>
+          <button class="btn-lesson" data-subject="ips">Selesaikan</button>
+        </div>
+        <div class="lesson-card" data-subject="informatika">
+          <h4>Informatika</h4>
+          <p>Kuasai dasar-dasar teknologi informasi.</p>
+          <button class="btn-lesson" data-subject="informatika">Selesaikan</button>
+        </div>
+        <div class="lesson-card" data-subject="seni">
+          <h4>Seni Budaya atau Prakarya</h4>
+          <p>Kembangkan kreativitasmu.</p>
+          <button class="btn-lesson" data-subject="seni">Selesaikan</button>
+        </div>
+        <div class="lesson-card" data-subject="pjok">
+          <h4>PJOK</h4>
+          <p>Tingkatkan kesehatan dan kebugaran.</p>
+          <button class="btn-lesson" data-subject="pjok">Selesaikan</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- JavaScript -->
+  <script src="js/lesson-ui.js"></script>
+</body>
+</html>
