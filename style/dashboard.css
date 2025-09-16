@@ -1,3 +1,5 @@
+/* style/dashboard.css */
+
 /* Reset minimal */
 * {
   margin: 0;
@@ -771,4 +773,42 @@ body.dark .slot-head small {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Game-style popup */
+.game-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: linear-gradient(135deg, var(--citta-blue), #00d2ff);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 1000;
+}
+
+.game-popup.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Floating points animation */
+.floating-points {
+  position: absolute;
+  color: var(--bonus-green); /* Hijau (#22c55e) */
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  transform: translateX(-50%);
+  transition: none; /* Animasi ditangani via JS */
+  pointer-events: none;
+  z-index: 1000;
   }
