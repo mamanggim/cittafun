@@ -25,7 +25,7 @@ body {
   --bg-dark: #1e1e2f;
   --text-light: #333;
   --text-dark: #ddd;
-  --how-bg-dark: #1e1e2f; /* Diubah untuk kontras lebih baik di dark mode */
+  --how-bg-dark: #1e1e2f;
 }
 
 /* Dark Mode */
@@ -144,14 +144,47 @@ a {
   color: var(--citta-blue);
   display: inline-block;
   animation: wave 2s infinite ease-in-out;
-  font-size: inherit; /* Menyesuaikan ukuran font dengan parent */
+  font-size: inherit; /* Menyesuaikan dengan parent */
 }
 
 .orange, #fun, #fun-hero, #fun-about, #fun-referral, #fun-footer, #fun-about-lower {
   color: var(--fun-orange);
   display: inline-block;
   animation: wave 2s infinite ease-in-out 0.2s;
-  font-size: inherit; /* Menyesuaikan ukuran font dengan parent */
+  font-size: inherit; /* Menyesuaikan dengan parent */
+}
+
+/* Pastikan font-size responsif */
+@media (min-width: 769px) {
+  .logo .blue, .logo .orange {
+    font-size: 1.5rem; /* Sesuai dengan .logo */
+  }
+  .hero .blue, .hero .orange {
+    font-size: 1.15rem; /* Sesuai dengan .hero p */
+  }
+  .about .blue, .about .orange,
+  .referral .blue, .referral .orange {
+    font-size: 1.05rem; /* Sesuai dengan p di about dan referral */
+  }
+  .footer .blue, .footer .orange {
+    font-size: 0.9rem; /* Sesuai dengan .footer */
+  }
+}
+
+@media (max-width: 768px) {
+  .logo .blue, .logo .orange {
+    font-size: 1.3rem; /* Sesuai responsif di mobile */
+  }
+  .hero .blue, .hero .orange {
+    font-size: 1rem; /* Sesuai responsif di mobile */
+  }
+  .about .blue, .about .orange,
+  .referral .blue, .referral .orange {
+    font-size: 0.95rem; /* Sesuai responsif di mobile */
+  }
+  .footer .blue, .footer .orange {
+    font-size: 0.85rem; /* Sesuai responsif di mobile */
+  }
 }
 
 /* Animasi Bounce */
@@ -330,28 +363,39 @@ body.dark .hamburger span {
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 30px;
   margin-top: 40px;
 }
 
+@media (min-width: 769px) {
+  .features-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 kolom horizontal di desktop */
+  }
+}
+
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
 .feature-card {
   background: #f1f5ff;
-  padding: 30px;
+  padding: 25px; /* Dikurangi sedikit untuk muat horizontal */
   border-radius: 16px;
-  min-width: 280px;
-  max-width: 320px;
+  min-width: 260px; /* Dikurangi untuk desktop */
+  max-width: 300px; /* Dikurangi untuk muat horizontal */
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .feature-card h3 {
-  font-size: 1.4rem;
-  margin-bottom: 15px;
+  font-size: 1.3rem; /* Diperkecil untuk konsistensi */
+  margin-bottom: 12px;
 }
 
 .feature-card p {
-  font-size: 1rem;
+  font-size: 0.95rem; /* Diperkecil untuk konsistensi */
   line-height: 1.5;
 }
 
@@ -368,33 +412,44 @@ body.dark .hamburger span {
 }
 
 body.dark .how {
-  background: var(--how-bg-dark); /* Background lebih kontras di dark mode */
+  background: var(--how-bg-dark);
 }
 
 .steps {
-  display: grid; /* Ubah ke grid untuk konsistensi dengan .features-grid */
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  display: grid;
   gap: 30px;
   margin-top: 40px;
 }
 
+@media (min-width: 769px) {
+  .steps {
+    grid-template-columns: repeat(3, 1fr); /* 3 kolom horizontal di desktop */
+  }
+}
+
+@media (max-width: 768px) {
+  .steps {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
 .step {
   background: white;
-  padding: 30px;
+  padding: 25px; /* Seragam dengan .feature-card */
   border-radius: 16px;
-  min-width: 280px;
-  max-width: 320px;
+  min-width: 260px; /* Seragam dengan .feature-card */
+  max-width: 300px; /* Seragam dengan .feature-card */
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .step h3 {
-  font-size: 1.4rem;
-  margin-bottom: 15px;
+  font-size: 1.3rem; /* Seragam dengan .feature-card */
+  margin-bottom: 12px;
 }
 
 .step p {
-  font-size: 1rem;
+  font-size: 0.95rem; /* Seragam dengan .feature-card */
   line-height: 1.5;
 }
 
@@ -471,4 +526,4 @@ body.dark .how {
 @keyframes wave {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
-}
+  }
