@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sections = Array.from(document.querySelectorAll('.section'));
   const themeToggle = document.getElementById('theme-toggle');
   const checkProgressBtn = document.getElementById('check-progress-btn');
+  const totalBonusPercentage = document.getElementById('total-bonus-percentage');
 
   // Helper: Safe addEvent
   function safeAddEvent(el, ev, fn) {
@@ -349,6 +350,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateCountdowns() {
     const slots = document.querySelectorAll('.referral-slot');
     const now = new Date();
+    const progress = getUserProgress();
+    
+    // Calculate total claimed percentage
+    let totalClaimedPercentage = 0;
+    for (let key in progress) {
+      if (key.startsWith('claimed_ref-') && progress[key]) {
+        totalClaimedPercentage += 2; // 2% per claim
+      }
+    }
+    if (totalBonusPercentage) {
+      totalBonusPercentage.textContent = `${totalClaimedPercentage}%`;
+    }
 
     slots.forEach(slot => {
       const startStr = slot.getAttribute('data-start');
@@ -356,7 +369,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const countdownEl = slot.querySelector('.countdown');
       const btn = slot.querySelector('.btn-claim');
       const missionKey = slot.getAttribute('data-mission');
-      const progress = getUserProgress();
 
       if (!countdownEl || !btn) return;
 
@@ -371,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (now < start) {
         countdownEl.textContent = `⏳ Mulai dalam ${formatTime(start - now)}`;
-        btn.textContent = 'Wajib Klaim';
+        btn.textContent = 'Klaim 2%';
         btn.disabled = true;
         btn.onclick = null;
       } else if (now >= start && now <= end) {
@@ -382,24 +394,29 @@ document.addEventListener('DOMContentLoaded', () => {
           btn.onclick = null;
         } else {
           countdownEl.textContent = `⏳ Sisa waktu ${formatTime(end - now)}`;
-          btn.textContent = 'Wajib Klaim';
+          btn.textContent = 'Klaim 2%';
           btn.disabled = false;
           btn.onclick = () => {
             if (!progress[`claimed_${missionKey}`]) {
-              const bonusPoints = 100; // Misalnya, 100 poin per klaim
+              const bonusPoints = 100; // Placeholder: 100 poin per 2% klaim
               const saldoBaru = getSaldo() + bonusPoints;
               setSaldo(saldoBaru);
               progress[`claimed_${missionKey}`] = true;
               setUserProgress(progress);
-              alert(`✅ Berhasil klaim ${bonusPoints} poin referral!\nSaldo sekarang: ${saldoBaru}`);
+              alert(`✅ Berhasil klaim 2% (${bonusPoints} poin)!\nSaldo sekarang: ${saldoBaru}`);
               btn.textContent = 'Sudah Klaim';
               btn.disabled = true;
+              // Update total claimed percentage
+              totalClaimedPercentage += 2;
+              if (totalBonusPercentage) {
+                totalBonusPercentage.textContent = `${totalClaimedPercentage}%`;
+              }
             }
           };
         }
       } else {
         countdownEl.textContent = '❌ Sudah berakhir';
-        btn.textContent = progress[`claimed_${missionKey}`] ? 'Sudah Klaim' : 'Wajib Klaim';
+        btn.textContent = progress[`claimed_${missionKey}`] ? 'Sudah Klaim' : 'Belum Klaim';
         btn.disabled = true;
         btn.onclick = null;
       }
