@@ -69,23 +69,23 @@ body.dark .footer {
 h1 {
   font-weight: 800;
   margin-bottom: 15px;
-  font-size: 2.2rem; /* Diperkecil dari 2.6rem untuk proporsi */
+  font-size: 1.8rem; /* Diseragamkan dengan .cta h2 di desktop */
 }
 
 h2 {
   font-weight: 800;
   margin-bottom: 15px;
-  font-size: 1.8rem; /* Diperkecil dari 2rem untuk proporsi */
+  font-size: 1.6rem; /* Diperkecil lagi untuk proporsi */
 }
 
 h3 {
   font-weight: 800;
   margin-bottom: 12px;
-  font-size: 1.2rem; /* Diperkecil dari 1.3rem untuk proporsi */
+  font-size: 1.1rem; /* Diperkecil lagi untuk proporsi */
 }
 
 p {
-  font-size: 0.9rem; /* Diseragamkan dengan footer di desktop */
+  font-size: 0.9rem !important; /* Diseragamkan dengan footer, paksa dengan !important */
   margin-bottom: 10px;
 }
 
@@ -351,7 +351,7 @@ body.dark .hamburger span {
 }
 
 .hero h1 {
-  font-size: 2.2rem; /* Diperkecil */
+  font-size: 1.8rem; /* Diseragamkan dengan .cta h2 */
   margin-bottom: 20px;
 }
 
@@ -359,7 +359,7 @@ body.dark .hamburger span {
   max-width: 700px;
   margin: auto;
   margin-bottom: 30px;
-  font-size: 0.9rem; /* Diseragamkan dengan footer */
+  font-size: 0.9rem !important; /* Paksa seragam dengan footer */
 }
 
 /* About Section */
@@ -367,6 +367,10 @@ body.dark .hamburger span {
   padding: 80px 20px;
   text-align: center;
   animation: slideUp 1.5s ease;
+}
+
+.about p {
+  font-size: 0.9rem !important; /* Paksa seragam dengan footer */
 }
 
 /* Features Section */
@@ -377,7 +381,7 @@ body.dark .hamburger span {
 }
 
 .features h2 {
-  font-size: 1.8rem; /* Diperkecil */
+  font-size: 1.6rem; /* Diperkecil */
 }
 
 .features-grid {
@@ -409,12 +413,12 @@ body.dark .hamburger span {
 }
 
 .feature-card h3 {
-  font-size: 1.2rem; /* Diperkecil */
+  font-size: 1.1rem; /* Diperkecil */
   margin-bottom: 12px;
 }
 
 .feature-card p {
-  font-size: 0.9rem; /* Diseragamkan dengan footer */
+  font-size: 0.9rem !important; /* Paksa seragam dengan footer */
   line-height: 1.5;
 }
 
@@ -463,12 +467,12 @@ body.dark .how {
 }
 
 .step h3 {
-  font-size: 1.2rem; /* Diperkecil */
+  font-size: 1.1rem; /* Diperkecil */
   margin-bottom: 12px;
 }
 
 .step p {
-  font-size: 0.9rem; /* Diseragamkan dengan footer */
+  font-size: 0.9rem !important; /* Paksa seragam dengan footer */
   line-height: 1.5;
 }
 
@@ -485,7 +489,7 @@ body.dark .how {
 }
 
 .referral p {
-  font-size: 0.9rem; /* Diseragamkan dengan footer */
+  font-size: 0.9rem !important; /* Paksa seragam dengan footer */
 }
 
 /* CTA */
@@ -499,7 +503,7 @@ body.dark .how {
 }
 
 .cta h2 {
-  font-size: 1.8rem; /* Diperkecil */
+  font-size: 1.8rem; /* Tetap untuk keseragaman dengan .hero h1 */
   margin-bottom: 20px;
 }
 
@@ -528,16 +532,16 @@ body.dark .how {
 /* Responsivitas untuk mobile */
 @media (max-width: 768px) {
   h1 {
-    font-size: 1.8rem;
+    font-size: 1.6rem; /* Diseragamkan dengan .cta h2 di mobile */
   }
   h2 {
-    font-size: 1.6rem;
+    font-size: 1.4rem; /* Diperkecil */
   }
   h3 {
-    font-size: 1.1rem;
+    font-size: 1rem; /* Diperkecil */
   }
   p {
-    font-size: 0.85rem; /* Sesuai footer di mobile */
+    font-size: 0.85rem !important; /* Sesuai footer di mobile */
   }
   .btn-primary {
     font-size: 0.85rem;
@@ -547,10 +551,29 @@ body.dark .how {
   .referral p,
   .feature-card p,
   .step p {
-    font-size: 0.85rem;
+    font-size: 0.85rem !important;
   }
   .cta h2 {
-    font-size: 1.6rem;
+    font-size: 1.6rem; /* Tetap untuk keseragaman dengan .hero h1 */
+  }
+}
+
+/* Responsivitas untuk tablet (opsional, untuk transisi halus) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  h1 {
+    font-size: 1.7rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  h3 {
+    font-size: 1.05rem;
+  }
+  p {
+    font-size: 0.85rem !important;
+  }
+  .btn-primary {
+    font-size: 0.85rem;
   }
 }
 
@@ -579,4 +602,4 @@ body.dark .how {
 @keyframes wave {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
-}
+  }
