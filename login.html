@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <title>Login - CittaFun</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="style/main.css"> <!-- Tambahkan main.css untuk tema -->
   <link rel="stylesheet" href="style/auth.css">
-
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
@@ -16,7 +16,7 @@
     <img src="assets/logo.png" alt="Logo" class="logo">
     <h2>
       <span class="black">Masuk ke </span>
-      <span class="blue">Citta</span><span class="orange">Fun</span>
+      <span class="blue" id="citta-login">Citta</span><span class="orange" id="fun-login">Fun</span>
     </h2>
     <div class="policy-check">
       <div class="policy-item">
@@ -35,6 +35,7 @@
     <button id="google-login" class="google-btn" disabled>Masuk dengan Google</button>
   </div>
   <script src="js/auth.js" type="module"></script>
+  <script src="js/ui.js"></script> <!-- Tambahkan ui.js untuk tema -->
   <script>
     const privacyCheck = document.getElementById("privacy-check");
     const termsCheck = document.getElementById("terms-check");
