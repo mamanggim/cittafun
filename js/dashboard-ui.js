@@ -223,13 +223,13 @@ document.addEventListener('DOMContentLoaded', () => {
     applyTheme(isDark ? 'light' : 'dark');
   });
 
-  // Mission points
+  // Mission points (sesuai dengan struktur poin)
   const missionPoints = {
-    lesson: 10,
-    quiz: 20,
-    video: 15,
-    exam: 30,
-    game: 25
+    lesson: 500, // Mata Pelajaran: 50 poin/menit x 10 menit
+    quiz: 20,    // Quiz Seru
+    video: 15,   // Video Edukasi
+    exam: 30,    // Ujian Pelajaran
+    game: 25     // Game Edukasi
   };
 
   // User progress
@@ -248,6 +248,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function setSaldo(v) {
     localStorage.setItem('saldo', v);
+  }
+
+  // Recent activities
+  function updateRecentActivities() {
+    const activityList = document.getElementById('recent-activity');
+    if (!activityList) return;
+
+    const activities = JSON.parse(localStorage.getItem('recentActivities') || '[]');
+    activityList.innerHTML = '';
+    if (activities.length === 0) {
+      activityList.innerHTML = '<li>Tidak ada aktivitas.</li>';
+    } else {
+      activities.forEach(activity => {
+        const li = document.createElement('li');
+        li.textContent = `${activity.action} - ${activity.time}`;
+        activityList.appendChild(li);
+      });
+    }
   }
 
   // Parse time
@@ -308,34 +326,42 @@ document.addEventListener('DOMContentLoaded', () => {
         cdEl.textContent = `⏳ Mulai dalam ${formatTime(start - now)}`;
         btn.textContent = 'Kerjakan Misi';
         btn.disabled = true;
-        btn.onclick = null; // Clear any previous onclick
+        btn.onclick = null;
       } else if (now >= start && now <= end) {
         cdEl.textContent = `⏳ Sisa waktu ${formatTime(end - now)}`;
         btn.textContent = 'Kerjakan Misi';
         btn.disabled = false;
         btn.onclick = () => {
           if (!btn.disabled) {
-            // Auto-scroll to #section-missions
             document.getElementById('section-missions').scrollIntoView({ behavior: 'smooth' });
-            // Simulate mission action (e.g., redirect to mission page or trigger action)
-            alert('Memulai misi...'); // Ganti dengan logika misi jika ada
+            alert('Memulai misi...');
           }
         };
       } else {
         cdEl.textContent = '⌛ Slot sudah berakhir';
-        let totalPoin = 0;
-        for (let k in missionPoints) {
-          if (progress[k]) totalPoin += missionPoints[k];
-        }
-        btn.textContent = `Klaim ${totalPoin} Poin`;
+        let totalPoints = 0;
+        // Hitung poin dari semua misi
+        const missionTypes = ['lesson', 'quiz', 'video', 'exam', 'game'];
+        missionTypes.forEach(type => {
+          for (let key in progress) {
+            if (key.startsWith(`${type}_`) && progress[key].slotStart === slot.dataset.start) {
+              totalPoints += progress[key].points || 0;
+            }
+          }
+        });
+        btn.textContent = `Klaim ${totalPoints} Poin`;
         btn.disabled = progress[`claimed_${missionKey}`];
         btn.onclick = () => {
           if (!progress[`claimed_${missionKey}`]) {
-            const saldoBaru = getSaldo() + totalPoin;
+            const saldoBaru = getSaldo() + totalPoints;
             setSaldo(saldoBaru);
             progress[`claimed_${missionKey}`] = true;
             setUserProgress(progress);
-            alert(`✅ Berhasil klaim ${totalPoin} poin!\nSaldo sekarang: ${saldoBaru}`);
+            alert(`✅ Berhasil klaim ${totalPoints} poin!\nSaldo sekarang: ${saldoBaru}`);
+            // Trigger confetti
+            if (window.confetti) {
+              confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            }
             btn.disabled = true;
           }
         };
@@ -411,6 +437,10 @@ document.addEventListener('DOMContentLoaded', () => {
               if (totalBonusPercentage) {
                 totalBonusPercentage.textContent = `${totalClaimedPercentage}%`;
               }
+              // Trigger confetti
+              if (window.confetti) {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+              }
             }
           };
         }
@@ -434,6 +464,10 @@ document.addEventListener('DOMContentLoaded', () => {
       setUserProgress(progress);
       checkProgressBtn.disabled = true;
       alert('✅ Progress harian diperiksa!');
+      // Trigger confetti
+      if (window.confetti) {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      }
     }
   });
 
@@ -443,25 +477,8 @@ document.addEventListener('DOMContentLoaded', () => {
     checkProgressBtn.disabled = true;
   }
 
+  // Initialize recent activities
+  safeAddEvent(document, 'DOMContentLoaded', updateRecentActivities);
+
   console.log('[dashboard-ui] Initialized');
 });
-
-// Tambahan di akhir dashboard-ui.js (sudah ada di jawaban sebelumnya)
-function updateRecentActivities() {
-  const activityList = document.getElementById('recent-activity');
-  if (!activityList) return;
-
-  const activities = JSON.parse(localStorage.getItem('recentActivities') || '[]');
-  activityList.innerHTML = '';
-  if (activities.length === 0) {
-    activityList.innerHTML = '<li>Tidak ada aktivitas.</li>';
-  } else {
-    activities.forEach(activity => {
-      const li = document.createElement('li');
-      li.textContent = `${activity.action} - ${activity.time}`;
-      activityList.appendChild(li);
-    });
-  }
-}
-
-safeAddEvent(document, 'DOMContentLoaded', updateRecentActivities);
