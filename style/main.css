@@ -25,6 +25,7 @@ body {
   --bg-dark: #1e1e2f;
   --text-light: #333;
   --text-dark: #ddd;
+  --how-bg-dark: #2a2a3c; /* Background untuk section Cara Kerja di dark mode */
 }
 
 /* Dark Mode */
@@ -49,6 +50,10 @@ body.dark .referral {
 
 body.dark .feature-card {
   background: #35354f;
+}
+
+body.dark .how {
+  background: var(--how-bg-dark); /* Background khusus untuk Cara Kerja */
 }
 
 body.dark .step {
@@ -133,23 +138,23 @@ a {
 .logo-img {
   height: 40px;
   margin-right: 10px;
-  animation: bounce 1s ease-in-out;
+  animation: bounce 1.5s ease-in-out infinite; /* Bounce berulang */
 }
 
 .logo:hover .logo-img,
 .logo:hover #citta,
 .logo:hover #fun {
-  animation: bounce 0.5s ease-in-out;
+  animation: bounce 0.5s ease-in-out; /* Bounce saat hover */
 }
 
 .blue, #citta, #citta-hero, #citta-about, #citta-referral, #citta-footer {
   color: var(--citta-blue);
-  animation: wave 1.5s infinite;
+  animation: wave 2s ease-in-out infinite; /* Animasi wave smooth */
 }
 
 .orange, #fun, #fun-hero, #fun-about, #fun-referral, #fun-footer {
   color: var(--fun-orange);
-  animation: wave 1.5s infinite 0.75s; /* Delay untuk efek bergantian */
+  animation: wave 2s ease-in-out infinite; /* Animasi wave seragam */
 }
 
 /* Animasi Bounce */
@@ -158,7 +163,7 @@ a {
   50% { transform: translateY(-10px); }
 }
 
-/* Animasi Wave untuk Citta dan Fun */
+/* Animasi Wave Smooth */
 @keyframes wave {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
