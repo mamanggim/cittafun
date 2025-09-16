@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pelajaran - CittaFun</title>
+  <title>Mata Pelajaran - CittaFun</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style/dashboard.css"> <!-- Gunakan dashboard.css untuk konsistensi -->
   <!-- Firebase SDKs -->
@@ -48,7 +48,7 @@
     <header class="topbar">
       <button id="sidebar-toggle" class="btn-icon" aria-label="Buka/tutup menu">☰</button>
       <div class="topbar-left">
-        <h2 class="page-title">Pelajaran</h2>
+        <h2 class="page-title">Mata Pelajaran</h2>
       </div>
       <div class="topbar-right">
         <div class="notif-icon" title="Notifikasi">🔔<span class="badge" id="notif-count">0</span></div>
@@ -72,16 +72,17 @@
     <!-- Content -->
     <main class="content">
       <section id="section-lessons" class="section active">
-        <h3>📚 Pelajaran</h3>
-        <p>Pilih pelajaran yang ingin kamu pelajari hari ini:</p>
+        <h3>📚 Mata Pelajaran</h3>
+        <p>Pilih mata pelajaran untuk dibaca selama 10 menit (50 poin/menit, maks. 500 poin).</p>
         <div class="search-bar">
           <input type="text" id="search-input" placeholder="Cari mata pelajaran...">
+          <div id="search-suggestions" class="search-suggestions"></div> <!-- Dropdown saran -->
           <select id="jenjang-filter">
             <option value="">Semua Jenjang</option>
             <option value="SD">SD</option>
             <option value="SMP">SMP</option>
             <option value="SMA">SMA</option>
-          </select>
+          </option>
         </div>
         <div class="lessons-grid"></div>
         <div class="pagination">
