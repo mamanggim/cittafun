@@ -3,7 +3,7 @@
 
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, var(--citta-blue), #00d2ff); /* Sama dengan landing page */
+  background: linear-gradient(135deg, var(--citta-blue), #00d2ff);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -15,7 +15,7 @@ body {
 
 /* Dark Mode */
 body.dark {
-  background: linear-gradient(135deg, #003087, #0088b3); /* Gradient lebih gelap untuk dark mode */
+  background: linear-gradient(135deg, #003087, #0088b3);
 }
 
 body.dark .login-container {
@@ -52,8 +52,9 @@ body.dark h2 .black {
 
 .logo {
   width: 90px;
-  margin-bottom: 1rem;
-  animation: bounce 1.8s infinite; /* Animasi bounce asli */
+  margin: 0 auto 1rem; /* Memusatkan logo */
+  display: block; /* Pastikan logo di tengah */
+  animation: bounce 1.8s infinite;
 }
 
 h2 {
@@ -69,13 +70,13 @@ h2 .black {
 h2 .blue, h2 #citta-login {
   color: var(--citta-blue);
   display: inline-block;
-  animation: wave 2s infinite ease-in-out; /* Wave asli */
+  animation: wave 2s infinite ease-in-out;
 }
 
 h2 .orange, h2 #fun-login {
   color: var(--fun-orange);
   display: inline-block;
-  animation: wave 2s infinite ease-in-out 0.2s; /* Wave dengan delay 0.2s */
+  animation: wave 2s infinite ease-in-out 0.2s;
 }
 
 .policy-check {
