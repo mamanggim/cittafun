@@ -53,7 +53,7 @@ body.dark .feature-card {
 }
 
 body.dark .how {
-  background: var(--how-bg-dark); /* Background khusus untuk Cara Kerja */
+  background: var(--how-bg-dark);
 }
 
 body.dark .step {
@@ -138,7 +138,7 @@ a {
 .logo-img {
   height: 40px;
   margin-right: 10px;
-  animation: bounce 1.5s ease-in-out infinite; /* Bounce berulang */
+  animation: bounce 1.8s infinite; /* Sama dengan auth.css */
 }
 
 .logo:hover .logo-img,
@@ -149,24 +149,25 @@ a {
 
 .blue, #citta, #citta-hero, #citta-about, #citta-referral, #citta-footer {
   color: var(--citta-blue);
-  animation: wave 2s ease-in-out infinite; /* Animasi wave smooth */
+  animation: wave 2s infinite ease-in-out; /* Wave sama dengan auth.css */
 }
 
 .orange, #fun, #fun-hero, #fun-about, #fun-referral, #fun-footer {
   color: var(--fun-orange);
-  animation: wave 2s ease-in-out infinite; /* Animasi wave seragam */
+  animation: wave 2s infinite ease-in-out 0.2s; /* Wave dengan delay 0.2s */
 }
 
 /* Animasi Bounce */
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-12px); }
+  60% { transform: translateY(-6px); }
 }
 
-/* Animasi Wave Smooth */
+/* Animasi Wave */
 @keyframes wave {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  50% { transform: translateY(-6px); }
 }
 
 /* Nav links desktop */
@@ -442,4 +443,4 @@ body.dark .hamburger span {
 @keyframes pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(0, 82, 204, 0.6); }
   50% { box-shadow: 0 0 30px 10px rgba(0, 82, 204, 0.2); }
-  }
+}
