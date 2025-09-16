@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mata Pelajaran - CittaFun</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style/dashboard.css"> <!-- Gunakan dashboard.css untuk konsistensi -->
+  <link rel="stylesheet" href="style/dashboard.css">
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
@@ -76,14 +76,15 @@
         <p>Pilih mata pelajaran untuk dibaca selama 10 menit (50 poin/menit, maks. 500 poin).</p>
         <div class="search-bar">
           <input type="text" id="search-input" placeholder="Cari mata pelajaran...">
-          <div id="search-suggestions" class="search-suggestions"></div> <!-- Dropdown saran -->
+          <div id="search-suggestions" class="search-suggestions"></div>
           <select id="jenjang-filter">
             <option value="">Semua Jenjang</option>
             <option value="SD">SD</option>
             <option value="SMP">SMP</option>
             <option value="SMA">SMA</option>
-          </option>
+          </select>
         </div>
+        <div id="error-message" style="color: red; display: none;"></div>
         <div class="lessons-grid"></div>
         <div class="pagination">
           <button id="prev-page" class="btn-outline" disabled>Sebelumnya</button>
