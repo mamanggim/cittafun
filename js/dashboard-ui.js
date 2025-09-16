@@ -19,6 +19,38 @@ document.addEventListener('DOMContentLoaded', () => {
     el.addEventListener(ev, fn);
   }
 
+  // Floating points animation
+  function showFloatingPoints(button, points) {
+    const rect = button.getBoundingClientRect();
+    const floatEl = document.createElement('span');
+    floatEl.className = 'floating-points';
+    floatEl.textContent = `+${points} Poin`;
+    floatEl.style.position = 'absolute';
+    floatEl.style.left = `${rect.left + rect.width / 2}px`;
+    floatEl.style.top = `${rect.top - 10}px`;
+    floatEl.style.color = '#22c55e'; // Hijau
+    floatEl.style.fontSize = '1rem';
+    floatEl.style.fontWeight = '700';
+    floatEl.style.zIndex = '1000';
+    document.body.appendChild(floatEl);
+
+    // Animate
+    let opacity = 1;
+    let y = 0;
+    const animate = () => {
+      y -= 1;
+      opacity -= 0.02;
+      floatEl.style.transform = `translate(-50%, ${y}px)`;
+      floatEl.style.opacity = opacity;
+      if (opacity <= 0) {
+        floatEl.remove();
+      } else {
+        requestAnimationFrame(animate);
+      }
+    };
+    requestAnimationFrame(animate);
+  }
+
   // Sidebar initial state
   function setInitialSidebarState() {
     if (!sidebar) return;
@@ -223,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyTheme(isDark ? 'light' : 'dark');
   });
 
-  // Mission points (sesuai dengan struktur poin)
+  // Mission points
   const missionPoints = {
     lesson: 500, // Mata Pelajaran: 50 poin/menit x 10 menit
     quiz: 20,    // Quiz Seru
@@ -304,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setUserProgress(progress);
       if (checkProgressBtn) checkProgressBtn.disabled = false;
       console.log('[Daily Reset] Progress reset at 00:00 WIB');
-      setInterval(resetDailyProgress, 24 * 60 * 60 * 1000); // Repeat daily
+      setInterval(resetDailyProgress, 24 * 60 * 60 * 1000);
     }, timeUntilReset);
   }
   resetDailyProgress();
@@ -340,7 +372,6 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         cdEl.textContent = '⌛ Slot sudah berakhir';
         let totalPoints = 0;
-        // Hitung poin dari semua misi
         const missionTypes = ['lesson', 'quiz', 'video', 'exam', 'game'];
         missionTypes.forEach(type => {
           for (let key in progress) {
@@ -358,10 +389,11 @@ document.addEventListener('DOMContentLoaded', () => {
             progress[`claimed_${missionKey}`] = true;
             setUserProgress(progress);
             alert(`✅ Berhasil klaim ${totalPoints} poin!\nSaldo sekarang: ${saldoBaru}`);
-            // Trigger confetti
+            // Trigger confetti and floating points
             if (window.confetti) {
               confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
             }
+            showFloatingPoints(btn, totalPoints);
             btn.disabled = true;
           }
         };
@@ -377,12 +409,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const slots = document.querySelectorAll('.referral-slot');
     const now = new Date();
     const progress = getUserProgress();
-    
-    // Calculate total claimed percentage
+
     let totalClaimedPercentage = 0;
     for (let key in progress) {
       if (key.startsWith('claimed_ref-') && progress[key]) {
-        totalClaimedPercentage += 2; // 2% per claim
+        totalClaimedPercentage += 2;
       }
     }
     if (totalBonusPercentage) {
@@ -432,15 +463,15 @@ document.addEventListener('DOMContentLoaded', () => {
               alert(`✅ Berhasil klaim 2% (${bonusPoints} poin)!\nSaldo sekarang: ${saldoBaru}`);
               btn.textContent = 'Sudah Klaim';
               btn.disabled = true;
-              // Update total claimed percentage
               totalClaimedPercentage += 2;
               if (totalBonusPercentage) {
                 totalBonusPercentage.textContent = `${totalClaimedPercentage}%`;
               }
-              // Trigger confetti
+              // Trigger confetti and floating points
               if (window.confetti) {
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
               }
+              showFloatingPoints(btn, bonusPoints);
             }
           };
         }
@@ -464,10 +495,11 @@ document.addEventListener('DOMContentLoaded', () => {
       setUserProgress(progress);
       checkProgressBtn.disabled = true;
       alert('✅ Progress harian diperiksa!');
-      // Trigger confetti
+      // Trigger confetti and floating points
       if (window.confetti) {
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       }
+      showFloatingPoints(checkProgressBtn, 0); // 0 poin untuk Cek Progress
     }
   });
 
