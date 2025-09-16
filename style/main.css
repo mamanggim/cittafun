@@ -25,7 +25,7 @@ body {
   --bg-dark: #1e1e2f;
   --text-light: #333;
   --text-dark: #ddd;
-  --how-bg-dark: #2a2a3c;
+  --how-bg-dark: #1e1e2f; /* Diubah untuk kontras lebih baik di dark mode */
 }
 
 /* Dark Mode */
@@ -142,14 +142,16 @@ a {
 
 .blue, #citta, #citta-hero, #citta-about, #citta-referral, #citta-footer, #citta-about-lower {
   color: var(--citta-blue);
-  display: inline-block; /* Pastikan animasi wave bekerja */
+  display: inline-block;
   animation: wave 2s infinite ease-in-out;
+  font-size: inherit; /* Menyesuaikan ukuran font dengan parent */
 }
 
 .orange, #fun, #fun-hero, #fun-about, #fun-referral, #fun-footer, #fun-about-lower {
   color: var(--fun-orange);
-  display: inline-block; /* Pastikan animasi wave bekerja */
+  display: inline-block;
   animation: wave 2s infinite ease-in-out 0.2s;
+  font-size: inherit; /* Menyesuaikan ukuran font dengan parent */
 }
 
 /* Animasi Bounce */
@@ -336,10 +338,10 @@ body.dark .hamburger span {
 .feature-card {
   background: #f1f5ff;
   padding: 30px;
-  border-radius: 16px; /* Diseragamkan dengan .step */
+  border-radius: 16px;
   min-width: 280px;
-  max-width: 320px; /* Seragam dengan .step */
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* Seragam dengan .step */
+  max-width: 320px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
@@ -365,37 +367,39 @@ body.dark .hamburger span {
   text-align: center;
 }
 
+body.dark .how {
+  background: var(--how-bg-dark); /* Background lebih kontras di dark mode */
+}
+
 .steps {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid; /* Ubah ke grid untuk konsistensi dengan .features-grid */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 30px;
-  justify-content: center;
   margin-top: 40px;
 }
 
 .step {
-  flex: 1;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
   min-width: 280px;
   max-width: 320px;
-  background: white;
-  padding: 30px; /* Seragam dengan .feature-card */
-  border-radius: 16px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .step h3 {
-  font-size: 1.4rem; /* Seragam dengan .feature-card */
+  font-size: 1.4rem;
   margin-bottom: 15px;
 }
 
 .step p {
-  font-size: 1rem; /* Seragam dengan .feature-card */
+  font-size: 1rem;
   line-height: 1.5;
 }
 
 .step:hover {
-  transform: translateY(-8px); /* Seragam dengan .feature-card */
+  transform: translateY(-8px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
