@@ -1,9 +1,9 @@
 [
-  // SD - Pendidikan Agama dan Budi Pekerti
   {
     "id": 1,
     "jenjang": "SD",
     "subject": "agama",
+    "category": "Pendidikan Agama dan Budi Pekerti",
     "title": "Nilai-Nilai Kebaikan",
     "description": "Pelajari pentingnya kebaikan dan sopan santun dalam kehidupan sehari-hari.",
     "level": "Dasar",
@@ -14,17 +14,18 @@
     "id": 2,
     "jenjang": "SD",
     "subject": "agama",
+    "category": "Pendidikan Agama dan Budi Pekerti",
     "title": "Cerita Teladan Nabi",
     "description": "Kisah inspiratif dari tokoh agama untuk anak-anak.",
     "level": "Dasar",
     "content": "Cerita tentang Nabi Muhammad yang jujur dan amanah mengajarkan pentingnya kejujuran. Anak-anak diajak memahami bagaimana sikap teladan bisa diterapkan dalam kehidupan. (Placeholder: 1000 kata bacaan).",
     "points": 50
   },
-  // SD - PPKn
   {
     "id": 3,
     "jenjang": "SD",
     "subject": "ppkn",
+    "category": "Pendidikan Pancasila dan Kewarganegaraan",
     "title": "Pancasila sebagai Dasar Negara",
     "description": "Kenali makna lima sila Pancasila.",
     "level": "Dasar",
@@ -35,17 +36,18 @@
     "id": 4,
     "jenjang": "SD",
     "subject": "ppkn",
+    "category": "Pendidikan Pancasila dan Kewarganegaraan",
     "title": "Hak dan Kewajiban Warga Negara",
     "description": "Pahami hak dan kewajiban sebagai warga Indonesia.",
     "level": "Dasar",
     "content": "Setiap warga punya hak atas pendidikan dan kewajiban menjaga kebersihan lingkungan. Pelajaran ini memberikan contoh sederhana untuk anak-anak. (Placeholder: 1000 kata bacaan).",
     "points": 50
   },
-  // SD - Bahasa Indonesia
   {
     "id": 5,
     "jenjang": "SD",
     "subject": "bahasa",
+    "category": "Bahasa Indonesia",
     "title": "Membaca dan Menulis",
     "description": "Latih keterampilan membaca dan menulis teks sederhana.",
     "level": "Dasar",
@@ -56,17 +58,18 @@
     "id": 6,
     "jenjang": "SD",
     "subject": "bahasa",
+    "category": "Bahasa Indonesia",
     "title": "Dongeng Nusantara",
     "description": "Nikmati cerita rakyat Indonesia.",
     "level": "Dasar",
     "content": "Dongeng seperti Malin Kundang mengajarkan nilai moral. Pelajaran ini berisi cerita rakyat dan pertanyaan sederhana. (Placeholder: 1000 kata bacaan).",
     "points": 50
   },
-  // SD - Matematika
   {
     "id": 7,
     "jenjang": "SD",
     "subject": "matematika",
+    "category": "Matematika",
     "title": "Penjumlahan dan Pengurangan",
     "description": "Latih operasi dasar matematika.",
     "level": "Dasar",
@@ -77,17 +80,18 @@
     "id": 8,
     "jenjang": "SD",
     "subject": "matematika",
+    "category": "Matematika",
     "title": "Geometri Dasar",
     "description": "Kenali bentuk-bentuk geometri.",
     "level": "Dasar",
     "content": "Pelajari lingkaran, persegi, dan segitiga. Pelajaran ini menjelaskan sifat-sifat bentuk dengan gambar. (Placeholder: 1000 kata bacaan).",
     "points": 50
   },
-  // SD - IPAS (IPA)
   {
     "id": 9,
     "jenjang": "SD",
     "subject": "ipa",
+    "category": "Ilmu Pengetahuan Alam",
     "title": "Tumbuhan dan Hewan",
     "description": "Pelajari makhluk hidup di sekitarmu.",
     "level": "Dasar",
@@ -98,17 +102,18 @@
     "id": 10,
     "jenjang": "SD",
     "subject": "ipa",
+    "category": "Ilmu Pengetahuan Alam",
     "title": "Cuaca dan Iklim",
     "description": "Pahami fenomena alam seperti hujan dan panas.",
     "level": "Dasar",
     "content": "Cuaca bisa berubah setiap hari. Iklim adalah pola cuaca jangka panjang. Pelajaran ini berisi contoh sederhana. (Placeholder: 1000 kata bacaan).",
     "points": 50
   },
-  // SD - IPAS (IPS)
   {
     "id": 11,
     "jenjang": "SD",
     "subject": "ips",
+    "category": "Ilmu Pengetahuan Sosial",
     "title": "Sejarah Indonesia",
     "description": "Kenali sejarah bangsamu.",
     "level": "Dasar",
@@ -119,17 +124,18 @@
     "id": 12,
     "jenjang": "SD",
     "subject": "ips",
+    "category": "Ilmu Pengetahuan Sosial",
     "title": "Geografi Indonesia",
     "description": "Pelajari peta dan pulau-pulau Indonesia.",
     "level": "Dasar",
     "content": "Indonesia punya ribuan pulau. Pelajaran ini menjelaskan peta dan keanekaragaman budaya. (Placeholder: 1000 kata bacaan).",
     "points": 50
   },
-  // SD - PJOK
   {
     "id": 13,
     "jenjang": "SD",
     "subject": "pjok",
+    "category": "Pendidikan Jasmani, Olahraga, dan Kesehatan",
     "title": "Olahraga Dasar",
     "description": "Latih gerakan dasar olahraga.",
     "level": "Dasar",
@@ -140,17 +146,18 @@
     "id": 14,
     "jenjang": "SD",
     "subject": "pjok",
+    "category": "Pendidikan Jasmani, Olahraga, dan Kesehatan",
     "title": "Kesehatan Tubuh",
     "description": "Pelajari cara menjaga kesehatan.",
     "level": "Dasar",
     "content": "Makan sehat dan tidur cukup penting untuk tubuh. Pelajaran ini berisi tips kesehatan. (Placeholder: 1000 kata bacaan).",
     "points": 50
   },
-  // SD - Seni Budaya
   {
     "id": 15,
     "jenjang": "SD",
     "subject": "seni",
+    "category": "Seni Budaya",
     "title": "Seni Musik",
     "description": "Kenali alat musik tradisional.",
     "level": "Dasar",
@@ -161,17 +168,18 @@
     "id": 16,
     "jenjang": "SD",
     "subject": "seni",
+    "category": "Seni Budaya",
     "title": "Seni Tari",
     "description": "Pelajari tarian daerah Indonesia.",
     "level": "Dasar",
     "content": "Tari Pendet dari Bali adalah tarian penyambutan. Pelajaran ini menjelaskan gerakan dasar. (Placeholder: 1000 kata bacaan).",
     "points": 50
   },
-  // SD - Informatika
   {
     "id": 17,
     "jenjang": "SD",
     "subject": "informatika",
+    "category": "Informatika",
     "title": "Pengantar Komputer",
     "description": "Kenali dasar-dasar komputer.",
     "level": "Dasar",
@@ -182,17 +190,18 @@
     "id": 18,
     "jenjang": "SD",
     "subject": "informatika",
+    "category": "Informatika",
     "title": "Dasar Koding",
     "description": "Belajar koding sederhana.",
     "level": "Dasar",
     "content": "Koding adalah cara memberi perintah pada komputer. Pelajaran ini mengajarkan Scratch. (Placeholder: 1000 kata bacaan).",
     "points": 50
   },
-  // SMP - Pendidikan Agama dan Budi Pekerti
   {
     "id": 19,
     "jenjang": "SMP",
     "subject": "agama",
+    "category": "Pendidikan Agama dan Budi Pekerti",
     "title": "Etika dalam Agama",
     "description": "Pelajari etika dan moral dalam agama.",
     "level": "Menengah",
@@ -203,17 +212,18 @@
     "id": 20,
     "jenjang": "SMP",
     "subject": "agama",
+    "category": "Pendidikan Agama dan Budi Pekerti",
     "title": "Sejarah Agama",
     "description": "Pahami sejarah perkembangan agama.",
     "level": "Menengah",
     "content": "Setiap agama punya sejarah perkembangan. Pelajaran ini menjelaskan asal-usul agama. (Placeholder: 2000 kata bacaan).",
     "points": 50
   },
-  // SMP - PPKn
   {
     "id": 21,
     "jenjang": "SMP",
     "subject": "ppkn",
+    "category": "Pendidikan Pancasila dan Kewarganegaraan",
     "title": "Demokrasi di Indonesia",
     "description": "Pelajari sistem demokrasi Pancasila.",
     "level": "Menengah",
@@ -224,17 +234,18 @@
     "id": 22,
     "jenjang": "SMP",
     "subject": "ppkn",
+    "category": "Pendidikan Pancasila dan Kewarganegaraan",
     "title": "Hukum dan HAM",
     "description": "Pahami hukum dan hak asasi manusia.",
     "level": "Menengah",
     "content": "HAM adalah hak dasar setiap manusia. Pelajaran ini membahas hukum di Indonesia. (Placeholder: 2000 kata bacaan).",
     "points": 50
   },
-  // SMP - Bahasa Indonesia
   {
     "id": 23,
     "jenjang": "SMP",
     "subject": "bahasa",
+    "category": "Bahasa Indonesia",
     "title": "Sastra Indonesia",
     "description": "Pelajari puisi dan prosa Indonesia.",
     "level": "Menengah",
@@ -245,17 +256,18 @@
     "id": 24,
     "jenjang": "SMP",
     "subject": "bahasa",
+    "category": "Bahasa Indonesia",
     "title": "Tata Bahasa",
     "description": "Asah kemampuan tata bahasa Indonesia.",
     "level": "Menengah",
     "content": "Tata bahasa mencakup struktur kalimat. Pelajaran ini berisi latihan tata bahasa. (Placeholder: 2000 kata bacaan).",
     "points": 50
   },
-  // SMP - Matematika
   {
     "id": 25,
     "jenjang": "SMP",
     "subject": "matematika",
+    "category": "Matematika",
     "title": "Aljabar Dasar",
     "description": "Pelajari persamaan dan variabel.",
     "level": "Menengah",
@@ -266,17 +278,18 @@
     "id": 26,
     "jenjang": "SMP",
     "subject": "matematika",
+    "category": "Matematika",
     "title": "Geometri Lanjutan",
     "description": "Pelajari bangun ruang.",
     "level": "Menengah",
     "content": "Bangun ruang seperti kubus dan balok punya volume. Pelajaran ini menjelaskan rumus. (Placeholder: 2000 kata bacaan).",
     "points": 50
   },
-  // SMP - IPA
   {
     "id": 27,
     "jenjang": "SMP",
     "subject": "ipa",
+    "category": "Ilmu Pengetahuan Alam",
     "title": "Fisika: Gerak dan Gaya",
     "description": "Pahami hukum Newton.",
     "level": "Menengah",
@@ -287,17 +300,18 @@
     "id": 28,
     "jenjang": "SMP",
     "subject": "ipa",
+    "category": "Ilmu Pengetahuan Alam",
     "title": "Biologi: Ekosistem",
     "description": "Pelajari interaksi makhluk hidup.",
     "level": "Menengah",
     "content": "Ekosistem mencakup rantai makanan. Pelajaran ini menjelaskan keseimbangan alam. (Placeholder: 2000 kata bacaan).",
     "points": 50
   },
-  // SMP - IPS
   {
     "id": 29,
     "jenjang": "SMP",
     "subject": "ips",
+    "category": "Ilmu Pengetahuan Sosial",
     "title": "Sejarah Kolonial",
     "description": "Pelajari masa kolonial Indonesia.",
     "level": "Menengah",
@@ -308,17 +322,18 @@
     "id": 30,
     "jenjang": "SMP",
     "subject": "ips",
+    "category": "Ilmu Pengetahuan Sosial",
     "title": "Geografi: Iklim",
     "description": "Pahami iklim dan cuaca dunia.",
     "level": "Menengah",
     "content": "Iklim tropis khas Indonesia. Pelajaran ini menjelaskan jenis iklim dunia. (Placeholder: 2000 kata bacaan).",
     "points": 50
   },
-  // SMP - PJOK
   {
     "id": 31,
     "jenjang": "SMP",
     "subject": "pjok",
+    "category": "Pendidikan Jasmani, Olahraga, dan Kesehatan",
     "title": "Teknik Sepak Bola",
     "description": "Latih teknik dasar sepak bola.",
     "level": "Menengah",
@@ -329,17 +344,18 @@
     "id": 32,
     "jenjang": "SMP",
     "subject": "pjok",
+    "category": "Pendidikan Jasmani, Olahraga, dan Kesehatan",
     "title": "Kebugaran Jasmani",
     "description": "Tingkatkan stamina tubuh.",
     "level": "Menengah",
     "content": "Kebugaran mencakup latihan kardio. Pelajaran ini memberikan tips latihan. (Placeholder: 2000 kata bacaan).",
     "points": 50
   },
-  // SMP - Seni Budaya
   {
     "id": 33,
     "jenjang": "SMP",
     "subject": "seni",
+    "category": "Seni Budaya",
     "title": "Seni Lukis",
     "description": "Pelajari teknik melukis.",
     "level": "Menengah",
@@ -350,17 +366,18 @@
     "id": 34,
     "jenjang": "SMP",
     "subject": "seni",
+    "category": "Seni Budaya",
     "title": "Musik Tradisional",
     "description": "Kenali musik daerah Indonesia.",
     "level": "Menengah",
     "content": "Angklung adalah alat musik tradisional. Pelajaran ini menjelaskan cara memainkannya. (Placeholder: 2000 kata bacaan).",
     "points": 50
   },
-  // SMP - Informatika
   {
     "id": 35,
     "jenjang": "SMP",
     "subject": "informatika",
+    "category": "Informatika",
     "title": "Pemrograman Python",
     "description": "Belajar koding dengan Python.",
     "level": "Menengah",
@@ -371,17 +388,18 @@
     "id": 36,
     "jenjang": "SMP",
     "subject": "informatika",
+    "category": "Informatika",
     "title": "Keamanan Digital",
     "description": "Pahami cara aman di internet.",
     "level": "Menengah",
     "content": "Keamanan digital melindungi data pribadi. Pelajaran ini berisi tips keamanan. (Placeholder: 2000 kata bacaan).",
     "points": 50
   },
-  // SMA - Pendidikan Agama dan Budi Pekerti
   {
     "id": 37,
     "jenjang": "SMA",
     "subject": "agama",
+    "category": "Pendidikan Agama dan Budi Pekerti",
     "title": "Filsafat Agama",
     "description": "Pelajari filsafat dalam agama.",
     "level": "Lanjutan",
@@ -392,17 +410,18 @@
     "id": 38,
     "jenjang": "SMA",
     "subject": "agama",
+    "category": "Pendidikan Agama dan Budi Pekerti",
     "title": "Toleransi Antaragama",
     "description": "Pahami pentingnya toleransi.",
     "level": "Lanjutan",
     "content": "Toleransi antaragama penting di Indonesia. Pelajaran ini membahas harmoni sosial. (Placeholder: 3000 kata bacaan).",
     "points": 50
   },
-  // SMA - PPKn
   {
     "id": 39,
     "jenjang": "SMA",
     "subject": "ppkn",
+    "category": "Pendidikan Pancasila dan Kewarganegaraan",
     "title": "Konstitusi Indonesia",
     "description": "Pelajari UUD 1945.",
     "level": "Lanjutan",
@@ -413,17 +432,18 @@
     "id": 40,
     "jenjang": "SMA",
     "subject": "ppkn",
+    "category": "Pendidikan Pancasila dan Kewarganegaraan",
     "title": "Politik Indonesia",
     "description": "Pahami sistem politik Indonesia.",
     "level": "Lanjutan",
     "content": "Sistem politik Indonesia adalah demokrasi. Pelajaran ini membahas pemilu. (Placeholder: 3000 kata bacaan).",
     "points": 50
   },
-  // SMA - Bahasa Indonesia
   {
     "id": 41,
     "jenjang": "SMA",
     "subject": "bahasa",
+    "category": "Bahasa Indonesia",
     "title": "Karya Sastra Modern",
     "description": "Analisis novel dan puisi modern.",
     "level": "Lanjutan",
@@ -434,17 +454,18 @@
     "id": 42,
     "jenjang": "SMA",
     "subject": "bahasa",
+    "category": "Bahasa Indonesia",
     "title": "Debat Bahasa Indonesia",
     "description": "Latih keterampilan debat.",
     "level": "Lanjutan",
     "content": "Debat membutuhkan argumen logis. Pelajaran ini berisi teknik debat. (Placeholder: 3000 kata bacaan).",
     "points": 50
   },
-  // SMA - Matematika
   {
     "id": 43,
     "jenjang": "SMA",
     "subject": "matematika",
+    "category": "Matematika",
     "title": "Kalkulus Dasar",
     "description": "Pelajari turunan dan integral.",
     "level": "Lanjutan",
@@ -455,17 +476,18 @@
     "id": 44,
     "jenjang": "SMA",
     "subject": "matematika",
+    "category": "Matematika",
     "title": "Statistika",
     "description": "Pahami data dan probabilitas.",
     "level": "Lanjutan",
     "content": "Statistika menganalisis data. Pelajaran ini berisi rumus dasar probabilitas. (Placeholder: 3000 kata bacaan).",
     "points": 50
   },
-  // SMA - IPA (Fisika)
   {
     "id": 45,
     "jenjang": "SMA",
     "subject": "fisika",
+    "category": "Fisika",
     "title": "Mekanika",
     "description": "Pelajari hukum-hukum mekanika.",
     "level": "Lanjutan",
@@ -476,17 +498,18 @@
     "id": 46,
     "jenjang": "SMA",
     "subject": "fisika",
+    "category": "Fisika",
     "title": "Listrik dan Magnet",
     "description": "Pahami arus listrik dan medan magnet.",
     "level": "Lanjutan",
     "content": "Listrik dan magnet saling berhubungan. Pelajaran ini menjelaskan hukum Faraday. (Placeholder: 3000 kata bacaan).",
     "points": 50
   },
-  // SMA - IPS (Sejarah)
   {
     "id": 47,
     "jenjang": "SMA",
     "subject": "sejarah",
+    "category": "Sejarah",
     "title": "Reformasi 1998",
     "description": "Pelajari peristiwa reformasi Indonesia.",
     "level": "Lanjutan",
@@ -497,17 +520,18 @@
     "id": 48,
     "jenjang": "SMA",
     "subject": "sejarah",
+    "category": "Sejarah",
     "title": "Sejarah Dunia",
     "description": "Pahami peristiwa dunia abad 20.",
     "level": "Lanjutan",
     "content": "Perang Dunia II mengubah dunia. Pelajaran ini menjelaskan dampaknya. (Placeholder: 3000 kata bacaan).",
     "points": 50
   },
-  // SMA - PJOK
   {
     "id": 49,
     "jenjang": "SMA",
     "subject": "pjok",
+    "category": "Pendidikan Jasmani, Olahraga, dan Kesehatan",
     "title": "Strategi Olahraga",
     "description": "Pelajari strategi dalam olahraga tim.",
     "level": "Lanjutan",
@@ -518,17 +542,18 @@
     "id": 50,
     "jenjang": "SMA",
     "subject": "pjok",
+    "category": "Pendidikan Jasmani, Olahraga, dan Kesehatan",
     "title": "Nutrisi Atlet",
     "description": "Pahami nutrisi untuk performa olahraga.",
     "level": "Lanjutan",
     "content": "Nutrisi penting untuk atlet. Pelajaran ini menjelaskan diet seimbang. (Placeholder: 3000 kata bacaan).",
     "points": 50
   },
-  // SMA - Seni Budaya
   {
     "id": 51,
     "jenjang": "SMA",
     "subject": "seni",
+    "category": "Seni Budaya",
     "title": "Seni Teater",
     "description": "Pelajari dasar-dasar teater.",
     "level": "Lanjutan",
@@ -539,17 +564,18 @@
     "id": 52,
     "jenjang": "SMA",
     "subject": "seni",
+    "category": "Seni Budaya",
     "title": "Seni Rupa Modern",
     "description": "Pahami seni rupa kontemporer.",
     "level": "Lanjutan",
     "content": "Seni rupa modern mencakup aliran abstrak. Pelajaran ini menjelaskan sejarah seni. (Placeholder: 3000 kata bacaan).",
     "points": 50
   },
-  // SMA - Informatika
   {
     "id": 53,
     "jenjang": "SMA",
     "subject": "informatika",
+    "category": "Informatika",
     "title": "Algoritma Lanjutan",
     "description": "Pelajari algoritma kompleks.",
     "level": "Lanjutan",
@@ -560,6 +586,7 @@
     "id": 54,
     "jenjang": "SMA",
     "subject": "informatika",
+    "category": "Informatika",
     "title": "Kecerdasan Buatan",
     "description": "Kenali dasar-dasar AI.",
     "level": "Lanjutan",
