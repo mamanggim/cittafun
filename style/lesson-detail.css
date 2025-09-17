@@ -47,8 +47,8 @@ body.dark {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 20px; /* Padding dikurangi untuk header lebih ramping */
-  height: 50px; /* Tinggi header proporsional */
+  padding: 8px 20px;
+  height: 50px;
   z-index: 100;
   transition: background 0.3s;
 }
@@ -59,9 +59,9 @@ body.dark .header-fixed {
 }
 
 .header-title {
-  font-size: 1.2rem; /* Ukuran font dikurangi */
+  font-size: 1.2rem;
   font-weight: 800;
-  color: var(--citta-blue);
+  color: var(--citta-blue); /* Biru di light mode */
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
@@ -69,13 +69,13 @@ body.dark .header-fixed {
 }
 
 body.dark .header-title {
-  color: #3b82f6;
+  color: var(--fun-orange); /* Oranye di dark mode */
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 15px; /* Jarak antar elemen di kanan */
+  gap: 15px;
 }
 
 .header-stats {
@@ -85,7 +85,7 @@ body.dark .header-title {
 }
 
 .points-display {
-  font-size: 1rem; /* Ukuran font lebih kecil */
+  font-size: 1rem;
   font-weight: 700;
   color: var(--bonus-green);
 }
@@ -95,19 +95,37 @@ body.dark .points-display {
 }
 
 .timer {
-  font-size: 1rem; /* Ukuran font lebih kecil */
+  font-size: 1rem;
   font-weight: 700;
-  color: var(--citta-blue);
+  color: var(--citta-blue); /* Biru di light mode */
   background: white;
-  padding: 6px 12px; /* Padding lebih kecil */
+  padding: 6px 12px;
   border-radius: 8px;
   box-shadow: var(--shadow);
   animation: pulse 2s infinite;
 }
 
 body.dark .timer {
-  color: #3b82f6;
+  color: var(--fun-orange); /* Oranye di dark mode */
   background: #35354f;
+}
+
+.reload-icon {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--citta-blue);
+  transition: transform 0.3s ease;
+}
+
+body.dark .reload-icon {
+  color: var(--fun-orange);
+}
+
+.reload-icon:hover {
+  transform: rotate(360deg);
 }
 
 /* Exit Dropdown */
@@ -118,7 +136,7 @@ body.dark .timer {
 .btn-icon {
   background: none;
   border: none;
-  font-size: 1.3rem; /* Ukuran panah lebih kecil */
+  font-size: 1.3rem;
   padding: 8px;
   cursor: pointer;
   color: var(--citta-blue);
@@ -130,7 +148,7 @@ body.dark .timer {
 }
 
 body.dark .btn-icon {
-  color: #3b82f6;
+  color: var(--fun-orange);
 }
 
 .btn-icon:hover {
@@ -140,12 +158,13 @@ body.dark .btn-icon {
 .exit-menu {
   position: absolute;
   top: 40px;
-  left: 0; /* Rata kiri */
+  left: 0;
   background: white;
   border-radius: 12px;
   box-shadow: var(--shadow);
   padding: 10px;
   min-width: 200px;
+  max-width: calc(100vw - 40px); /* Mencegah keluar layar */
   display: none;
   z-index: 10;
   animation: slideIn 0.3s ease;
@@ -207,7 +226,7 @@ body.dark .theme-toggle {
 
 /* Content */
 .content {
-  padding: 60px 20px 20px; /* Padding atas dikurangi sesuai tinggi header */
+  padding: 60px 20px 20px;
   max-width: 800px;
   margin: 0 auto;
 }
@@ -302,15 +321,15 @@ body.dark .floating-points {
   .header-stats {
     gap: 8px;
   }
-  .points-display, .timer {
+  .points-display, .timer, .reload-icon {
     font-size: 0.9rem;
     padding: 5px 10px;
-  }
-  .lesson-detail p {
-    font-size: 0.95rem;
   }
   .btn-icon {
     font-size: 1.2rem;
     padding: 6px;
+  }
+  .exit-menu {
+    max-width: calc(100vw - 30px);
   }
 }
