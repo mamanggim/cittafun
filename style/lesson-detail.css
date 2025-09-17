@@ -1,0 +1,273 @@
+/* style/lesson-detail.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background: linear-gradient(135deg, #eaf2ff, #f9fbff);
+  transition: background 0.3s, color 0.3s;
+}
+
+body.dark {
+  background: linear-gradient(135deg, #1e1e2f, #2a2a3c);
+  color: #ddd;
+}
+
+/* Variabel Warna */
+:root {
+  --citta-blue: #0052cc;
+  --fun-orange: #ff6200;
+  --bg-light: linear-gradient(135deg, #eaf2ff, #f9fbff);
+  --bg-dark: linear-gradient(135deg, #1e1e2f, #2a2a3c);
+  --text-light: #333;
+  --text-dark: #ddd;
+  --card-bg: #f1f5ff;
+  --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  --bonus-green: #22c55e;
+}
+
+/* Exit Dropdown */
+.exit-dropdown {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.btn-icon {
+  background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
+  border: none;
+  font-size: 1.5rem;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: white;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.btn-icon:hover {
+  transform: scale(1.15);
+  box-shadow: 0 5px 15px rgba(0, 82, 204, 0.3);
+}
+
+body.dark .btn-icon {
+  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+}
+
+.exit-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 10px;
+  min-width: 160px;
+  display: none;
+  z-index: 10;
+  animation: slideIn 0.3s ease;
+}
+
+body.dark .exit-menu {
+  background: #35354f;
+}
+
+.exit-menu.show {
+  display: block;
+}
+
+.exit-menu a {
+  display: block;
+  padding: 10px 14px;
+  color: var(--text-light);
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: background 0.3s, color 0.3s, transform 0.2s;
+}
+
+.exit-menu a:hover {
+  background: var(--citta-blue);
+  color: white;
+  transform: translateX(5px);
+}
+
+body.dark .exit-menu a {
+  color: var(--text-dark);
+}
+
+.mission-link {
+  background: linear-gradient(45deg, var(--fun-orange), #ff8c00);
+  color: white !important;
+  border-radius: 8px;
+  margin: 5px 0;
+}
+
+.mission-link:hover {
+  background: linear-gradient(45deg, #e55a00, #ff6200);
+  transform: translateX(5px);
+}
+
+.theme-toggle {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s, transform 0.2s;
+}
+
+.theme-toggle:hover {
+  background: var(--citta-blue);
+  color: white;
+  transform: translateX(5px);
+}
+
+body.dark .theme-toggle {
+  color: var(--text-dark);
+}
+
+/* Content */
+.content {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.lesson-detail {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+body.dark .lesson-detail {
+  background: #35354f;
+}
+
+.lesson-detail h3 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--citta-blue);
+  margin-bottom: 16px;
+}
+
+body.dark .lesson-detail h3 {
+  color: #3b82f6;
+}
+
+.lesson-detail p {
+  font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.8;
+}
+
+body.dark .lesson-detail p {
+  color: #9ca3af;
+}
+
+/* Timer */
+.timer-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.timer {
+  display: inline-block;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--citta-blue);
+  background: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  animation: pulse 2s infinite;
+}
+
+body.dark .timer {
+  color: #3b82f6;
+  background: #35354f;
+}
+
+/* Game Popup */
+.game-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
+  color: white;
+  padding: 20px 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+}
+
+.game-popup.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+body.dark .game-popup {
+  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+}
+
+/* Floating Points */
+.floating-points {
+  position: absolute;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--bonus-green);
+  z-index: 1000;
+}
+
+body.dark .floating-points {
+  color: #4ade80;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .content {
+    padding: 15px;
+  }
+  .lesson-detail h3 {
+    font-size: 1.4rem;
+  }
+  .lesson-detail p {
+    font-size: 0.95rem;
+  }
+  .timer {
+    font-size: 1.5rem;
+    padding: 8px 16px;
+  }
+}
