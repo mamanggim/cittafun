@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const lesson = lessons.find(l => l.id === lessonId);
       if (lesson) {
         lessonTitle.textContent = lesson.title;
+        lessonTitle.dataset.fullTitle = lesson.title; // Simpan judul lengkap
         lessonContent.innerHTML = lesson.fullContent || '<p>Konten pelajaran belum tersedia.</p>';
       } else {
         lessonTitle.textContent = 'Pelajaran Tidak Ditemukan';
@@ -59,6 +60,22 @@ document.addEventListener('DOMContentLoaded', () => {
       lessonContent.innerHTML = '<p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid.</p>';
     }
   }
+
+  // Title Popup
+  lessonTitle.addEventListener('click', () => {
+    const fullTitle = lessonTitle.dataset.fullTitle || lessonTitle.textContent;
+    if (fullTitle.length > 20) { // Hanya tampilkan popup jika judul panjang
+      const popup = document.createElement('div');
+      popup.className = 'title-popup';
+      popup.textContent = fullTitle;
+      document.body.appendChild(popup);
+      setTimeout(() => popup.classList.add('show'), 10);
+      setTimeout(() => {
+        popup.classList.remove('show');
+        setTimeout(() => popup.remove(), 300);
+      }, 3000); // Popup 3 detik
+    }
+  });
 
   function formatTime(ms) {
     if (ms < 0) ms = 0;
@@ -165,19 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   }
 
-  // Reset timer
+  // Reload page
   reloadTimer.addEventListener('click', () => {
-    if (timerInterval) clearInterval(timerInterval);
-    timeRemaining = 10 * 60 * 1000;
-    minutesCompleted = 0;
-    points = 0;
-    pointsEarned.textContent = `Poin: ${points}`;
-    timerDisplay.textContent = formatTime(timeRemaining);
-    const progress = getUserProgress();
-    const timerKey = `lessonTimer_${currentSlotKey}`;
-    progress[timerKey] = { remaining: timeRemaining };
-    setUserProgress(progress);
-    if (isTabActive) startTimer();
+    window.location.reload(); // Refresh browser
   });
 
   // Jeda timer ketika tab tidak aktif
