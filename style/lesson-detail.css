@@ -143,8 +143,7 @@ body.dark .btn-icon {
   display: none;
   z-index: 10;
   animation: slideIn 0.3s ease;
-  font-family: 'Press Start 2P', cursive;
-  font-size: 0.85rem;
+  font-family: 'Nunito', sans-serif;
 }
 
 body.dark .exit-menu {
@@ -159,6 +158,8 @@ body.dark .exit-menu {
   display: block;
   padding: 10px 14px;
   color: var(--text-light);
+  font-size: 0.95rem;
+  font-weight: 600;
   text-decoration: none;
   transition: background 0.3s, color 0.3s, transform 0.2s;
 }
@@ -180,8 +181,9 @@ body.dark .menu-link {
   background: none;
   border: none;
   color: var(--text-light);
-  font-family: 'Press Start 2P', cursive;
-  font-size: 0.85rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
   text-align: left;
   cursor: pointer;
   transition: background 0.3s, color 0.3s, transform 0.2s;
@@ -297,4 +299,4 @@ body.dark .floating-points {
   .lesson-detail p {
     font-size: 0.95rem;
   }
-  }
+}
