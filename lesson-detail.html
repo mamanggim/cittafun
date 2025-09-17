@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Detail Mata Pelajaran - CittaFun</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style/lesson-detail.css">
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
@@ -19,13 +19,16 @@
   <!-- Header Fixed -->
   <header class="header-fixed">
     <div class="header-title" id="lesson-title">Memuat...</div>
+    <div class="header-stats">
+      <span id="points-earned" class="points-display">Poin: 0</span>
+      <span id="timer" class="timer">10:00</span>
+    </div>
     <!-- Exit Dropdown -->
     <div class="exit-dropdown">
       <button id="exit-toggle" class="btn-icon" aria-label="Keluar">▾</button>
       <div id="exit-menu" class="exit-menu" aria-hidden="true">
         <a href="lesson.html" class="menu-link">Kembali ke Mata Pelajaran</a>
         <a href="dashboard.html" class="menu-link">Beranda</a>
-        <a href="dashboard.html#section-missions" class="mission-link">Misi Harian</a>
         <button id="theme-toggle" class="theme-toggle" aria-label="Ganti tema">🌙</button>
       </div>
     </div>
@@ -34,12 +37,6 @@
   <!-- Content -->
   <main class="content">
     <section class="lesson-detail">
-      <div class="points-display">
-        <span id="points-earned">Poin: 0</span>
-      </div>
-      <div class="timer-container">
-        <span id="timer" class="timer">10:00</span>
-      </div>
       <div id="lesson-content">Memuat konten pelajaran...</div>
     </section>
   </main>
