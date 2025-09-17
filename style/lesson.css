@@ -44,36 +44,37 @@ body.dark {
 }
 
 .btn-icon {
-  background: none;
+  background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
   border: none;
   font-size: 1.5rem;
-  padding: 8px;
-  border-radius: 8px;
+  padding: 10px;
+  border-radius: 50%;
   cursor: pointer;
-  color: var(--text-light);
-  transition: transform 0.3s, background 0.3s;
+  color: white;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .btn-icon:hover {
-  transform: scale(1.2);
-  background: rgba(0, 82, 204, 0.1);
+  transform: scale(1.15);
+  box-shadow: 0 5px 15px rgba(0, 82, 204, 0.3);
 }
 
 body.dark .btn-icon {
-  color: var(--text-dark);
+  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
 }
 
 .exit-menu {
   position: absolute;
-  top: 40px;
+  top: 50px;
   right: 0;
   background: white;
-  border-radius: 10px;
+  border-radius: 12px;
   box-shadow: var(--shadow);
-  padding: 8px;
-  min-width: 140px;
+  padding: 10px;
+  min-width: 160px;
   display: none;
   z-index: 10;
+  animation: slideIn 0.3s ease;
 }
 
 body.dark .exit-menu {
@@ -82,24 +83,25 @@ body.dark .exit-menu {
 
 .exit-menu.show {
   display: block;
-  animation: fadeIn 0.3s ease;
 }
 
 .exit-menu a {
   display: block;
-  padding: 8px 12px;
+  padding: 10px 14px;
   color: var(--text-light);
-  font-size: 0.9rem;
-  transition: background 0.3s, color 0.3s;
-}
-
-body.dark .exit-menu a {
-  color: var(--text-dark);
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: background 0.3s, color 0.3s, transform 0.2s;
 }
 
 .exit-menu a:hover {
   background: var(--citta-blue);
   color: white;
+  transform: translateX(5px);
+}
+
+body.dark .exit-menu a {
+  color: var(--text-dark);
 }
 
 /* Content */
@@ -110,9 +112,10 @@ body.dark .exit-menu a {
 }
 
 .section h3 {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   font-weight: 800;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  color: var(--citta-blue);
 }
 
 .section p {
@@ -128,32 +131,39 @@ body.dark .section p {
 /* Search Bar */
 .search-bar {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 24px;
   position: relative;
 }
 
 .search-bar input {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 0.9rem;
-  transition: border-color 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .search-bar input:focus {
   outline: none;
   border-color: var(--citta-blue);
+  box-shadow: 0 0 8px rgba(0, 82, 204, 0.2);
 }
 
 .search-bar select {
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 0.9rem;
   background: white;
   cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.search-bar select:focus {
+  outline: none;
+  border-color: var(--citta-blue);
 }
 
 body.dark .search-bar input,
@@ -169,7 +179,7 @@ body.dark .search-bar select {
   left: 0;
   right: 0;
   background: white;
-  border-radius: 8px;
+  border-radius: 10px;
   box-shadow: var(--shadow);
   max-height: 200px;
   overflow-y: auto;
@@ -182,9 +192,10 @@ body.dark .search-bar select {
 }
 
 .search-suggestions div {
-  padding: 8px 12px;
+  padding: 10px 14px;
   cursor: pointer;
   font-size: 0.9rem;
+  transition: background 0.3s, color 0.3s;
 }
 
 .search-suggestions div:hover {
@@ -199,8 +210,8 @@ body.dark .search-suggestions {
 /* Lessons Grid */
 .lessons-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
   padding: 20px 0;
 }
 
@@ -216,22 +227,28 @@ body.dark .search-suggestions {
 }
 
 .lesson-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-10px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
 .lesson-card h4 {
-  font-size: 1rem;
-  margin: 0 0 10px;
+  font-size: 1.1rem;
+  margin: 0 0 12px;
+  color: var(--citta-blue);
 }
 
 .lesson-card p {
   font-size: 0.85rem !important;
   color: #6b7280;
+  margin-bottom: 16px;
 }
 
 body.dark .lesson-card {
   background: #35354f;
+}
+
+body.dark .lesson-card h4 {
+  color: #3b82f6;
 }
 
 body.dark .lesson-card p {
@@ -240,11 +257,11 @@ body.dark .lesson-card p {
 
 .lesson-card .btn {
   display: inline-block;
-  padding: 10px 16px;
+  padding: 12px 20px;
   background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
@@ -252,8 +269,8 @@ body.dark .lesson-card p {
 }
 
 .lesson-card .btn:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 82, 204, 0.3);
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 82, 204, 0.3);
 }
 
 /* Pagination */
@@ -261,24 +278,25 @@ body.dark .lesson-card p {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .pagination .btn-outline {
-  padding: 8px 16px;
+  padding: 8px 20px;
   border: 1px solid var(--citta-blue);
   background: none;
   color: var(--citta-blue);
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.3s, color 0.3s;
+  transition: background 0.3s, color 0.3s, transform 0.2s;
 }
 
 .pagination .btn-outline:hover {
   background: var(--citta-blue);
   color: white;
+  transform: translateY(-2px);
 }
 
 .pagination .btn-outline:disabled {
@@ -288,8 +306,13 @@ body.dark .lesson-card p {
 }
 
 .pagination span {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
+  color: var(--text-light);
+}
+
+body.dark .pagination span {
+  color: var(--text-dark);
 }
 
 /* Animations */
@@ -298,7 +321,7 @@ body.dark .lesson-card p {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fadeIn {
+@keyframes slideIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
@@ -309,7 +332,7 @@ body.dark .lesson-card p {
     padding: 15px;
   }
   .section h3 {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
   }
   .section p {
     font-size: 0.85rem;
@@ -322,15 +345,19 @@ body.dark .lesson-card p {
     width: 100%;
   }
   .lesson-card {
-    padding: 15px;
+    padding: 16px;
   }
   .lesson-card h4 {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
   .lesson-card p {
     font-size: 0.8rem !important;
   }
   .lesson-card .btn {
     font-size: 0.85rem;
+    padding: 10px 16px;
+  }
+  .pagination .btn-outline {
+    padding: 8px 16px;
   }
 }
