@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!lessonId) {
     lessonTitle.textContent = 'Error';
     lessonContent.innerHTML = '<div class="page active"><p>ID pelajaran tidak ditemukan di URL.</p></div>';
+    pages = ['<p>ID pelajaran tidak ditemukan di URL.</p>'];
     updatePageNavigation();
     console.error('[Lesson Detail] No lesson ID provided in URL');
     return;
@@ -107,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         lessonTitle.textContent = 'Pelajaran Tidak Ditemukan';
         lessonContent.innerHTML = '<div class="page active"><p>Pelajaran dengan ID ini tidak ditemukan.</p></div>';
+        pages = ['<p>Pelajaran dengan ID ini tidak ditemukan.</p>'];
         updatePageNavigation();
         console.error('[Lesson Detail] No lesson found with id:', lessonId);
       }
@@ -115,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
       lessonTitle.textContent = 'Error';
       lessonTitle.dataset.fullTitle = 'Error';
       lessonContent.innerHTML = '<div class="page active"><p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid.</p></div>';
+      pages = ['<p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid.</p>'];
       updatePageNavigation();
     }
   }
@@ -123,44 +126,57 @@ document.addEventListener('DOMContentLoaded', () => {
   function splitContentIntoPages(content) {
     lessonContent.innerHTML = ''; // Kosongkan konten
     const tempDiv = document.createElement('div');
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.visibility = 'hidden';
+    tempDiv.style.width = lessonContent.offsetWidth + 'px';
+    tempDiv.style.padding = '15px';
+    tempDiv.style.fontSize = '1rem';
+    tempDiv.style.lineHeight = '1.8';
+    document.body.appendChild(tempDiv);
+    
     tempDiv.innerHTML = content;
     const paragraphs = Array.from(tempDiv.children).filter(p => p.tagName === 'P');
     
     let currentPageContent = '';
     let pageHeight = 0;
-    const maxHeight = window.innerHeight - 120; // Tinggi maksimum per halaman (viewport - header - padding)
+    const maxHeight = window.innerHeight - 120; // Tinggi maksimum per halaman
     pages = [];
 
     paragraphs.forEach(p => {
-      const pHeight = p.offsetHeight || 30; // Estimasi tinggi paragraf
-      if (pageHeight + pHeight > maxHeight && currentPageContent) {
+      tempDiv.innerHTML = currentPageContent + p.outerHTML;
+      const newHeight = tempDiv.offsetHeight;
+      if (newHeight > maxHeight && currentPageContent) {
         // Simpan halaman saat ini dan mulai baru
         pages.push(currentPageContent);
-        currentPageContent = '';
-        pageHeight = 0;
+        currentPageContent = p.outerHTML;
+        pageHeight = p.offsetHeight || 30;
+      } else {
+        currentPageContent += p.outerHTML;
+        pageHeight = newHeight;
       }
-      currentPageContent += p.outerHTML;
-      pageHeight += pHeight;
     });
 
-    // Tambahkan halaman terakhir jika ada konten
+    // Tambahkan halaman terakhir
     if (currentPageContent) {
       pages.push(currentPageContent);
     }
+
+    document.body.removeChild(tempDiv);
 
     // Tampilkan halaman
     lessonContent.innerHTML = pages.map((page, index) => 
       `<div class="page ${index === 0 ? 'active' : ''}" data-page="${index}">${page}</div>`
     ).join('');
     currentPage = 0;
-    updatePageNavigation();
 
     // Tambahkan pesan sesi selesai jika diperlukan
     const progress = getUserProgress();
     if (progress.sessionCompleted) {
-      lessonContent.innerHTML += '<div class="page" data-page="completion"><p style="color: var(--bonus-green); font-weight: 600; margin-top: 20px;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p></div>';
-      pages.push(lessonContent.lastElementChild.innerHTML);
+      lessonContent.innerHTML = '<div class="page active" data-page="0"><p style="color: var(--bonus-green); font-weight: 600;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p></div>';
+      pages = ['<p style="color: var(--bonus-green); font-weight: 600;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p>'];
     }
+
+    updatePageNavigation();
   }
 
   // Perbarui navigasi halaman
@@ -179,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentPage++;
       const next = lessonContent.querySelector(`.page[data-page="${currentPage}"]`);
       next.classList.add('active');
-      setTimeout(() => current.classList.remove('prev'), 500); // Reset setelah animasi
+      setTimeout(() => current.classList.remove('prev'), 600); // Reset setelah animasi
       updatePageNavigation();
     }
   });
@@ -192,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentPage--;
       const prev = lessonContent.querySelector(`.page[data-page="${currentPage}"]`);
       prev.classList.add('active');
-      setTimeout(() => current.classList.remove('next'), 500); // Reset setelah animasi
+      setTimeout(() => current.classList.remove('next'), 600); // Reset setelah animasi
       updatePageNavigation();
     }
   });
