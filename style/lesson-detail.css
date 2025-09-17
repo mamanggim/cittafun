@@ -30,7 +30,7 @@ body.dark {
   --bg-dark: linear-gradient(135deg, #1e1e2f, #2a2a3c);
   --text-light: #333;
   --text-dark: #ddd;
-  --card-bg: #f1f5ff;
+  --card-bg: #f9fafb;
   --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   --bonus-green: #22c55e;
 }
@@ -341,12 +341,14 @@ body.dark .lesson-content {
   width: 100%;
   height: 100%;
   background: var(--card-bg);
-  padding: 10px;
+  padding: 15px;
+  border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  transform: rotateY(180deg); /* Mulai di balik */
+  transform: rotateY(90deg); /* Mulai di sisi */
   opacity: 0;
-  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+  transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
   transform-origin: left center;
+  backface-visibility: hidden; /* Sembunyikan sisi belakang saat rotasi */
 }
 
 body.dark .page {
@@ -357,18 +359,21 @@ body.dark .page {
   transform: rotateY(0deg); /* Halaman aktif terlihat */
   opacity: 1;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  z-index: 2;
 }
 
 .page.next {
-  transform: rotateY(180deg); /* Halaman berikutnya mulai di balik */
+  transform: rotateY(90deg); /* Halaman berikutnya mulai dari sisi kanan */
   opacity: 0;
-  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 5px 0 20px rgba(0, 0, 0, 0.15);
+  z-index: 1;
 }
 
 .page.prev {
-  transform: rotateY(-180deg); /* Halaman sebelumnya mulai di balik */
+  transform: rotateY(-90deg); /* Halaman sebelumnya mulai dari sisi kiri */
   opacity: 0;
-  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.15);
+  z-index: 1;
 }
 
 /* Game Popup */
