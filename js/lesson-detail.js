@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const exitToggle = document.getElementById('exit-toggle');
   const exitMenu = document.getElementById('exit-menu');
   const themeToggle = document.getElementById('theme-toggle');
+  const reloadTimer = document.getElementById('reload-timer');
 
   let timerInterval;
   let timeRemaining = 10 * 60 * 1000; // 10 menit dalam ms
@@ -79,10 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
     floatEl.textContent = `+${pointsToAdd}`;
     floatEl.style.position = 'absolute';
     floatEl.style.left = `${pointsRect.left + pointsRect.width / 2}px`;
-    floatEl.style.top = `${pointsRect.top + 30}px`; // Mulai dari bawah
+    floatEl.style.top = `${pointsRect.top + 30}px`;
     document.body.appendChild(floatEl);
 
-    // Animasi melayang masuk ke teks poin
     let opacity = 1;
     let y = 30;
     const animate = () => {
@@ -164,6 +164,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, 1000);
   }
+
+  // Reset timer
+  reloadTimer.addEventListener('click', () => {
+    if (timerInterval) clearInterval(timerInterval);
+    timeRemaining = 10 * 60 * 1000;
+    minutesCompleted = 0;
+    points = 0;
+    pointsEarned.textContent = `Poin: ${points}`;
+    timerDisplay.textContent = formatTime(timeRemaining);
+    const progress = getUserProgress();
+    const timerKey = `lessonTimer_${currentSlotKey}`;
+    progress[timerKey] = { remaining: timeRemaining };
+    setUserProgress(progress);
+    if (isTabActive) startTimer();
+  });
 
   // Jeda timer ketika tab tidak aktif
   document.addEventListener('visibilitychange', () => {
