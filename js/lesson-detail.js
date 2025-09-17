@@ -12,9 +12,57 @@ document.addEventListener('DOMContentLoaded', () => {
   let timerInterval;
   let timeRemaining = 10 * 60 * 1000; // 10 menit dalam ms
   let minutesCompleted = 0;
-  let currentSessionKey = localStorage.getItem('currentSessionKey') || `session_${new Date().toISOString().split('T')[0]}`; // Sesi berdasarkan tanggal
   let points = 0;
   let isTabActive = true;
+
+  // Tentukan sesi berdasarkan waktu WIB
+  function getCurrentSession() {
+    const now = new Date();
+    const hours = now.getHours();
+    let date = now.toISOString().split('T')[0]; // Tanggal YYYY-MM-DD
+    let sessionName;
+
+    if (hours >= 6 && hours < 9) {
+      sessionName = 'Pagi1';
+    } else if (hours >= 9 && hours < 12) {
+      sessionName = 'Pagi2';
+    } else if (hours >= 12 && hours < 15) {
+      sessionName = 'Siang';
+    } else if (hours >= 15 && hours < 18) {
+      sessionName = 'Sore';
+    } else if (hours >= 18 && hours < 21) {
+      sessionName = 'Malam';
+    } else {
+      // Di luar sesi (21:00–05:59 WIB), anggap sesi berikutnya Pagi 1 hari berikutnya
+      sessionName = 'Pagi1';
+      const tomorrow = new Date(now);
+      tomorrow.setDate(now.getDate() + 1);
+      date = tomorrow.toISOString().split('T')[0];
+    }
+    return { sessionName, sessionKey: `session_${sessionName}_${date}`, date };
+  }
+
+  // Inisialisasi sesi
+  const { sessionName, sessionKey, date } = getCurrentSession();
+  let currentSessionKey = localStorage.getItem('currentSessionKey') || sessionKey;
+
+  // Cek sesi baru
+  const savedSessionDate = localStorage.getItem('currentSessionDate');
+  const savedSessionKey = localStorage.getItem('currentSessionKey');
+  if (savedSessionDate !== date || savedSessionKey !== sessionKey) {
+    localStorage.setItem('currentSessionDate', date);
+    localStorage.setItem('currentSessionKey', sessionKey);
+    // Hapus status sessionCompleted dan semua timer saat sesi baru
+    const progress = getUserProgress();
+    delete progress.sessionCompleted;
+    Object.keys(progress).forEach(key => {
+      if (key.startsWith('lessonTimer_')) {
+        delete progress[key];
+      }
+    });
+    setUserProgress(progress);
+  }
+  localStorage.setItem('currentSessionKey', currentSessionKey);
 
   // Dark/Light Mode
   const savedTheme = localStorage.getItem('theme') || 'light';
@@ -37,23 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('[Lesson Detail] No lesson ID provided in URL');
     return;
   }
-
-  // Cek sesi baru
-  const today = new Date().toISOString().split('T')[0];
-  const savedSessionDate = localStorage.getItem('currentSessionDate');
-  if (savedSessionDate !== today) {
-    localStorage.setItem('currentSessionDate', today);
-    localStorage.setItem('currentSessionKey', `session_${today}`);
-    // Hapus status completed untuk semua pelajaran saat sesi baru
-    const progress = getUserProgress();
-    Object.keys(progress).forEach(key => {
-      if (key.startsWith('lessonCompleted_')) {
-        delete progress[key];
-      }
-    });
-    setUserProgress(progress);
-  }
-  localStorage.setItem('currentSessionKey', currentSessionKey);
 
   async function loadLesson() {
     try {
@@ -161,13 +192,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function startTimer() {
     const progress = getUserProgress();
     const timerKey = `lessonTimer_${lessonId}_${currentSessionKey}`;
-    const completedKey = `lessonCompleted_${lessonId}_${currentSessionKey}`;
 
-    // Cek apakah misi sudah selesai untuk pelajaran ini di sesi ini
-    if (progress[completedKey]) {
+    // Cek apakah sesi sudah selesai secara global
+    if (progress.sessionCompleted) {
       timerDisplay.textContent = '00:00';
       pointsEarned.textContent = `Poin: 500`;
-      lessonContent.innerHTML += '<p style="color: var(--bonus-green); font-weight: 600; margin-top: 20px;">Misi selesai untuk sesi ini. Tunggu sesi baru besok!</p>';
+      lessonContent.innerHTML += '<p style="color: var(--bonus-green); font-weight: 600; margin-top: 20px;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p>';
       return;
     }
 
@@ -186,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (timeRemaining <= 0) {
           clearInterval(timerInterval);
-          progress[completedKey] = true; // Tandai misi selesai
+          progress.sessionCompleted = true; // Tandai sesi selesai secara global
           setUserProgress(progress);
           showGamePopup('Waktu membaca selesai! Anda mendapatkan 500 poin.');
           confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, duration: 2000 });
