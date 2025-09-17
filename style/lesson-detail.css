@@ -118,7 +118,7 @@ body.dark .timer {
   padding: 6px;
   cursor: pointer;
   color: var(--citta-blue);
-  transition: transform 0.5s ease-in-out; /* Animasi lebih halus */
+  transition: transform 0.5s ease-in-out;
 }
 
 body.dark .reload-icon {
@@ -164,7 +164,7 @@ body.dark .btn-icon {
   border-radius: 12px;
   box-shadow: var(--shadow);
   padding: 10px;
-  min-width: 160px; /* Dikurangi karena teks lebih pendek */
+  min-width: 160px;
   max-width: calc(100vw - 40px);
   display: none;
   z-index: 10;
@@ -272,13 +272,24 @@ body.dark .lesson-detail {
   background: #35354f;
 }
 
-.lesson-detail p {
+.lesson-content {
   font-size: 1rem;
   color: #4b5563;
   line-height: 1.8;
+  position: relative;
+  transform: translateX(100%); /* Mulai di luar layar (kanan) */
+  opacity: 0;
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1); /* Bayangan kertas */
 }
 
-body.dark .lesson-detail p {
+.lesson-content.animate {
+  transform: translateX(0); /* Slide ke posisi normal */
+  opacity: 1;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* Bayangan normal */
+}
+
+body.dark .lesson-content {
   color: #9ca3af;
 }
 
@@ -361,7 +372,7 @@ body.dark .floating-points {
   }
   .exit-menu {
     right: 15px;
-    min-width: 140px; /* Dikurangi untuk teks lebih pendek */
+    min-width: 140px;
     max-width: calc(100vw - 30px);
   }
 }
