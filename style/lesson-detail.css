@@ -61,15 +61,16 @@ body.dark .header-fixed {
 .header-title {
   font-size: 1.2rem;
   font-weight: 800;
-  color: var(--citta-blue); /* Biru di light mode */
+  color: var(--citta-blue);
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer; /* Menandakan bisa diklik */
 }
 
 body.dark .header-title {
-  color: var(--fun-orange); /* Oranye di dark mode */
+  color: var(--fun-orange);
 }
 
 .header-right {
@@ -97,7 +98,7 @@ body.dark .points-display {
 .timer {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--citta-blue); /* Biru di light mode */
+  color: var(--citta-blue);
   background: white;
   padding: 6px 12px;
   border-radius: 8px;
@@ -106,7 +107,7 @@ body.dark .points-display {
 }
 
 body.dark .timer {
-  color: var(--fun-orange); /* Oranye di dark mode */
+  color: var(--fun-orange);
   background: #35354f;
 }
 
@@ -158,7 +159,7 @@ body.dark .btn-icon {
 .exit-menu {
   position: absolute;
   top: 40px;
-  left: 0;
+  right: 20px; /* Pindah ke kanan agar sejajar dengan tombol dropdown */
   background: white;
   border-radius: 12px;
   box-shadow: var(--shadow);
@@ -222,6 +223,35 @@ body.dark .menu-link {
 
 body.dark .theme-toggle {
   color: var(--text-dark);
+}
+
+/* Title Popup */
+.title-popup {
+  position: fixed;
+  top: 60px; /* Di bawah header */
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  max-width: calc(100vw - 40px);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+}
+
+body.dark .title-popup {
+  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+}
+
+.title-popup.show {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
 }
 
 /* Content */
@@ -330,6 +360,7 @@ body.dark .floating-points {
     padding: 6px;
   }
   .exit-menu {
+    right: 15px;
     max-width: calc(100vw - 30px);
   }
 }
