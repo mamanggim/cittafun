@@ -8,12 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const exitMenu = document.getElementById('exit-menu');
   const themeToggle = document.getElementById('theme-toggle');
   const reloadTimer = document.getElementById('reload-timer');
+  const prevPageBtn = document.getElementById('prev-page');
+  const nextPageBtn = document.getElementById('next-page');
+  const pageIndicator = document.getElementById('page-indicator');
 
   let timerInterval;
   let timeRemaining = 10 * 60 * 1000; // 10 menit dalam ms
   let minutesCompleted = 0;
   let points = 0;
   let isTabActive = true;
+  let currentPage = 0;
+  let pages = [];
 
   // Tentukan sesi berdasarkan waktu WIB
   function getCurrentSession() {
@@ -81,7 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!lessonId) {
     lessonTitle.textContent = 'Error';
-    lessonContent.innerHTML = '<p>ID pelajaran tidak ditemukan di URL.</p>';
+    lessonContent.innerHTML = '<div class="page active"><p>ID pelajaran tidak ditemukan di URL.</p></div>';
+    updatePageNavigation();
     console.error('[Lesson Detail] No lesson ID provided in URL');
     return;
   }
@@ -95,24 +101,101 @@ document.addEventListener('DOMContentLoaded', () => {
       const lesson = lessons.find(l => l.id === lessonId);
       if (lesson) {
         lessonTitle.textContent = lesson.title;
-        lessonTitle.dataset.fullTitle = lesson.title; // Simpan judul lengkap
-        lessonContent.innerHTML = lesson.fullContent || '<p>Konten pelajaran belum tersedia.</p>';
-        // Picu animasi slide kertas
-        setTimeout(() => lessonContent.classList.add('animate'), 10);
+        lessonTitle.dataset.fullTitle = lesson.title;
+        const fullContent = lesson.fullContent || '<p>Konten pelajaran belum tersedia.</p>';
+        splitContentIntoPages(fullContent);
       } else {
         lessonTitle.textContent = 'Pelajaran Tidak Ditemukan';
-        lessonContent.innerHTML = '<p>Pelajaran dengan ID ini tidak ditemukan.</p>';
-        lessonContent.classList.add('animate'); // Tetap animasi meski error
+        lessonContent.innerHTML = '<div class="page active"><p>Pelajaran dengan ID ini tidak ditemukan.</p></div>';
+        updatePageNavigation();
         console.error('[Lesson Detail] No lesson found with id:', lessonId);
       }
     } catch (err) {
       console.error('[Lesson Detail] Failed to load lesson:', err.message);
       lessonTitle.textContent = 'Error';
       lessonTitle.dataset.fullTitle = 'Error';
-      lessonContent.innerHTML = '<p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid.</p>';
-      lessonContent.classList.add('animate'); // Tetap animasi meski error
+      lessonContent.innerHTML = '<div class="page active"><p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid.</p></div>';
+      updatePageNavigation();
     }
   }
+
+  // Pecah konten menjadi halaman berdasarkan tinggi layar
+  function splitContentIntoPages(content) {
+    lessonContent.innerHTML = ''; // Kosongkan konten
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = content;
+    const paragraphs = Array.from(tempDiv.children).filter(p => p.tagName === 'P');
+    
+    let currentPageContent = '';
+    let pageHeight = 0;
+    const maxHeight = window.innerHeight - 120; // Tinggi maksimum per halaman (viewport - header - padding)
+    pages = [];
+
+    paragraphs.forEach(p => {
+      const pHeight = p.offsetHeight || 30; // Estimasi tinggi paragraf
+      if (pageHeight + pHeight > maxHeight && currentPageContent) {
+        // Simpan halaman saat ini dan mulai baru
+        pages.push(currentPageContent);
+        currentPageContent = '';
+        pageHeight = 0;
+      }
+      currentPageContent += p.outerHTML;
+      pageHeight += pHeight;
+    });
+
+    // Tambahkan halaman terakhir jika ada konten
+    if (currentPageContent) {
+      pages.push(currentPageContent);
+    }
+
+    // Tampilkan halaman
+    lessonContent.innerHTML = pages.map((page, index) => 
+      `<div class="page ${index === 0 ? 'active' : ''}" data-page="${index}">${page}</div>`
+    ).join('');
+    currentPage = 0;
+    updatePageNavigation();
+
+    // Tambahkan pesan sesi selesai jika diperlukan
+    const progress = getUserProgress();
+    if (progress.sessionCompleted) {
+      lessonContent.innerHTML += '<div class="page" data-page="completion"><p style="color: var(--bonus-green); font-weight: 600; margin-top: 20px;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p></div>';
+      pages.push(lessonContent.lastElementChild.innerHTML);
+    }
+  }
+
+  // Perbarui navigasi halaman
+  function updatePageNavigation() {
+    pageIndicator.textContent = `Halaman ${currentPage + 1} / ${pages.length}`;
+    prevPageBtn.disabled = currentPage === 0;
+    nextPageBtn.disabled = currentPage === pages.length - 1;
+  }
+
+  // Navigasi halaman
+  nextPageBtn.addEventListener('click', () => {
+    if (currentPage < pages.length - 1) {
+      const current = lessonContent.querySelector(`.page[data-page="${currentPage}"]`);
+      current.classList.remove('active');
+      current.classList.add('prev');
+      currentPage++;
+      const next = lessonContent.querySelector(`.page[data-page="${currentPage}"]`);
+      next.classList.add('active');
+      setTimeout(() => current.classList.remove('prev'), 500); // Reset setelah animasi
+      updatePageNavigation();
+    }
+  });
+
+  prevPageBtn.addEventListener('click', () => {
+    if (currentPage > 0) {
+      const current = lessonContent.querySelector(`.page[data-page="${currentPage}"]`);
+      current.classList.remove('active');
+      current.classList.add('next');
+      currentPage--;
+      const prev = lessonContent.querySelector(`.page[data-page="${currentPage}"]`);
+      prev.classList.add('active');
+      setTimeout(() => current.classList.remove('next'), 500); // Reset setelah animasi
+      updatePageNavigation();
+    }
+  });
 
   // Title Popup
   lessonTitle.addEventListener('click', () => {
@@ -201,8 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (progress.sessionCompleted) {
       timerDisplay.textContent = '00:00';
       pointsEarned.textContent = `Poin: 500`;
-      lessonContent.innerHTML += '<p style="color: var(--bonus-green); font-weight: 600; margin-top: 20px;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p>';
-      setTimeout(() => lessonContent.classList.add('animate'), 10); // Animasi untuk pesan
+      splitContentIntoPages('<p style="color: var(--bonus-green); font-weight: 600;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p>');
       return;
     }
 
