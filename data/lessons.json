@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "id": "1",
     "jenjang": "SD",
     "subject": "agama",
     "category": "Pendidikan Agama dan Budi Pekerti",
@@ -8,28 +8,28 @@
     "description": "Pelajari pentingnya kebaikan dan sopan santun dalam kehidupan sehari-hari.",
     "level": "Dasar",
     "fullContent": "Kebaikan adalah nilai penting dalam semua agama. Misalnya, membantu teman yang kesulitan adalah tindakan mulia. Sopan santun mencakup mengucap salam dan menghormati orang tua. Pelajaran ini mengajarkan cara menerapkan nilai-nilai ini dalam kehidupan sehari-hari melalui cerita dan contoh sederhana. (Placeholder: 1000 kata bacaan).",
-    "points": 50
+    "points": "50"
   },
   {
-    "id": 2,
+    "id": "2",
     "jenjang": "SD",
     "subject": "agama",
     "category": "Pendidikan Agama dan Budi Pekerti",
     "title": "Cerita Teladan Nabi",
     "description": "Kisah inspiratif dari tokoh agama untuk anak-anak.",
     "level": "Dasar",
-    "content": "Cerita tentang Nabi Muhammad yang jujur dan amanah mengajarkan pentingnya kejujuran. Anak-anak diajak memahami bagaimana sikap teladan bisa diterapkan dalam kehidupan. (Placeholder: 1000 kata bacaan).",
+    "fullContent": "Cerita tentang Nabi Muhammad yang jujur dan amanah mengajarkan pentingnya kejujuran. Anak-anak diajak memahami bagaimana sikap teladan bisa diterapkan dalam kehidupan. (Placeholder: 1000 kata bacaan).",
     "points": 50
   },
   {
-    "id": 3,
+    "id": "3",
     "jenjang": "SD",
     "subject": "ppkn",
     "category": "Pendidikan Pancasila dan Kewarganegaraan",
     "title": "Pancasila sebagai Dasar Negara",
     "description": "Kenali makna lima sila Pancasila.",
     "level": "Dasar",
-    "content": "Pancasila adalah dasar negara Indonesia. Sila pertama mengajarkan ketuhanan, sila kedua kemanusiaan. Pelajaran ini menjelaskan setiap sila dengan contoh sederhana, seperti membantu tetangga. (Placeholder: 1000 kata bacaan).",
+    "fullContent": "Pancasila adalah dasar negara Indonesia. Sila pertama mengajarkan ketuhanan, sila kedua kemanusiaan. Pelajaran ini menjelaskan setiap sila dengan contoh sederhana, seperti membantu tetangga. (Placeholder: 1000 kata bacaan).",
     "points": 50
   },
   {
