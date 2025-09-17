@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const lesson = lessons.find(l => l.id === lessonId);
       if (lesson) {
         lessonTitle.textContent = lesson.title;
-        lessonContent.innerHTML = lesson.content || '<p>Konten pelajaran belum tersedia.</p>';
+        lessonContent.innerHTML = lesson.fullContent || '<p>Konten pelajaran belum tersedia.</p>';
       } else {
         lessonTitle.textContent = 'Pelajaran Tidak Ditemukan';
         lessonContent.innerHTML = '<p>Pelajaran dengan ID ini tidak ditemukan.</p>';
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (timeRemaining <= 0) {
         clearInterval(timerInterval);
         showGamePopup('Waktu membaca selesai! Anda mendapatkan 500 poin.');
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, duration: 4000 }); // Durasi 4 detik
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, duration: 2000 }); // Kembali ke 2 detik
         pointsEarned = 500;
         savePoints(pointsEarned);
       } else if (timeRemaining % (60 * 1000) === 0) {
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         triggerAd();
         showFloatingPoints(50);
         showGamePopup('1 menit selesai! +50 poin');
-        confetti({ particleCount: 50, spread: 60, duration: 4000 });
+        confetti({ particleCount: 50, spread: 60, duration: 2000 });
         pointsEarned += 50;
       }
     }, 1000);
@@ -136,12 +136,23 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       popup.classList.remove('show');
       setTimeout(() => popup.remove(), 300);
-    }, 2000);
+    }, 2000); // 2 detik
   }
 
   // Automatically start timer on load
   loadLesson();
   startTimer();
+
+  // Stop reading button
+  stopReadingBtn.addEventListener('click', () => {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      const points = minutesCompleted * 50;
+      showGamePopup(`Anda mendapatkan ${points} poin!`);
+      confetti({ particleCount: 50, spread: 60, duration: 2000 });
+      savePoints(points);
+    }
+  });
 
   // Exit dropdown
   exitToggle.addEventListener('click', (e) => {
@@ -154,6 +165,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!exitMenu.contains(e.target) && e.target !== exitToggle) {
       exitMenu.classList.remove('show');
       exitMenu.setAttribute('aria-hidden', 'true');
+    }
+  });
+
+  // Stop timer when page is closed or offline
+  window.addEventListener('beforeunload', () => {
+    if (timerInterval) {
+      clearInterval(timerInterval);
     }
   });
 });
