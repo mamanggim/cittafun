@@ -61,15 +61,52 @@ body.dark .header-fixed {
   font-size: 1.4rem;
   font-weight: 800;
   color: var(--citta-blue);
+  flex: 1;
 }
 
 body.dark .header-title {
   color: #3b82f6;
 }
 
+.header-stats {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  justify-content: center;
+}
+
+.points-display {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--bonus-green);
+}
+
+body.dark .points-display {
+  color: #4ade80;
+}
+
+.timer {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--citta-blue);
+  background: white;
+  padding: 8px 16px;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  animation: pulse 2s infinite;
+}
+
+body.dark .timer {
+  color: #3b82f6;
+  background: #35354f;
+}
+
 /* Exit Dropdown */
 .exit-dropdown {
   position: relative;
+  flex: 1;
+  text-align: right;
 }
 
 .btn-icon {
@@ -102,10 +139,12 @@ body.dark .btn-icon {
   border-radius: 12px;
   box-shadow: var(--shadow);
   padding: 10px;
-  min-width: 160px;
+  min-width: 200px;
   display: none;
   z-index: 10;
   animation: slideIn 0.3s ease;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.85rem;
 }
 
 body.dark .exit-menu {
@@ -116,35 +155,22 @@ body.dark .exit-menu {
   display: block;
 }
 
-.menu-link, .mission-link {
+.menu-link {
   display: block;
   padding: 10px 14px;
   color: var(--text-light);
-  font-size: 0.95rem;
-  font-weight: 600;
   text-decoration: none;
   transition: background 0.3s, color 0.3s, transform 0.2s;
 }
 
-.menu-link:hover, .mission-link:hover {
+.menu-link:hover {
   background: var(--citta-blue);
   color: white;
   transform: translateX(5px);
 }
 
-body.dark .menu-link, body.dark .mission-link {
+body.dark .menu-link {
   color: var(--text-dark);
-}
-
-.mission-link {
-  background: linear-gradient(45deg, var(--fun-orange), #ff8c00);
-  color: white !important;
-  border-radius: 8px;
-  margin: 5px 0;
-}
-
-.mission-link:hover {
-  background: linear-gradient(45deg, #e55a00, #ff6200);
 }
 
 .theme-toggle {
@@ -154,8 +180,8 @@ body.dark .menu-link, body.dark .mission-link {
   background: none;
   border: none;
   color: var(--text-light);
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.85rem;
   text-align: left;
   cursor: pointer;
   transition: background 0.3s, color 0.3s, transform 0.2s;
@@ -197,45 +223,6 @@ body.dark .lesson-detail {
 
 body.dark .lesson-detail p {
   color: #9ca3af;
-}
-
-/* Points Display */
-.points-display {
-  text-align: center;
-  margin: 20px 0;
-}
-
-#points-earned {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--bonus-green);
-}
-
-body.dark #points-earned {
-  color: #4ade80;
-}
-
-/* Timer */
-.timer-container {
-  text-align: center;
-  margin: 20px 0;
-}
-
-.timer {
-  display: inline-block;
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--citta-blue);
-  background: white;
-  padding: 10px 20px;
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  animation: pulse 2s infinite;
-}
-
-body.dark .timer {
-  color: #3b82f6;
-  background: #35354f;
 }
 
 /* Game Popup */
@@ -300,14 +287,14 @@ body.dark .floating-points {
   .header-title {
     font-size: 1.2rem;
   }
+  .header-stats {
+    gap: 10px;
+  }
+  .points-display, .timer {
+    font-size: 1rem;
+    padding: 6px 12px;
+  }
   .lesson-detail p {
     font-size: 0.95rem;
   }
-  .timer {
-    font-size: 1.5rem;
-    padding: 8px 16px;
   }
-  .points-display {
-    font-size: 1rem;
-  }
-}
