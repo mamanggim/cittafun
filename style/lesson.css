@@ -104,6 +104,30 @@ body.dark .exit-menu a {
   color: var(--text-dark);
 }
 
+.theme-toggle {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s, transform 0.2s;
+}
+
+.theme-toggle:hover {
+  background: var(--citta-blue);
+  color: white;
+  transform: translateX(5px);
+}
+
+body.dark .theme-toggle {
+  color: var(--text-dark);
+}
+
 /* Content */
 .content {
   padding: 20px;
@@ -283,7 +307,7 @@ body.dark .lesson-card p {
 }
 
 .pagination .btn-outline {
-  padding: 8px 20px;
+  padding: 10px 20px;
   border: 1px solid var(--citta-blue);
   background: none;
   color: var(--citta-blue);
@@ -313,6 +337,47 @@ body.dark .lesson-card p {
 
 body.dark .pagination span {
   color: var(--text-dark);
+}
+
+/* Game Popup */
+.game-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
+  color: white;
+  padding: 20px 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+}
+
+.game-popup.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+body.dark .game-popup {
+  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+}
+
+/* Floating Points */
+.floating-points {
+  position: absolute;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--bonus-green);
+  z-index: 1000;
+}
+
+body.dark .floating-points {
+  color: #4ade80;
 }
 
 /* Animations */
@@ -360,4 +425,4 @@ body.dark .pagination span {
   .pagination .btn-outline {
     padding: 8px 16px;
   }
-}
+  }
