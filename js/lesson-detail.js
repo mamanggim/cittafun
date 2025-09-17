@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let timerInterval;
   let timeRemaining = 10 * 60 * 1000; // 10 menit dalam ms
   let minutesCompleted = 0;
-  let currentSlotKey = localStorage.getItem('currentSlotKey') || 'default';
+  let currentSessionKey = localStorage.getItem('currentSessionKey') || `session_${new Date().toISOString().split('T')[0]}`; // Sesi berdasarkan tanggal
   let points = 0;
   let isTabActive = true;
 
@@ -38,6 +38,23 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  // Cek sesi baru
+  const today = new Date().toISOString().split('T')[0];
+  const savedSessionDate = localStorage.getItem('currentSessionDate');
+  if (savedSessionDate !== today) {
+    localStorage.setItem('currentSessionDate', today);
+    localStorage.setItem('currentSessionKey', `session_${today}`);
+    // Hapus status completed untuk semua pelajaran saat sesi baru
+    const progress = getUserProgress();
+    Object.keys(progress).forEach(key => {
+      if (key.startsWith('lessonCompleted_')) {
+        delete progress[key];
+      }
+    });
+    setUserProgress(progress);
+  }
+  localStorage.setItem('currentSessionKey', currentSessionKey);
+
   async function loadLesson() {
     try {
       console.log('[Lesson Detail] Fetching lessons.json...');
@@ -57,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error('[Lesson Detail] Failed to load lesson:', err.message);
       lessonTitle.textContent = 'Error';
-      lessonTitle.dataset.fullTitle = 'Error'; // Fallback untuk popup
+      lessonTitle.dataset.fullTitle = 'Error';
       lessonContent.innerHTML = '<p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid.</p>';
     }
   }
@@ -143,7 +160,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function startTimer() {
     const progress = getUserProgress();
-    const timerKey = `lessonTimer_${currentSlotKey}`;
+    const timerKey = `lessonTimer_${lessonId}_${currentSessionKey}`;
+    const completedKey = `lessonCompleted_${lessonId}_${currentSessionKey}`;
+
+    // Cek apakah misi sudah selesai untuk pelajaran ini di sesi ini
+    if (progress[completedKey]) {
+      timerDisplay.textContent = '00:00';
+      pointsEarned.textContent = `Poin: 500`;
+      lessonContent.innerHTML += '<p style="color: var(--bonus-green); font-weight: 600; margin-top: 20px;">Misi selesai untuk sesi ini. Tunggu sesi baru besok!</p>';
+      return;
+    }
+
     timeRemaining = progress[timerKey]?.remaining || 10 * 60 * 1000;
     minutesCompleted = Math.floor((10 * 60 * 1000 - timeRemaining) / (60 * 1000));
     points = minutesCompleted * 50;
@@ -159,6 +186,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (timeRemaining <= 0) {
           clearInterval(timerInterval);
+          progress[completedKey] = true; // Tandai misi selesai
+          setUserProgress(progress);
           showGamePopup('Waktu membaca selesai! Anda mendapatkan 500 poin.');
           confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, duration: 2000 });
           points = 500;
@@ -192,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isTabActive && timerInterval) {
       clearInterval(timerInterval);
       const progress = getUserProgress();
-      progress[`lessonTimer_${currentSlotKey}`] = { remaining: timeRemaining };
+      progress[`lessonTimer_${lessonId}_${currentSessionKey}`] = { remaining: timeRemaining };
       setUserProgress(progress);
     } else if (isTabActive && !timerInterval) {
       startTimer(); // Lanjutkan timer saat tab aktif kembali
@@ -204,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (timerInterval) {
       clearInterval(timerInterval);
       const progress = getUserProgress();
-      progress[`lessonTimer_${currentSlotKey}`] = { remaining: timeRemaining };
+      progress[`lessonTimer_${lessonId}_${currentSessionKey}`] = { remaining: timeRemaining };
       setUserProgress(progress);
     }
   });
