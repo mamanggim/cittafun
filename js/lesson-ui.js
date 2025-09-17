@@ -1,6 +1,5 @@
 // js/lesson-ui.js
 document.addEventListener('DOMContentLoaded', () => {
-  // Elements
   const exitToggle = document.getElementById('exit-toggle');
   const exitMenu = document.getElementById('exit-menu');
   const lessonsGrid = document.querySelector('.lessons-grid');
@@ -16,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentPage = 1;
   const itemsPerPage = 10;
 
-  // Load lessons from JSON
   async function loadLessons() {
     try {
       const response = await fetch('data/lessons.json');
@@ -32,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Render lessons with pagination and filters
   function renderLessons() {
     const searchTerm = searchInput.value.toLowerCase();
     const jenjang = jenjangFilter.value;
@@ -55,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
       pageData.forEach((lesson, index) => {
         const card = document.createElement('div');
         card.className = 'lesson-card';
-        card.style.setProperty('--index', index); // For stagger animation
+        card.style.setProperty('--index', index);
         card.innerHTML = `
           <h4>${lesson.title}</h4>
           <p>${lesson.description}</p>
@@ -71,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
     nextPage.disabled = currentPage === totalPages;
   }
 
-  // Search suggestions (autocomplete)
   function updateSuggestions() {
     const searchTerm = searchInput.value.toLowerCase();
     searchSuggestions.innerHTML = '';
@@ -98,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Pagination handlers
   prevPage.addEventListener('click', () => {
     if (currentPage > 1) {
       currentPage--;
@@ -114,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Search and filter handlers
   searchInput.addEventListener('input', () => {
     currentPage = 1;
     updateSuggestions();
@@ -132,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Exit dropdown
   exitToggle.addEventListener('click', (e) => {
     e.stopPropagation();
     const isShown = exitMenu.classList.toggle('show');
@@ -146,6 +139,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Load lessons
   loadLessons();
 });
