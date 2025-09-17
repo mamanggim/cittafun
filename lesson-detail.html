@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Detail Pelajaran - CittaFun</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style/lesson.css">
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
+  <!-- Firebase config -->
+  <script src="js/firebase-config.js"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+  <div class="exit-dropdown">
+    <button id="exit-toggle" class="btn-icon" aria-label="Kembali">←</button>
+    <div id="exit-menu" class="exit-menu" aria-hidden="true">
+      <a href="lesson.html">Kembali ke Pelajaran</a>
+    </div>
+  </div>
+
+  <main class="content">
+    <section class="lesson-detail">
+      <h3 id="lesson-title">Memuat...</h3>
+      <div id="lesson-content">Memuat konten pelajaran...</div>
+      <div class="timer-container">
+        <p>Waktu Membaca: <span id="timer">00:00</span></p>
+        <button id="start-timer" class="btn">Mulai Timer</button>
+        <button id="stop-timer" class="btn" disabled>Selesai</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/lesson-detail.js"></script>
+</body>
+</html>
