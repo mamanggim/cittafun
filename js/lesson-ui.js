@@ -52,9 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (pageData.length === 0) {
       lessonsGrid.innerHTML = '<p>Tidak ada pelajaran ditemukan.</p>';
     } else {
-      pageData.forEach(lesson => {
+      pageData.forEach((lesson, index) => {
         const card = document.createElement('div');
         card.className = 'lesson-card';
+        card.style.setProperty('--index', index); // For stagger animation
         card.innerHTML = `
           <h4>${lesson.title}</h4>
           <p>${lesson.description}</p>
