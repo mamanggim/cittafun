@@ -35,37 +35,68 @@ body.dark {
   --bonus-green: #22c55e;
 }
 
+/* Header Fixed */
+.header-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  z-index: 100;
+  transition: background 0.3s;
+}
+
+body.dark .header-fixed {
+  background: rgba(30, 30, 45, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--citta-blue);
+}
+
+body.dark .header-title {
+  color: #3b82f6;
+}
+
 /* Exit Dropdown */
 .exit-dropdown {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 100;
+  position: relative;
 }
 
 .btn-icon {
-  background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
+  background: none;
   border: none;
   font-size: 1.5rem;
   padding: 10px;
-  border-radius: 50%;
   cursor: pointer;
-  color: white;
-  transition: transform 0.3s, box-shadow 0.3s;
+  color: var(--citta-blue);
+  transition: transform 0.3s ease;
 }
 
-.btn-icon:hover {
-  transform: scale(1.15);
-  box-shadow: 0 5px 15px rgba(0, 82, 204, 0.3);
+.btn-icon.active {
+  transform: rotate(180deg);
 }
 
 body.dark .btn-icon {
-  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+  color: #3b82f6;
+}
+
+.btn-icon:hover {
+  transform: rotate(180deg);
 }
 
 .exit-menu {
   position: absolute;
-  top: 50px;
+  top: 40px;
   right: 0;
   background: white;
   border-radius: 12px;
@@ -85,22 +116,23 @@ body.dark .exit-menu {
   display: block;
 }
 
-.exit-menu a {
+.menu-link, .mission-link {
   display: block;
   padding: 10px 14px;
   color: var(--text-light);
   font-size: 0.95rem;
   font-weight: 600;
+  text-decoration: none;
   transition: background 0.3s, color 0.3s, transform 0.2s;
 }
 
-.exit-menu a:hover {
+.menu-link:hover, .mission-link:hover {
   background: var(--citta-blue);
   color: white;
   transform: translateX(5px);
 }
 
-body.dark .exit-menu a {
+body.dark .menu-link, body.dark .mission-link {
   color: var(--text-dark);
 }
 
@@ -113,7 +145,6 @@ body.dark .exit-menu a {
 
 .mission-link:hover {
   background: linear-gradient(45deg, #e55a00, #ff6200);
-  transform: translateX(5px);
 }
 
 .theme-toggle {
@@ -142,7 +173,7 @@ body.dark .theme-toggle {
 
 /* Content */
 .content {
-  padding: 20px;
+  padding: 80px 20px 20px; /* Padding atas untuk header fixed */
   max-width: 800px;
   margin: 0 auto;
 }
@@ -158,17 +189,6 @@ body.dark .lesson-detail {
   background: #35354f;
 }
 
-.lesson-detail h3 {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: var(--citta-blue);
-  margin-bottom: 16px;
-}
-
-body.dark .lesson-detail h3 {
-  color: #3b82f6;
-}
-
 .lesson-detail p {
   font-size: 1rem;
   color: #4b5563;
@@ -177,6 +197,22 @@ body.dark .lesson-detail h3 {
 
 body.dark .lesson-detail p {
   color: #9ca3af;
+}
+
+/* Points Display */
+.points-display {
+  text-align: center;
+  margin: 20px 0;
+}
+
+#points-earned {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--bonus-green);
+}
+
+body.dark #points-earned {
+  color: #4ade80;
 }
 
 /* Timer */
@@ -237,6 +273,7 @@ body.dark .game-popup {
   font-weight: 700;
   color: var(--bonus-green);
   z-index: 1000;
+  transition: transform 1s ease, opacity 1s ease;
 }
 
 body.dark .floating-points {
@@ -258,10 +295,10 @@ body.dark .floating-points {
 /* Responsive */
 @media (max-width: 768px) {
   .content {
-    padding: 15px;
+    padding: 70px 15px 15px;
   }
-  .lesson-detail h3 {
-    font-size: 1.4rem;
+  .header-title {
+    font-size: 1.2rem;
   }
   .lesson-detail p {
     font-size: 0.95rem;
@@ -269,5 +306,8 @@ body.dark .floating-points {
   .timer {
     font-size: 1.5rem;
     padding: 8px 16px;
+  }
+  .points-display {
+    font-size: 1rem;
   }
 }
