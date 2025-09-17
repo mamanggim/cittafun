@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Detail Pelajaran - CittaFun</title>
+  <title>Detail Mata Pelajaran - CittaFun</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style/lesson.css">
   <!-- Firebase SDKs -->
@@ -16,22 +16,25 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
+  <!-- Exit Dropdown -->
   <div class="exit-dropdown">
-    <button id="exit-toggle" class="btn-icon" aria-label="Kembali">←</button>
+    <button id="exit-toggle" class="btn-icon" aria-label="Keluar">▾</button>
     <div id="exit-menu" class="exit-menu" aria-hidden="true">
-      <a href="lesson.html">Kembali ke Pelajaran</a>
+      <a href="lesson.html">Kembali ke Mata Pelajaran</a>
+      <a href="dashboard.html">Beranda</a>
+      <a href="dashboard.html#section-missions">Misi Harian</a>
     </div>
   </div>
 
+  <!-- Content -->
   <main class="content">
     <section class="lesson-detail">
       <h3 id="lesson-title">Memuat...</h3>
-      <div id="lesson-content">Memuat konten pelajaran...</div>
       <div class="timer-container">
-        <p>Waktu Membaca: <span id="timer">00:00</span></p>
-        <button id="start-timer" class="btn">Mulai Timer</button>
-        <button id="stop-timer" class="btn" disabled>Selesai</button>
+        <span id="timer" class="timer">10:00</span>
       </div>
+      <div id="lesson-content">Memuat konten...</div>
+      <button id="stop-reading" class="btn">Selesai Baca</button>
     </section>
   </main>
 
