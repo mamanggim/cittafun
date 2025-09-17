@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error('[Lesson Detail] Failed to load lesson:', err.message);
       lessonTitle.textContent = 'Error';
+      lessonTitle.dataset.fullTitle = 'Error'; // Fallback untuk popup
       lessonContent.innerHTML = '<p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid.</p>';
     }
   }
@@ -64,17 +65,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Title Popup
   lessonTitle.addEventListener('click', () => {
     const fullTitle = lessonTitle.dataset.fullTitle || lessonTitle.textContent;
-    if (fullTitle.length > 20) { // Hanya tampilkan popup jika judul panjang
-      const popup = document.createElement('div');
-      popup.className = 'title-popup';
-      popup.textContent = fullTitle;
-      document.body.appendChild(popup);
-      setTimeout(() => popup.classList.add('show'), 10);
-      setTimeout(() => {
-        popup.classList.remove('show');
-        setTimeout(() => popup.remove(), 300);
-      }, 3000); // Popup 3 detik
-    }
+    const popup = document.createElement('div');
+    popup.className = 'title-popup';
+    popup.textContent = fullTitle;
+    document.body.appendChild(popup);
+    setTimeout(() => popup.classList.add('show'), 10);
+    setTimeout(() => {
+      popup.classList.remove('show');
+      setTimeout(() => popup.remove(), 300);
+    }, 3000); // Popup 3 detik
   });
 
   function formatTime(ms) {
