@@ -97,9 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
         lessonTitle.textContent = lesson.title;
         lessonTitle.dataset.fullTitle = lesson.title; // Simpan judul lengkap
         lessonContent.innerHTML = lesson.fullContent || '<p>Konten pelajaran belum tersedia.</p>';
+        // Picu animasi slide kertas
+        setTimeout(() => lessonContent.classList.add('animate'), 10);
       } else {
         lessonTitle.textContent = 'Pelajaran Tidak Ditemukan';
         lessonContent.innerHTML = '<p>Pelajaran dengan ID ini tidak ditemukan.</p>';
+        lessonContent.classList.add('animate'); // Tetap animasi meski error
         console.error('[Lesson Detail] No lesson found with id:', lessonId);
       }
     } catch (err) {
@@ -107,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
       lessonTitle.textContent = 'Error';
       lessonTitle.dataset.fullTitle = 'Error';
       lessonContent.innerHTML = '<p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid.</p>';
+      lessonContent.classList.add('animate'); // Tetap animasi meski error
     }
   }
 
@@ -198,6 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
       timerDisplay.textContent = '00:00';
       pointsEarned.textContent = `Poin: 500`;
       lessonContent.innerHTML += '<p style="color: var(--bonus-green); font-weight: 600; margin-top: 20px;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p>';
+      setTimeout(() => lessonContent.classList.add('animate'), 10); // Animasi untuk pesan
       return;
     }
 
