@@ -47,7 +47,8 @@ body.dark {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 20px;
+  padding: 8px 20px; /* Padding dikurangi untuk header lebih ramping */
+  height: 50px; /* Tinggi header proporsional */
   z-index: 100;
   transition: background 0.3s;
 }
@@ -58,26 +59,33 @@ body.dark .header-fixed {
 }
 
 .header-title {
-  font-size: 1.4rem;
+  font-size: 1.2rem; /* Ukuran font dikurangi */
   font-weight: 800;
   color: var(--citta-blue);
   flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 body.dark .header-title {
   color: #3b82f6;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Jarak antar elemen di kanan */
+}
+
 .header-stats {
   display: flex;
   align-items: center;
-  gap: 20px;
-  flex: 1;
-  justify-content: center;
+  gap: 10px;
 }
 
 .points-display {
-  font-size: 1.2rem;
+  font-size: 1rem; /* Ukuran font lebih kecil */
   font-weight: 700;
   color: var(--bonus-green);
 }
@@ -87,12 +95,12 @@ body.dark .points-display {
 }
 
 .timer {
-  font-size: 1.2rem;
+  font-size: 1rem; /* Ukuran font lebih kecil */
   font-weight: 700;
   color: var(--citta-blue);
   background: white;
-  padding: 8px 16px;
-  border-radius: 10px;
+  padding: 6px 12px; /* Padding lebih kecil */
+  border-radius: 8px;
   box-shadow: var(--shadow);
   animation: pulse 2s infinite;
 }
@@ -105,15 +113,13 @@ body.dark .timer {
 /* Exit Dropdown */
 .exit-dropdown {
   position: relative;
-  flex: 1;
-  text-align: right;
 }
 
 .btn-icon {
   background: none;
   border: none;
-  font-size: 1.5rem;
-  padding: 10px;
+  font-size: 1.3rem; /* Ukuran panah lebih kecil */
+  padding: 8px;
   cursor: pointer;
   color: var(--citta-blue);
   transition: transform 0.3s ease;
@@ -134,7 +140,7 @@ body.dark .btn-icon {
 .exit-menu {
   position: absolute;
   top: 40px;
-  right: 0;
+  left: 0; /* Rata kiri */
   background: white;
   border-radius: 12px;
   box-shadow: var(--shadow);
@@ -156,9 +162,9 @@ body.dark .exit-menu {
 
 .menu-link {
   display: block;
-  padding: 10px 14px;
+  padding: 8px 12px;
   color: var(--text-light);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   text-decoration: none;
   transition: background 0.3s, color 0.3s, transform 0.2s;
@@ -177,12 +183,12 @@ body.dark .menu-link {
 .theme-toggle {
   display: block;
   width: 100%;
-  padding: 10px 14px;
+  padding: 8px 12px;
   background: none;
   border: none;
   color: var(--text-light);
   font-family: 'Nunito', sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   text-align: left;
   cursor: pointer;
@@ -201,7 +207,7 @@ body.dark .theme-toggle {
 
 /* Content */
 .content {
-  padding: 80px 20px 20px; /* Padding atas untuk header fixed */
+  padding: 60px 20px 20px; /* Padding atas dikurangi sesuai tinggi header */
   max-width: 800px;
   margin: 0 auto;
 }
@@ -284,19 +290,27 @@ body.dark .floating-points {
 /* Responsive */
 @media (max-width: 768px) {
   .content {
-    padding: 70px 15px 15px;
+    padding: 55px 15px 15px;
+  }
+  .header-fixed {
+    padding: 6px 15px;
+    height: 45px;
   }
   .header-title {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
   .header-stats {
-    gap: 10px;
+    gap: 8px;
   }
   .points-display, .timer {
-    font-size: 1rem;
-    padding: 6px 12px;
+    font-size: 0.9rem;
+    padding: 5px 10px;
   }
   .lesson-detail p {
     font-size: 0.95rem;
+  }
+  .btn-icon {
+    font-size: 1.2rem;
+    padding: 6px;
   }
 }
