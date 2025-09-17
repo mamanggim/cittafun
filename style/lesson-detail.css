@@ -66,7 +66,7 @@ body.dark .header-fixed {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  cursor: pointer; /* Menandakan bisa diklik */
+  cursor: pointer;
 }
 
 body.dark .header-title {
@@ -118,7 +118,7 @@ body.dark .timer {
   padding: 6px;
   cursor: pointer;
   color: var(--citta-blue);
-  transition: transform 0.3s ease;
+  transition: transform 0.5s ease-in-out; /* Animasi lebih halus */
 }
 
 body.dark .reload-icon {
@@ -159,13 +159,13 @@ body.dark .btn-icon {
 .exit-menu {
   position: absolute;
   top: 40px;
-  right: 20px; /* Pindah ke kanan agar sejajar dengan tombol dropdown */
+  right: 20px;
   background: white;
   border-radius: 12px;
   box-shadow: var(--shadow);
   padding: 10px;
-  min-width: 200px;
-  max-width: calc(100vw - 40px); /* Mencegah keluar layar */
+  min-width: 160px; /* Dikurangi karena teks lebih pendek */
+  max-width: calc(100vw - 40px);
   display: none;
   z-index: 10;
   animation: slideIn 0.3s ease;
@@ -228,7 +228,7 @@ body.dark .theme-toggle {
 /* Title Popup */
 .title-popup {
   position: fixed;
-  top: 60px; /* Di bawah header */
+  top: 60px;
   left: 50%;
   transform: translateX(-50%) scale(0.8);
   background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
@@ -361,6 +361,7 @@ body.dark .floating-points {
   }
   .exit-menu {
     right: 15px;
+    min-width: 140px; /* Dikurangi untuk teks lebih pendek */
     max-width: calc(100vw - 30px);
   }
 }
