@@ -79,15 +79,15 @@ document.addEventListener('DOMContentLoaded', () => {
     floatEl.textContent = `+${pointsToAdd}`;
     floatEl.style.position = 'absolute';
     floatEl.style.left = `${pointsRect.left + pointsRect.width / 2}px`;
-    floatEl.style.top = `${pointsRect.top + 50}px`; // Mulai dari bawah
+    floatEl.style.top = `${pointsRect.top + 30}px`; // Mulai dari bawah
     document.body.appendChild(floatEl);
 
     // Animasi melayang masuk ke teks poin
     let opacity = 1;
-    let y = 50;
+    let y = 30;
     const animate = () => {
       y -= 1;
-      opacity -= 0.01;
+      opacity -= 0.02;
       floatEl.style.transform = `translate(-50%, ${-y}px)`;
       floatEl.style.opacity = opacity;
       if (y <= 0 || opacity <= 0) {
