@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Detail Mata Pelajaran - CittaFun</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style/lesson.css">
+  <link rel="stylesheet" href="style/lesson-detail.css">
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
@@ -22,7 +22,8 @@
     <div id="exit-menu" class="exit-menu" aria-hidden="true">
       <a href="lesson.html">Kembali ke Mata Pelajaran</a>
       <a href="dashboard.html">Beranda</a>
-      <a href="dashboard.html#section-missions">Misi Harian</a>
+      <a href="dashboard.html#section-missions" class="mission-link">Misi Harian</a>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Ganti tema">🌙</button>
     </div>
   </div>
 
@@ -34,7 +35,6 @@
         <span id="timer" class="timer">10:00</span>
       </div>
       <div id="lesson-content">Memuat konten pelajaran...</div>
-      <button id="stop-reading" class="btn">Selesai Baca</button>
     </section>
   </main>
 
