@@ -10,10 +10,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const nextPage = document.getElementById('next-page');
   const pageInfo = document.getElementById('page-info');
   const errorMessage = document.getElementById('error-message');
+  const themeToggle = document.getElementById('theme-toggle');
 
   let lessonsData = [];
   let currentPage = 1;
   const itemsPerPage = 10;
+
+  // Dark/Light Mode
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.body.classList.toggle('dark', savedTheme === 'dark');
+  themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    themeToggle.textContent = isDark ? '☀️' : '🌙';
+  });
 
   async function loadLessons() {
     try {
