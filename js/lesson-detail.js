@@ -8,8 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const exitMenu = document.getElementById('exit-menu');
   const themeToggle = document.getElementById('theme-toggle');
   const reloadTimer = document.getElementById('reload-timer');
-  const prevPageBtn = document.getElementById('prev-page');
-  const nextPageBtn = document.getElementById('next-page');
   const pageIndicator = document.getElementById('page-indicator');
 
   let timerInterval;
@@ -19,6 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let isTabActive = true;
   let currentPage = 0;
   let pages = [];
+  let isDragging = false;
+  let startX = 0;
+  let startTouchX = 0;
 
   // Tentukan sesi berdasarkan waktu WIB
   function getCurrentSession() {
@@ -86,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!lessonId) {
     lessonTitle.textContent = 'Error';
-    lessonContent.innerHTML = '<div class="page active"><p>ID pelajaran tidak ditemukan di URL.</p></div>';
+    lessonContent.innerHTML = '<div class="page active" data-page="0"><p>ID pelajaran tidak ditemukan di URL.</p></div><div id="page-indicator" class="page-indicator">Halaman 1</div>';
     pages = ['<p>ID pelajaran tidak ditemukan di URL.</p>'];
     updatePageNavigation();
     console.error('[Lesson Detail] No lesson ID provided in URL');
@@ -107,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         splitContentIntoPages(fullContent);
       } else {
         lessonTitle.textContent = 'Pelajaran Tidak Ditemukan';
-        lessonContent.innerHTML = '<div class="page active"><p>Pelajaran dengan ID ini tidak ditemukan.</p></div>';
+        lessonContent.innerHTML = '<div class="page active" data-page="0"><p>Pelajaran dengan ID ini tidak ditemukan.</p></div><div id="page-indicator" class="page-indicator">Halaman 1</div>';
         pages = ['<p>Pelajaran dengan ID ini tidak ditemukan.</p>'];
         updatePageNavigation();
         console.error('[Lesson Detail] No lesson found with id:', lessonId);
@@ -116,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('[Lesson Detail] Failed to load lesson:', err.message);
       lessonTitle.textContent = 'Error';
       lessonTitle.dataset.fullTitle = 'Error';
-      lessonContent.innerHTML = '<div class="page active"><p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid.</p></div>';
+      lessonContent.innerHTML = '<div class="page active" data-page="0"><p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid.</p></div><div id="page-indicator" class="page-indicator">Halaman 1</div>';
       pages = ['<p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid.</p>'];
       updatePageNavigation();
     }
@@ -132,26 +133,27 @@ document.addEventListener('DOMContentLoaded', () => {
     tempDiv.style.padding = '15px';
     tempDiv.style.fontSize = '1rem';
     tempDiv.style.lineHeight = '1.8';
+    tempDiv.style.fontFamily = '"Nunito", sans-serif';
     document.body.appendChild(tempDiv);
-    
+
     tempDiv.innerHTML = content;
-    const paragraphs = Array.from(tempDiv.children).filter(p => p.tagName === 'P');
+    const elements = Array.from(tempDiv.children).filter(el => el.tagName === 'P' || el.tagName === 'DIV');
     
     let currentPageContent = '';
     let pageHeight = 0;
     const maxHeight = window.innerHeight - 120; // Tinggi maksimum per halaman
     pages = [];
 
-    paragraphs.forEach(p => {
-      tempDiv.innerHTML = currentPageContent + p.outerHTML;
-      const newHeight = tempDiv.offsetHeight;
+    elements.forEach((el, index) => {
+      tempDiv.innerHTML = currentPageContent + el.outerHTML;
+      const newHeight = tempDiv.scrollHeight; // Gunakan scrollHeight untuk akurasi
       if (newHeight > maxHeight && currentPageContent) {
         // Simpan halaman saat ini dan mulai baru
         pages.push(currentPageContent);
-        currentPageContent = p.outerHTML;
-        pageHeight = p.offsetHeight || 30;
+        currentPageContent = el.outerHTML;
+        pageHeight = tempDiv.scrollHeight;
       } else {
-        currentPageContent += p.outerHTML;
+        currentPageContent += el.outerHTML;
         pageHeight = newHeight;
       }
     });
@@ -166,28 +168,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // Tampilkan halaman
     lessonContent.innerHTML = pages.map((page, index) => 
       `<div class="page ${index === 0 ? 'active' : ''}" data-page="${index}">${page}</div>`
-    ).join('');
+    ).join('') + `<div id="page-indicator" class="page-indicator">Halaman ${currentPage + 1}</div>`;
     currentPage = 0;
 
     // Tambahkan pesan sesi selesai jika diperlukan
     const progress = getUserProgress();
     if (progress.sessionCompleted) {
-      lessonContent.innerHTML = '<div class="page active" data-page="0"><p style="color: var(--bonus-green); font-weight: 600;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p></div>';
+      lessonContent.innerHTML = '<div class="page active" data-page="0"><p style="color: var(--bonus-green); font-weight: 600;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p></div><div id="page-indicator" class="page-indicator">Halaman 1</div>';
       pages = ['<p style="color: var(--bonus-green); font-weight: 600;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p>'];
     }
 
     updatePageNavigation();
   }
 
-  // Perbarui navigasi halaman
+  // Perbarui indikator halaman
   function updatePageNavigation() {
-    pageIndicator.textContent = `Halaman ${currentPage + 1} / ${pages.length}`;
-    prevPageBtn.disabled = currentPage === 0;
-    nextPageBtn.disabled = currentPage === pages.length - 1;
+    const indicator = lessonContent.querySelector('#page-indicator');
+    indicator.textContent = `Halaman ${currentPage + 1} / ${pages.length}`;
   }
 
-  // Navigasi halaman
-  nextPageBtn.addEventListener('click', () => {
+  // Navigasi ke halaman berikutnya
+  function goToNextPage() {
     if (currentPage < pages.length - 1) {
       const current = lessonContent.querySelector(`.page[data-page="${currentPage}"]`);
       current.classList.remove('active');
@@ -198,9 +199,10 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => current.classList.remove('prev'), 600); // Reset setelah animasi
       updatePageNavigation();
     }
-  });
+  }
 
-  prevPageBtn.addEventListener('click', () => {
+  // Navigasi ke halaman sebelumnya
+  function goToPrevPage() {
     if (currentPage > 0) {
       const current = lessonContent.querySelector(`.page[data-page="${currentPage}"]`);
       current.classList.remove('active');
@@ -210,6 +212,63 @@ document.addEventListener('DOMContentLoaded', () => {
       prev.classList.add('active');
       setTimeout(() => current.classList.remove('next'), 600); // Reset setelah animasi
       updatePageNavigation();
+    }
+  }
+
+  // Deteksi swipe untuk mobile
+  lessonContent.addEventListener('touchstart', (e) => {
+    startTouchX = e.touches[0].clientX;
+  });
+
+  lessonContent.addEventListener('touchmove', (e) => {
+    e.preventDefault(); // Cegah scroll default
+    const touchX = e.touches[0].clientX;
+    const deltaX = touchX - startTouchX;
+    if (deltaX > 50 && currentPage > 0) {
+      goToPrevPage();
+      startTouchX = touchX; // Reset posisi
+    } else if (deltaX < -50 && currentPage < pages.length - 1) {
+      goToNextPage();
+      startTouchX = touchX; // Reset posisi
+    }
+  });
+
+  // Deteksi drag untuk desktop
+  lessonContent.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startX = e.clientX;
+    lessonContent.style.cursor = 'grabbing';
+  });
+
+  lessonContent.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      const deltaX = e.clientX - startX;
+      if (deltaX > 50 && currentPage > 0) {
+        goToPrevPage();
+        isDragging = false;
+      } else if (deltaX < -50 && currentPage < pages.length - 1) {
+        goToNextPage();
+        isDragging = false;
+      }
+    }
+  });
+
+  lessonContent.addEventListener('mouseup', () => {
+    isDragging = false;
+    lessonContent.style.cursor = 'grab';
+  });
+
+  lessonContent.addEventListener('mouseleave', () => {
+    isDragging = false;
+    lessonContent.style.cursor = 'grab';
+  });
+
+  // Deteksi tombol panah keyboard
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft' && currentPage > 0) {
+      goToPrevPage();
+    } else if (e.key === 'ArrowRight' && currentPage < pages.length - 1) {
+      goToNextPage();
     }
   });
 
@@ -236,8 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function triggerAd() {
     console.log('[Monetag] Iklan popunder ditampilkan');
-    // Ganti dengan skrip Monetag sebenarnya, misalnya:
-    // window.open('https://monetag-ad-url', '_blank');
+    // Ganti dengan skrip Monetag sebenarnya
   }
 
   function showFloatingPoints(pointsToAdd) {
