@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (hours >= 18 && hours < 21) {
       sessionName = 'Malam';
     } else {
-      // Di luar sesi (21:00–05:59 WIB), anggap sesi berikutnya Pagi 1 hari berikutnya
       sessionName = 'Pagi1';
       const tomorrow = new Date(now);
       tomorrow.setDate(now.getDate() + 1);
@@ -58,14 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (savedSessionDate !== date || savedSessionKey !== sessionKey) {
     localStorage.setItem('currentSessionDate', date);
     localStorage.setItem('currentSessionKey', sessionKey);
-    // Hapus status sessionCompleted dan semua timer saat sesi baru
     const progress = getUserProgress();
     delete progress.sessionCompleted;
-    Object.keys(progress).forEach(key => {
-      if (key.startsWith('lessonTimer_')) {
-        delete progress[key];
-      }
-    });
+    delete progress[`sessionTimer_${currentSessionKey}`];
     setUserProgress(progress);
   }
   localStorage.setItem('currentSessionKey', currentSessionKey);
@@ -105,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         lessonTitle.textContent = lesson.title;
         lessonTitle.dataset.fullTitle = lesson.title;
         const fullContent = lesson.fullContent || '<p>Konten pelajaran belum tersedia.</p>';
+        console.log('[Lesson Detail] Full content loaded:', fullContent);
         splitContentIntoPages(fullContent);
       } else {
         lessonTitle.textContent = 'Pelajaran Tidak Ditemukan';
@@ -125,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Pecah konten menjadi halaman berdasarkan tinggi layar
   function splitContentIntoPages(content) {
+    console.log('[splitContentIntoPages] Starting with content:', content);
     lessonContent.innerHTML = ''; // Kosongkan konten
     const tempDiv = document.createElement('div');
     tempDiv.style.position = 'absolute';
@@ -134,26 +130,31 @@ document.addEventListener('DOMContentLoaded', () => {
     tempDiv.style.fontSize = '1rem';
     tempDiv.style.lineHeight = '1.8';
     tempDiv.style.fontFamily = '"Nunito", sans-serif';
+    tempDiv.style.color = document.body.classList.contains('dark') ? '#9ca3af' : '#4b5563';
     document.body.appendChild(tempDiv);
 
+    // Bagi konten menjadi elemen-elemen HTML
     tempDiv.innerHTML = content;
-    const elements = Array.from(tempDiv.children).filter(el => el.tagName === 'P' || el.tagName === 'DIV');
-    
+    const elements = Array.from(tempDiv.childNodes).filter(node => node.nodeType === 1); // Hanya elemen HTML
+    console.log('[splitContentIntoPages] Elements found:', elements.length);
+
     let currentPageContent = '';
     let pageHeight = 0;
     const maxHeight = window.innerHeight - 120; // Tinggi maksimum per halaman
     pages = [];
 
     elements.forEach((el, index) => {
-      tempDiv.innerHTML = currentPageContent + el.outerHTML;
-      const newHeight = tempDiv.scrollHeight; // Gunakan scrollHeight untuk akurasi
+      const elClone = el.cloneNode(true);
+      tempDiv.innerHTML = currentPageContent + elClone.outerHTML;
+      const newHeight = tempDiv.scrollHeight;
+      console.log(`[splitContentIntoPages] Element ${index}, newHeight: ${newHeight}, maxHeight: ${maxHeight}`);
       if (newHeight > maxHeight && currentPageContent) {
-        // Simpan halaman saat ini dan mulai baru
         pages.push(currentPageContent);
-        currentPageContent = el.outerHTML;
+        console.log(`[splitContentIntoPages] Page ${pages.length} created with content:`, currentPageContent);
+        currentPageContent = elClone.outerHTML;
         pageHeight = tempDiv.scrollHeight;
       } else {
-        currentPageContent += el.outerHTML;
+        currentPageContent += elClone.outerHTML;
         pageHeight = newHeight;
       }
     });
@@ -161,9 +162,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Tambahkan halaman terakhir
     if (currentPageContent) {
       pages.push(currentPageContent);
+      console.log(`[splitContentIntoPages] Final page created:`, currentPageContent);
     }
 
     document.body.removeChild(tempDiv);
+    console.log('[splitContentIntoPages] Total pages:', pages.length);
 
     // Tampilkan halaman
     lessonContent.innerHTML = pages.map((page, index) => 
@@ -176,6 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (progress.sessionCompleted) {
       lessonContent.innerHTML = '<div class="page active" data-page="0"><p style="color: var(--bonus-green); font-weight: 600;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p></div><div id="page-indicator" class="page-indicator">Halaman 1</div>';
       pages = ['<p style="color: var(--bonus-green); font-weight: 600;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p>'];
+      console.log('[splitContentIntoPages] Session completed, showing message');
     }
 
     updatePageNavigation();
@@ -352,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function startTimer() {
     const progress = getUserProgress();
-    const timerKey = `lessonTimer_${lessonId}_${currentSessionKey}`;
+    const timerKey = `sessionTimer_${currentSessionKey}`;
 
     // Cek apakah sesi sudah selesai secara global
     if (progress.sessionCompleted) {
@@ -412,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isTabActive && timerInterval) {
       clearInterval(timerInterval);
       const progress = getUserProgress();
-      progress[`lessonTimer_${lessonId}_${currentSessionKey}`] = { remaining: timeRemaining };
+      progress[`sessionTimer_${currentSessionKey}`] = { remaining: timeRemaining };
       setUserProgress(progress);
     } else if (isTabActive && !timerInterval) {
       startTimer(); // Lanjutkan timer saat tab aktif kembali
@@ -424,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (timerInterval) {
       clearInterval(timerInterval);
       const progress = getUserProgress();
-      progress[`lessonTimer_${lessonId}_${currentSessionKey}`] = { remaining: timeRemaining };
+      progress[`sessionTimer_${currentSessionKey}`] = { remaining: timeRemaining };
       setUserProgress(progress);
     }
   });
