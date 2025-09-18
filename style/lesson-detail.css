@@ -273,50 +273,23 @@ body.dark .lesson-detail {
   background: #35354f;
 }
 
-/* Page Navigation */
-.page-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.page-btn {
-  background: var(--citta-blue);
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
-}
-
-.page-btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-
-body.dark .page-btn {
-  background: var(--fun-orange);
-}
-
-body.dark .page-btn:disabled {
-  background: #555;
-}
-
-.page-btn:hover:not(:disabled) {
-  transform: scale(1.05);
-}
-
-#page-indicator {
-  font-size: 0.9rem;
+/* Page Indicator */
+.page-indicator {
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-light);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 5px 10px;
+  border-radius: 8px;
+  z-index: 3;
 }
 
-body.dark #page-indicator {
+body.dark .page-indicator {
   color: var(--text-dark);
+  background: rgba(30, 30, 45, 0.8);
 }
 
 /* Lesson Content */
@@ -328,6 +301,7 @@ body.dark #page-indicator {
   overflow: hidden;
   position: relative;
   perspective: 1000px; /* Untuk efek 3D */
+  user-select: none; /* Cegah seleksi teks saat drag */
 }
 
 body.dark .lesson-content {
@@ -461,4 +435,4 @@ body.dark .floating-points {
   .lesson-content {
     max-height: calc(100vh - 110px);
   }
-  }
+}
