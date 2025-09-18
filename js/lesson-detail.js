@@ -133,28 +133,34 @@ document.addEventListener('DOMContentLoaded', () => {
     tempDiv.style.color = document.body.classList.contains('dark') ? '#9ca3af' : '#4b5563';
     document.body.appendChild(tempDiv);
 
-    // Bagi konten menjadi elemen-elemen HTML
-    tempDiv.innerHTML = content;
-    const elements = Array.from(tempDiv.childNodes).filter(node => node.nodeType === 1); // Hanya elemen HTML
-    console.log('[splitContentIntoPages] Elements found:', elements.length);
+    // Wrap seluruh konten dalam <div> untuk memastikan parsing
+    tempDiv.innerHTML = `<div>${content}</div>`;
+    const contentDiv = tempDiv.firstElementChild;
+    const paragraphs = Array.from(contentDiv.childNodes).filter(node => node.nodeType === 1 || (node.nodeType === 3 && node.textContent.trim()));
+    console.log('[splitContentIntoPages] Elements found:', paragraphs.length);
 
     let currentPageContent = '';
     let pageHeight = 0;
     const maxHeight = window.innerHeight - 120; // Tinggi maksimum per halaman
     pages = [];
 
-    elements.forEach((el, index) => {
-      const elClone = el.cloneNode(true);
-      tempDiv.innerHTML = currentPageContent + elClone.outerHTML;
-      const newHeight = tempDiv.scrollHeight;
+    paragraphs.forEach((el, index) => {
+      let elContent;
+      if (el.nodeType === 1) {
+        elContent = el.outerHTML;
+      } else {
+        elContent = `<p>${el.textContent.trim()}</p>`;
+      }
+      tempDiv.innerHTML = `<div>${currentPageContent + elContent}</div>`;
+      const newHeight = tempDiv.firstElementChild.scrollHeight;
       console.log(`[splitContentIntoPages] Element ${index}, newHeight: ${newHeight}, maxHeight: ${maxHeight}`);
       if (newHeight > maxHeight && currentPageContent) {
         pages.push(currentPageContent);
-        console.log(`[splitContentIntoPages] Page ${pages.length} created with content:`, currentPageContent);
-        currentPageContent = elClone.outerHTML;
-        pageHeight = tempDiv.scrollHeight;
+        console.log(`[splitContentIntoPages] Page ${pages.length} created with content length: ${currentPageContent.length}`);
+        currentPageContent = elContent;
+        pageHeight = newHeight;
       } else {
-        currentPageContent += elClone.outerHTML;
+        currentPageContent += elContent;
         pageHeight = newHeight;
       }
     });
@@ -162,7 +168,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Tambahkan halaman terakhir
     if (currentPageContent) {
       pages.push(currentPageContent);
-      console.log(`[splitContentIntoPages] Final page created:`, currentPageContent);
+      console.log(`[splitContentIntoPages] Final page created with content length: ${currentPageContent.length}`);
+    }
+
+    // Fallback jika tidak ada halaman
+    if (pages.length === 0) {
+      pages.push('<p>Konten tidak dapat dipisah menjadi halaman. Silakan periksa data.</p>');
+      console.warn('[splitContentIntoPages] No pages created, using fallback content');
     }
 
     document.body.removeChild(tempDiv);
@@ -171,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Tampilkan halaman
     lessonContent.innerHTML = pages.map((page, index) => 
       `<div class="page ${index === 0 ? 'active' : ''}" data-page="${index}">${page}</div>`
-    ).join('') + `<div id="page-indicator" class="page-indicator">Halaman ${currentPage + 1}</div>`;
+    ).join('') + `<div id="page-indicator" class="page-indicator">Halaman ${currentPage + 1} / ${pages.length}</div>`;
     currentPage = 0;
 
     // Tambahkan pesan sesi selesai jika diperlukan
@@ -208,248 +220,4 @@ document.addEventListener('DOMContentLoaded', () => {
   // Navigasi ke halaman sebelumnya
   function goToPrevPage() {
     if (currentPage > 0) {
-      const current = lessonContent.querySelector(`.page[data-page="${currentPage}"]`);
-      current.classList.remove('active');
-      current.classList.add('next');
-      currentPage--;
-      const prev = lessonContent.querySelector(`.page[data-page="${currentPage}"]`);
-      prev.classList.add('active');
-      setTimeout(() => current.classList.remove('next'), 600); // Reset setelah animasi
-      updatePageNavigation();
-    }
-  }
-
-  // Deteksi swipe untuk mobile
-  lessonContent.addEventListener('touchstart', (e) => {
-    startTouchX = e.touches[0].clientX;
-  });
-
-  lessonContent.addEventListener('touchmove', (e) => {
-    e.preventDefault(); // Cegah scroll default
-    const touchX = e.touches[0].clientX;
-    const deltaX = touchX - startTouchX;
-    if (deltaX > 50 && currentPage > 0) {
-      goToPrevPage();
-      startTouchX = touchX; // Reset posisi
-    } else if (deltaX < -50 && currentPage < pages.length - 1) {
-      goToNextPage();
-      startTouchX = touchX; // Reset posisi
-    }
-  });
-
-  // Deteksi drag untuk desktop
-  lessonContent.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    startX = e.clientX;
-    lessonContent.style.cursor = 'grabbing';
-  });
-
-  lessonContent.addEventListener('mousemove', (e) => {
-    if (isDragging) {
-      const deltaX = e.clientX - startX;
-      if (deltaX > 50 && currentPage > 0) {
-        goToPrevPage();
-        isDragging = false;
-      } else if (deltaX < -50 && currentPage < pages.length - 1) {
-        goToNextPage();
-        isDragging = false;
-      }
-    }
-  });
-
-  lessonContent.addEventListener('mouseup', () => {
-    isDragging = false;
-    lessonContent.style.cursor = 'grab';
-  });
-
-  lessonContent.addEventListener('mouseleave', () => {
-    isDragging = false;
-    lessonContent.style.cursor = 'grab';
-  });
-
-  // Deteksi tombol panah keyboard
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft' && currentPage > 0) {
-      goToPrevPage();
-    } else if (e.key === 'ArrowRight' && currentPage < pages.length - 1) {
-      goToNextPage();
-    }
-  });
-
-  // Title Popup
-  lessonTitle.addEventListener('click', () => {
-    const fullTitle = lessonTitle.dataset.fullTitle || lessonTitle.textContent;
-    const popup = document.createElement('div');
-    popup.className = 'title-popup';
-    popup.textContent = fullTitle;
-    document.body.appendChild(popup);
-    setTimeout(() => popup.classList.add('show'), 10);
-    setTimeout(() => {
-      popup.classList.remove('show');
-      setTimeout(() => popup.remove(), 300);
-    }, 3000); // Popup 3 detik
-  });
-
-  function formatTime(ms) {
-    if (ms < 0) ms = 0;
-    const minutes = Math.floor(ms / 1000 / 60);
-    const seconds = Math.floor((ms / 1000) % 60);
-    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-  }
-
-  function triggerAd() {
-    console.log('[Monetag] Iklan popunder ditampilkan');
-    // Ganti dengan skrip Monetag sebenarnya
-  }
-
-  function showFloatingPoints(pointsToAdd) {
-    const pointsRect = pointsEarned.getBoundingClientRect();
-    const floatEl = document.createElement('span');
-    floatEl.className = 'floating-points';
-    floatEl.textContent = `+${pointsToAdd}`;
-    floatEl.style.position = 'absolute';
-    floatEl.style.left = `${pointsRect.left + pointsRect.width / 2}px`;
-    floatEl.style.top = `${pointsRect.top + 30}px`;
-    document.body.appendChild(floatEl);
-
-    let opacity = 1;
-    let y = 30;
-    const animate = () => {
-      y -= 1;
-      opacity -= 0.02;
-      floatEl.style.transform = `translate(-50%, ${-y}px)`;
-      floatEl.style.opacity = opacity;
-      if (y <= 0 || opacity <= 0) {
-        floatEl.remove();
-      } else {
-        requestAnimationFrame(animate);
-      }
-    };
-    requestAnimationFrame(animate);
-  }
-
-  function showGamePopup(message) {
-    const popup = document.createElement('div');
-    popup.className = 'game-popup';
-    popup.textContent = message;
-    document.body.appendChild(popup);
-    setTimeout(() => popup.classList.add('show'), 10);
-    setTimeout(() => {
-      popup.classList.remove('show');
-      setTimeout(() => popup.remove(), 300);
-    }, 4000); // Popup durasi 4 detik
-  }
-
-  function savePoints(pointsToAdd) {
-    const progress = getUserProgress();
-    progress.points = (progress.points || 0) + pointsToAdd;
-    setUserProgress(progress);
-  }
-
-  function getUserProgress() {
-    return JSON.parse(localStorage.getItem('userProgress') || '{}');
-  }
-
-  function setUserProgress(p) {
-    localStorage.setItem('userProgress', JSON.stringify(p));
-  }
-
-  function startTimer() {
-    const progress = getUserProgress();
-    const timerKey = `sessionTimer_${currentSessionKey}`;
-
-    // Cek apakah sesi sudah selesai secara global
-    if (progress.sessionCompleted) {
-      timerDisplay.textContent = '00:00';
-      pointsEarned.textContent = `Poin: 500`;
-      splitContentIntoPages('<p style="color: var(--bonus-green); font-weight: 600;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p>');
-      return;
-    }
-
-    timeRemaining = progress[timerKey]?.remaining || 10 * 60 * 1000;
-    minutesCompleted = Math.floor((10 * 60 * 1000 - timeRemaining) / (60 * 1000));
-    points = minutesCompleted * 50;
-    pointsEarned.textContent = `Poin: ${points}`;
-
-    timerDisplay.textContent = formatTime(timeRemaining);
-    timerInterval = setInterval(() => {
-      if (isTabActive) {
-        timeRemaining -= 1000;
-        timerDisplay.textContent = formatTime(timeRemaining);
-        progress[timerKey] = { remaining: timeRemaining };
-        setUserProgress(progress);
-
-        if (timeRemaining <= 0) {
-          clearInterval(timerInterval);
-          progress.sessionCompleted = true; // Tandai sesi selesai secara global
-          setUserProgress(progress);
-          showGamePopup('Waktu membaca selesai! Anda mendapatkan 500 poin.');
-          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, duration: 2000 });
-          points = 500;
-          pointsEarned.textContent = `Poin: ${points}`;
-          savePoints(500);
-          setTimeout(() => {
-            window.location.href = 'dashboard.html#section-missions';
-          }, 4000);
-        } else if (timeRemaining % (60 * 1000) === 0) {
-          minutesCompleted++;
-          triggerAd();
-          showFloatingPoints(50);
-          showGamePopup('1 menit selesai! +50 poin');
-          confetti({ particleCount: 50, spread: 60, duration: 2000 });
-          points += 50;
-          pointsEarned.textContent = `Poin: ${points}`;
-          savePoints(50);
-        }
-      }
-    }, 1000);
-  }
-
-  // Reload page
-  reloadTimer.addEventListener('click', () => {
-    window.location.reload(); // Refresh browser
-  });
-
-  // Jeda timer ketika tab tidak aktif
-  document.addEventListener('visibilitychange', () => {
-    isTabActive = document.visibilityState === 'visible';
-    if (!isTabActive && timerInterval) {
-      clearInterval(timerInterval);
-      const progress = getUserProgress();
-      progress[`sessionTimer_${currentSessionKey}`] = { remaining: timeRemaining };
-      setUserProgress(progress);
-    } else if (isTabActive && !timerInterval) {
-      startTimer(); // Lanjutkan timer saat tab aktif kembali
-    }
-  });
-
-  // Stop timer when page is closed
-  window.addEventListener('beforeunload', () => {
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      const progress = getUserProgress();
-      progress[`sessionTimer_${currentSessionKey}`] = { remaining: timeRemaining };
-      setUserProgress(progress);
-    }
-  });
-
-  // Automatically start timer on load
-  loadLesson();
-  startTimer();
-
-  // Exit dropdown
-  exitToggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isShown = exitMenu.classList.toggle('show');
-    exitToggle.classList.toggle('active', isShown);
-    exitMenu.setAttribute('aria-hidden', !isShown);
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!exitMenu.contains(e.target) && e.target !== exitToggle) {
-      exitMenu.classList.remove('show');
-      exitToggle.classList.remove('active');
-      exitMenu.setAttribute('aria-hidden', 'true');
-    }
-  });
-});
+      const current =
