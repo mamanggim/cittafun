@@ -83,5 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Login gagal, coba lagi.");
       }
     });
+  } else {
+    console.error("Tombol login tidak ditemukan. Pastikan ID 'google-login' ada di HTML.");
   }
 });
