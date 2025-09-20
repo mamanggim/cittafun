@@ -1,5 +1,5 @@
 // js/dashboard-ui.js
-import { auth } from './firebase-config.js';
+import { auth, db } from './firebase-config.js';
 import { 
   onAuthStateChanged, 
   signOut 
@@ -221,16 +221,21 @@ async function loadUserData() {
   const docSnap = await getDoc(userRef);
   if (docSnap.exists()) {
     const data = docSnap.data();
-    userName.textContent = data.name || 'Pengguna';
-    userEmail.textContent = data.email || '-';
-    userPhoto.src = data.photoURL || 'assets/icons/user-placeholder.png';
+    userName.textContent = data.name || user.displayName || 'Pengguna';
+    userEmail.textContent = data.email || user.email || '-';
+    userPhoto.src = user.photoURL || 'https://via.placeholder.com/50'; // Gunakan photoURL dari Google
     pointsBalance.textContent = data.points || 0;
-    pointsRupiah.textContent = `Rp${(data.points * 10).toLocaleString('id-ID')}`; // 1 poin = Rp10
+    pointsRupiah.textContent = `Rp${(data.points * 10).toLocaleString('id-ID')}`;
     refCount.textContent = data.referrals?.length || 0;
     recentActivity.innerHTML = data.recentActivity?.length 
       ? data.recentActivity.map(act => `<li>${act}</li>`).join('')
       : '<li>Tidak ada aktivitas.</li>';
     totalBonusPercentage.textContent = `${(data.referrals?.length || 0) * 2}%`;
+  } else {
+    // Jika data di Firestore belum ada, gunakan data dari auth
+    userName.textContent = user.displayName || 'Pengguna';
+    userEmail.textContent = user.email || '-';
+    userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
   }
 }
 
