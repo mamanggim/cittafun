@@ -16,7 +16,7 @@ import {
 const sidebar = document.getElementById('sidebar');
 const sidebarToggle = document.getElementById('sidebar-toggle');
 const overlay = document.getElementById('sidebar-overlay');
-const profileToggle = document.getElementById('profile-menu-toggle');
+const userPhoto = document.getElementById('user-photo');
 const profileMenu = document.getElementById('profile-menu');
 const logoutBtn = document.getElementById('logout-btn-2');
 const navLinks = Array.from(document.querySelectorAll('.nav-link'));
@@ -26,7 +26,6 @@ const checkProgressBtn = document.getElementById('check-progress-btn');
 const totalBonusPercentage = document.getElementById('total-bonus-percentage');
 const userName = document.getElementById('user-name');
 const userEmail = document.getElementById('user-email');
-const userPhoto = document.getElementById('user-photo');
 const pointsBalance = document.getElementById('points-balance');
 const pointsRupiah = document.getElementById('points-rupiah');
 const refCount = document.getElementById('ref-count');
@@ -139,14 +138,14 @@ safeAddEvent(overlay, 'click', (e) => {
   closeSidebar();
 });
 
-safeAddEvent(profileToggle, 'click', (e) => {
+safeAddEvent(userPhoto, 'click', (e) => {
   e.stopPropagation();
   profileMenu?.classList.toggle('show');
   profileMenu?.setAttribute('aria-hidden', !profileMenu.classList.contains('show'));
 });
 
 document.addEventListener('click', (e) => {
-  if (profileMenu && !profileMenu.contains(e.target) && e.target !== profileToggle) {
+  if (profileMenu && !profileMenu.contains(e.target) && e.target !== userPhoto) {
     profileMenu.classList.remove('show');
     profileMenu.setAttribute('aria-hidden', 'true');
   }
@@ -201,6 +200,24 @@ safeAddEvent(themeToggle, 'click', (e) => {
   applyTheme(document.body.classList.contains('dark') ? 'light' : 'dark');
 });
 
+// Button Functionality
+safeAddEvent(btnWithdraw, 'click', () => {
+  navLinks.find(link => link.getAttribute('data-section') === 'penarikan').click();
+  showGamePopup('Arahkan ke Penarikan!');
+});
+
+safeAddEvent(btnCopyRef, 'click', async () => {
+  if (!user) return;
+  const referralLink = `https://cittafun.com/referral?code=${user.uid}`;
+  try {
+    await navigator.clipboard.writeText(referralLink);
+    showGamePopup('Link Referral disalin!');
+  } catch (err) {
+    console.error('Gagal menyalin link:', err);
+    showGamePopup('Gagal menyalin link, coba lagi!');
+  }
+});
+
 // Firebase Logic
 let user = null;
 
@@ -223,7 +240,7 @@ async function loadUserData() {
     const data = docSnap.data();
     userName.textContent = data.name || user.displayName || 'Pengguna';
     userEmail.textContent = data.email || user.email || '-';
-    userPhoto.src = user.photoURL || 'https://via.placeholder.com/50'; // Gunakan photoURL dari Google
+    userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
     pointsBalance.textContent = data.points || 0;
     pointsRupiah.textContent = `Rp${(data.points * 10).toLocaleString('id-ID')}`;
     refCount.textContent = data.referrals?.length || 0;
@@ -232,7 +249,6 @@ async function loadUserData() {
       : '<li>Tidak ada aktivitas.</li>';
     totalBonusPercentage.textContent = `${(data.referrals?.length || 0) * 2}%`;
   } else {
-    // Jika data di Firestore belum ada, gunakan data dari auth
     userName.textContent = user.displayName || 'Pengguna';
     userEmail.textContent = user.email || '-';
     userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
@@ -279,7 +295,7 @@ function setupClaimListeners() {
           return;
         }
 
-        const points = mission.startsWith('ref-') ? 100 : 100; // 100 poin per klaim (adjustable)
+        const points = mission.startsWith('ref-') ? 100 : 100;
         await updateDoc(userRef, {
           points: (data.points || 0) + points,
           missionsCompleted: {
@@ -304,7 +320,7 @@ function setupClaimListeners() {
     if (docSnap.exists()) {
       const data = docSnap.data();
       if (data.referrals?.length >= 1) {
-        const bonus = 50000; // 50.000 poin untuk referral aktif 7 hari
+        const bonus = 50000;
         await updateDoc(userRef, {
           points: (data.points || 0) + bonus,
           recentActivity: arrayUnion(`Bonus referral 50.000 poin - ${new Date().toLocaleString('id-ID')}`).slice(-5)
