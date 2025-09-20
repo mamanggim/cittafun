@@ -446,17 +446,18 @@ body.dark .card .label {
   margin: 8px 0;
 }
 
-#points-balance {
-  color: var(--citta-blue); /* Warna biru untuk Saldo Poin */
+#points-balance,
+.balance-card h3 {
+  color: var(--citta-blue); /* Saldo Poin dan 0 selalu biru */
 }
 
-#points-rupiah {
-  color: var(--fun-orange); /* Warna oranye untuk Saldo Rupiah */
+#points-rupiah,
+.balance-card h3 ~ .label:nth-child(3) {
+  color: var(--fun-orange); /* Saldo Rupiah dan Rp0 selalu oranye */
 }
 
 .card small {
   font-size: 0.8rem;
-  color: #6b7280;
 }
 
 body.dark .card small {
@@ -964,7 +965,7 @@ body.dark .search-suggestions div {
   color: #6b7280;
   cursor: pointer;
   margin-left: 5px;
-  display: inline-block; /* Pastikan terlihat */
+  display: inline-block;
 }
 
 body.dark .info-icon {
@@ -973,13 +974,17 @@ body.dark .info-icon {
 
 /* Clickable Total Teman */
 #total-teman-link {
-  color: var(--citta-blue);
-  text-decoration: none; /* Hapus garis bawah */
+  color: var(--fun-orange); /* Teks Total Teman oranye */
+  text-decoration: none;
   cursor: pointer;
 }
 
 #total-teman-link:hover {
   color: var(--citta-blue-dark);
+}
+
+#ref-count {
+  color: var(--citta-blue); /* Angka 0 biru */
 }
 
 /* Responsive */
