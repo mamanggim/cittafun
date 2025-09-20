@@ -504,6 +504,38 @@ body.dark .list-muted li {
   color: #9ca3af;
 }
 
+/* Tambahkan di dalam file dashboard.css */
+.card .label {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+body.dark .card .label {
+  color: #9ca3af;
+}
+
+.info-icon {
+  font-size: 0.8rem;
+  color: #6b7280;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+body.dark .info-icon {
+  color: #9ca3af;
+}
+
+.clickable {
+  color: var(--citta-blue);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.clickable:hover {
+  color: var(--citta-blue-dark);
+}
+
 /* Missions */
 .missions-grid {
   display: grid;
