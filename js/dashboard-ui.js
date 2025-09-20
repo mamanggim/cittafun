@@ -290,7 +290,7 @@ async function loadLeaderboard() {
     snapshot.forEach(doc => {
       const data = doc.data();
       const li = document.createElement('li');
-      li.innerHTML = `<span>${data.name || 'Pengguna Anonim'}</span><span>${rank}</span><span>${data.points || 0}</span>`;
+      li.innerHTML = `<span>${rank}</span><span>${data.name || 'Pengguna Anonim'}</span><span>${data.points || 0}</span>`;
       leaderboardList.appendChild(li);
       rank++;
     });
@@ -298,11 +298,11 @@ async function loadLeaderboard() {
     console.error('Error loading leaderboard:', err);
     // Simulasi data jika gagal ambil dari Firebase
     leaderboardList.innerHTML = `
-      <li><span>Ahmad</span><span>1</span><span>5000</span></li>
-      <li><span>Budi</span><span>2</span><span>4500</span></li>
-      <li><span>Citra</span><span>3</span><span>4000</span></li>
-      <li><span>Dedi</span><span>4</span><span>3500</span></li>
-      <li><span>Eka</span><span>5</span><span>3000</span></li>
+      <li><span>1</span><span>Ahmad</span><span>5000</span></li>
+      <li><span>2</span><span>Budi</span><span>4500</span></li>
+      <li><span>3</span><span>Citra</span><span>4000</span></li>
+      <li><span>4</span><span>Dedi</span><span>3500</span></li>
+      <li><span>5</span><span>Eka</span><span>3000</span></li>
     `;
   }
 }
