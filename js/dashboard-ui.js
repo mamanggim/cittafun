@@ -39,6 +39,7 @@ const btnCopyRef = document.getElementById('btn-copy-ref');
 const claimButtons = document.querySelectorAll('.btn-claim');
 const totalTemanLink = document.getElementById('total-teman-link');
 const infoIcon = document.querySelector('.info-icon');
+const leaderboardList = document.getElementById('leaderboard-list');
 
 // Helper Functions
 function safeAddEvent(el, ev, fn) {
@@ -249,6 +250,7 @@ onAuthStateChanged(auth, async (currentUser) => {
   }
   user = currentUser;
   await loadUserData();
+  await loadLeaderboard();
   setupCountdowns();
   setupClaimListeners();
   startPointConversion();
@@ -274,6 +276,34 @@ async function loadUserData() {
     userName.textContent = user.displayName || 'Pengguna';
     userEmail.textContent = user.email || '-';
     userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
+  }
+}
+
+async function loadLeaderboard() {
+  if (!leaderboardList) return;
+  try {
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, orderBy('points', 'desc'), limit(5));
+    const snapshot = await getDocs(q);
+    let rank = 1;
+    leaderboardList.innerHTML = '';
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${rank}</span><span>${data.name || 'Pengguna Anonim'}</span><span>${data.points || 0}</span>`;
+      leaderboardList.appendChild(li);
+      rank++;
+    });
+  } catch (err) {
+    console.error('Error loading leaderboard:', err);
+    // Simulasi data jika gagal ambil dari Firebase
+    leaderboardList.innerHTML = `
+      <li><span>1</span><span>Ahmad</span><span>5000</span></li>
+      <li><span>2</span><span>Budi</span><span>4500</span></li>
+      <li><span>3</span><span>Citra</span><span>4000</span></li>
+      <li><span>4</span><span>Dedi</span><span>3500</span></li>
+      <li><span>5</span><span>Eka</span><span>3000</span></li>
+    `;
   }
 }
 
@@ -339,6 +369,7 @@ function setupClaimListeners() {
           recentActivity: arrayUnion(`Klaim ${mission} - ${new Date().toLocaleString('id-ID')}`).slice(-5)
         });
         await loadUserData();
+        await loadLeaderboard(); // Perbarui leaderboard setelah klaim poin
         showGamePopup(`Berhasil klaim ${points} poin!`);
         showFloatingPoints(button, points);
         if (window.confetti) confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
@@ -360,6 +391,7 @@ function setupClaimListeners() {
           recentActivity: arrayUnion(`Bonus referral 50.000 poin - ${new Date().toLocaleString('id-ID')}`).slice(-5)
         });
         await loadUserData();
+        await loadLeaderboard(); // Perbarui leaderboard setelah bonus
         showGamePopup(`Berhasil klaim bonus ${bonus} poin!`);
         showFloatingPoints(checkProgressBtn, bonus);
         if (window.confetti) confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
@@ -395,6 +427,7 @@ function startPointConversion() {
           recentActivity: arrayUnion(`Konversi ${convertiblePoints} poin - ${new Date().toLocaleString('id-ID')}`).slice(-5)
         });
         await loadUserData();
+        await loadLeaderboard(); // Perbarui leaderboard setelah konversi
         showGamePopup(`Konversi ${convertiblePoints} poin berhasil!`);
       }
     }
@@ -406,5 +439,6 @@ function startPointConversion() {
 setInitialSidebarState();
 if (user) {
   loadUserData();
+  loadLeaderboard();
   setInterval(setupCountdowns, 1000);
 }
