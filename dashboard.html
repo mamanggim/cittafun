@@ -98,34 +98,36 @@
     <!-- Content area -->
     <main class="content" id="content">
       <!-- Section: Beranda -->
-      <section id="section-overview" class="section active">
-        <div class="cards-row">
-          <div class="card balance-card">
-            <h3>Saldo Poin</h3>
-            <p class="big" id="points-balance">0</p>
-            <small id="points-rupiah">Rp0</small>
-          </div>
-          <div class="card referral-card">
-            <h3>Ajak Teman</h3>
-            <p id="ref-count">0</p>
-            <small>Referral sukses</small>
-          </div>
-          <div class="card actions-card">
-            <h3>Aksi Cepat</h3>
-            <div class="actions">
-              <button id="btn-withdraw" class="btn">Tarik Saldo</button>
-              <button id="btn-copy-ref" class="btn-outline">Salin Link Referral</button>
-            </div>
-          </div>
-        </div>
+<section id="section-overview" class="section active">
+  <div class="cards-row">
+    <div class="card balance-card">
+      <h3>Saldo Poin <span class="info-icon" title="Info Konversi">?</span></h3>
+      <p class="label">Saldo Poin (total poin)</p>
+      <p class="big" id="points-balance">0</p>
+      <p class="label">Saldo Rupiah (total rupiah dari konversi poin)</p>
+      <small id="points-rupiah">Rp0</small>
+    </div>
+    <div class="card referral-card">
+      <h3>Ajak Teman</h3>
+      <p id="ref-count">0</p>
+      <small><a href="#" id="total-teman-link" class="clickable">Total Teman</a></small>
+    </div>
+    <div class="card actions-card">
+      <h3>Aksi Cepat</h3>
+      <div class="actions">
+        <button id="btn-withdraw" class="btn">Tarik Saldo</button>
+        <button id="btn-copy-ref" class="btn-outline">Salin Link Referral</button>
+      </div>
+    </div>
+  </div>
 
-        <div class="panel">
-          <h4>Aktivitas Terbaru</h4>
-          <ul id="recent-activity" class="list-muted">
-            <li>Tidak ada aktivitas.</li>
-          </ul>
-        </div>
-      </section>
+  <div class="panel">
+    <h4>Aktivitas Terbaru</h4>
+    <ul id="recent-activity" class="list-muted">
+      <li>Tidak ada aktivitas.</li>
+    </ul>
+  </div>
+</section>
 
       <!-- Section: Papan Peringkat -->
       <section id="section-leaderboard" class="section">
