@@ -961,7 +961,10 @@ body.dark .search-suggestions div {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   }
   .page-title {
-    font-size: 1.4rem;
+    font-size: 1.1rem; /* Mengurangi ukuran untuk mobile */
+  }
+  .section.active h3 {
+    display: none; /* Menghilangkan judul di konten */
   }
   h1 { font-size: 1.6rem; }
   h2 { font-size: 1.4rem; }
