@@ -58,7 +58,8 @@ body.dark .lesson-card,
 body.dark .mission-slot,
 body.dark .referral-slot,
 body.dark .referral-bonus,
-body.dark .reading-popup {
+body.dark .reading-popup,
+body.dark .leaderboard-table {
   background: #35354f;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
@@ -424,44 +425,45 @@ body.dark .profile-info small {
 
 .card h3 {
   font-size: 1rem;
-  color: #6b7280;
+  color: var(--citta-blue); /* Saldo Poin selalu biru */
 }
 
 body.dark .card h3 {
-  color: #9ca3af;
+  color: var(--citta-blue); /* Tetap biru di dark mode */
 }
 
 .card .label {
   font-size: 0.8rem;
   margin-bottom: 4px;
+  color: var(--fun-orange); /* Saldo Rupiah selalu oranye */
 }
 
 body.dark .card .label {
-  color: #9ca3af;
+  color: var(--fun-orange); /* Tetap oranye di dark mode */
 }
 
 .card .big {
   font-size: 1.6rem;
   font-weight: 800;
   margin: 8px 0;
+  color: var(--citta-blue); /* Nilai Saldo Poin selalu biru */
 }
 
-#points-balance,
-.balance-card h3 {
-  color: var(--citta-blue); /* Saldo Poin dan 0 selalu biru */
+#points-balance {
+  color: var(--citta-blue); /* Pastikan nilai Saldo Poin biru */
 }
 
-#points-rupiah,
-.balance-card h3 ~ .label:nth-child(3) {
-  color: var(--fun-orange); /* Saldo Rupiah dan Rp0 selalu oranye */
+#points-rupiah {
+  color: var(--fun-orange); /* Pastikan nilai Saldo Rupiah oranye */
 }
 
 .card small {
   font-size: 0.8rem;
+  color: var(--fun-orange); /* Nilai Rupiah selalu oranye */
 }
 
 body.dark .card small {
-  color: #9ca3af;
+  color: var(--fun-orange); /* Tetap oranye di dark mode */
 }
 
 .actions .btn {
@@ -987,6 +989,50 @@ body.dark .info-icon {
   color: var(--citta-blue); /* Angka 0 biru */
 }
 
+/* Leaderboard */
+.leaderboard-table {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  margin-top: 20px;
+}
+
+.leaderboard-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--citta-blue);
+  margin-bottom: 10px;
+}
+
+.leaderboard-header span {
+  flex: 1;
+  text-align: center;
+}
+
+#leaderboard-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+}
+
+#leaderboard-list li span {
+  flex: 1;
+  text-align: center;
+  color: var(--text-light);
+}
+
+body.dark #leaderboard-list li span {
+  color: var(--text-dark);
+}
+
+#leaderboard-list li:first-child span {
+  color: var(--bonus-green); /* Peringkat 1 hijau */
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .sidebar {
@@ -1033,6 +1079,14 @@ body.dark .info-icon {
   }
   .search-suggestions {
     max-width: 100%;
+  }
+  .leaderboard-header,
+  #leaderboard-list li {
+    flex-direction: column;
+    text-align: left;
+  }
+  #leaderboard-list li span {
+    margin: 5px 0;
   }
 }
 
