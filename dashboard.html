@@ -6,12 +6,34 @@
   <title>Beranda - CittaFun</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style/dashboard.css">
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
-  <!-- Firebase config -->
-  <script src="js/firebase-config.js"></script>
+
+  <!-- Favicon untuk Browser (ICO) -->
+  <link rel="icon" type="image/x-icon" href="assets/ico16px.ico" sizes="16x16">
+  <link rel="icon" type="image/x-icon" href="assets/ico32px.ico" sizes="32x32">
+  <link rel="icon" type="image/x-icon" href="assets/ico48px.ico" sizes="48x48">
+  <link rel="icon" type="image/x-icon" href="assets/ico64px.ico" sizes="64x64">
+  <link rel="icon" type="image/x-icon" href="assets/ico128px.ico" sizes="128x128">
+  <link rel="icon" type="image/x-icon" href="assets/ico256px.ico" sizes="256x256">
+
+  <!-- Apple Touch Icons untuk iOS -->
+  <link rel="apple-touch-icon" sizes="57x57" href="assets/ios57px.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="assets/ios76px.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="assets/ios120px.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="assets/ios152px.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="assets/ios167px.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/ios180px.png">
+
+  <!-- Adaptive Icons untuk Android -->
+  <link rel="icon" type="image/png" sizes="48x48" href="assets/aos48px.png">
+  <link rel="icon" type="image/png" sizes="72x72" href="assets/aos72px.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/aos96px.png">
+  <link rel="icon" type="image/png" sizes="144x144" href="assets/aos144px.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/aos192px.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/aos512px.png">
+
+  <!-- Fallback untuk kompatibilitas -->
+  <link rel="icon" type="image/x-icon" href="assets/ico256px.ico">
+
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
@@ -273,6 +295,6 @@
   </div>
 
   <!-- Per-section JS -->
-  <script src="js/dashboard-ui.js"></script>
+  <script src="js/dashboard-ui.js" type="module"></script>
 </body>
-</html>
+  </html>
