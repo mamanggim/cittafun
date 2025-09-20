@@ -19,10 +19,10 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
-/* Variabel Warna */
+/* Variabel Warna (Diperbarui: Biru lebih terang) */
 :root {
-  --citta-blue: #0052cc;
-  --citta-blue-dark: #003d99;
+  --citta-blue: #00aaff; /* Biru terang sesuai logo */
+  --citta-blue-dark: #0088cc;
   --fun-orange: #ff6200;
   --bonus-green: #22c55e;
   --bg-light: linear-gradient(135deg, #eaf2ff, #f9fbff);
@@ -154,7 +154,7 @@ a {
 }
 
 .blue, .citta {
-  color: var(--citta-blue);
+  color: var(--citta-blue); /* Biru terang untuk Citta */
   display: inline-block;
   animation: wave 2s infinite ease-in-out;
 }
@@ -425,11 +425,11 @@ body.dark .profile-info small {
 
 .card h3 {
   font-size: 1rem;
-  color: var(--citta-blue); /* Saldo Poin selalu biru */
+  color: var(--citta-blue); /* Saldo Poin selalu biru terang */
 }
 
 body.dark .card h3 {
-  color: var(--citta-blue); /* Tetap biru di dark mode */
+  color: var(--citta-blue); /* Tetap biru terang di dark mode */
 }
 
 .card .label {
@@ -446,11 +446,11 @@ body.dark .card .label {
   font-size: 1.6rem;
   font-weight: 800;
   margin: 8px 0;
-  color: var(--citta-blue); /* Nilai Saldo Poin selalu biru */
+  color: var(--citta-blue); /* Nilai Saldo Poin selalu biru terang */
 }
 
 #points-balance {
-  color: var(--citta-blue); /* Pastikan nilai Saldo Poin biru */
+  color: var(--citta-blue); /* Pastikan nilai Saldo Poin biru terang */
 }
 
 #points-rupiah {
@@ -1019,18 +1019,40 @@ body.dark .info-icon {
   border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
 }
 
-#leaderboard-list li span {
-  flex: 1;
-  text-align: center;
+#leaderboard-list li span:first-child {
+  flex: 2; /* Nama lebih lebar */
   color: var(--text-light);
 }
 
-body.dark #leaderboard-list li span {
+#leaderboard-list li span:nth-child(2) {
+  flex: 1;
+  color: var(--citta-blue); /* Peringkat biru */
+  font-weight: 700;
+}
+
+#leaderboard-list li span:last-child {
+  flex: 1;
+  color: var(--fun-orange); /* Poin oranye */
+  font-weight: 700;
+}
+
+body.dark #leaderboard-list li span:first-child {
   color: var(--text-dark);
 }
 
-#leaderboard-list li:first-child span {
-  color: var(--bonus-green); /* Peringkat 1 hijau */
+#leaderboard-list li:nth-child(1) span:nth-child(2)::before {
+  content: "🏆 "; /* Piala emas untuk peringkat 1 */
+  color: #ffd700;
+}
+
+#leaderboard-list li:nth-child(2) span:nth-child(2)::before {
+  content: "🥈 "; /* Piala perak untuk peringkat 2 */
+  color: #c0c0c0;
+}
+
+#leaderboard-list li:nth-child(3) span:nth-child(2)::before {
+  content: "🥉 "; /* Piala perunggu untuk peringkat 3 */
+  color: #cd7f32;
 }
 
 /* Responsive */
