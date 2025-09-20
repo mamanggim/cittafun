@@ -9,7 +9,12 @@ import {
   getDoc, 
   updateDoc, 
   arrayUnion, 
-  arrayRemove 
+  arrayRemove, 
+  query, 
+  collection, 
+  getDocs, 
+  orderBy, 
+  limit 
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 // DOM Elements
@@ -33,6 +38,8 @@ const recentActivity = document.getElementById('recent-activity');
 const btnWithdraw = document.getElementById('btn-withdraw');
 const btnCopyRef = document.getElementById('btn-copy-ref');
 const claimButtons = document.querySelectorAll('.btn-claim');
+const totalTemanLink = document.getElementById('total-teman-link');
+const infoIcon = document.querySelector('.info-icon');
 
 // Helper Functions
 function safeAddEvent(el, ev, fn) {
@@ -48,7 +55,7 @@ function showGamePopup(message) {
   setTimeout(() => {
     popup.classList.remove('show');
     setTimeout(() => popup.remove(), 300);
-  }, 1000);
+  }, 2000);
 }
 
 function showFloatingPoints(button, points) {
@@ -91,6 +98,10 @@ function formatTime(ms) {
   const m = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
   const s = String(sec % 60).padStart(2, '0');
   return `${h}:${m}:${s}`;
+}
+
+function convertPointsToRupiah(points) {
+  return points * 10; // 1 poin = Rp10 (sesuaikan konversi jika berbeda)
 }
 
 // UI Logic
@@ -208,7 +219,8 @@ safeAddEvent(btnWithdraw, 'click', () => {
 
 safeAddEvent(btnCopyRef, 'click', async () => {
   if (!user) return;
-  const referralLink = `https://cittafun.com/referral?code=${user.uid}`;
+  const registrationId = await getRegistrationId(user.uid); // Ambil ID urutan pendaftaran
+  const referralLink = `https://cittafun.com/referral?code=${registrationId}`;
   try {
     await navigator.clipboard.writeText(referralLink);
     showGamePopup('Link Referral disalin!');
@@ -216,6 +228,16 @@ safeAddEvent(btnCopyRef, 'click', async () => {
     console.error('Gagal menyalin link:', err);
     showGamePopup('Gagal menyalin link, coba lagi!');
   }
+});
+
+safeAddEvent(totalTemanLink, 'click', (e) => {
+  e.preventDefault();
+  navLinks.find(link => link.getAttribute('data-section') === 'referral').click();
+  showGamePopup('Arahkan ke Ajak Teman!');
+});
+
+safeAddEvent(infoIcon, 'click', () => {
+  showGamePopup('Konversi poin otomatis setiap jam 00:00 WIB, maks. 100.000 poin/hari. Tingkatkan limit dengan KYC!');
 });
 
 // Firebase Logic
@@ -230,6 +252,7 @@ onAuthStateChanged(auth, async (currentUser) => {
   await loadUserData();
   setupCountdowns();
   setupClaimListeners();
+  startPointConversion();
 });
 
 async function loadUserData() {
@@ -242,7 +265,7 @@ async function loadUserData() {
     userEmail.textContent = data.email || user.email || '-';
     userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
     pointsBalance.textContent = data.points || 0;
-    pointsRupiah.textContent = `Rp${(data.points * 10).toLocaleString('id-ID')}`;
+    pointsRupiah.textContent = `Rp${convertPointsToRupiah(data.convertedPoints || 0).toLocaleString('id-ID')}`;
     refCount.textContent = data.referrals?.length || 0;
     recentActivity.innerHTML = data.recentActivity?.length 
       ? data.recentActivity.map(act => `<li>${act}</li>`).join('')
@@ -253,6 +276,18 @@ async function loadUserData() {
     userEmail.textContent = user.email || '-';
     userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
   }
+}
+
+async function getRegistrationId(uid) {
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, orderBy('createdAt')); // Asumsikan ada field createdAt
+  const snapshot = await getDocs(q);
+  let index = 0;
+  snapshot.forEach((doc) => {
+    if (doc.id === uid) return;
+    index++;
+  });
+  return index + 1; // ID urutan pendaftaran dimulai dari 1
 }
 
 function setupCountdowns() {
@@ -335,6 +370,37 @@ function setupClaimListeners() {
       checkProgressBtn.disabled = true;
     }
   });
+}
+
+function startPointConversion() {
+  const now = new Date();
+  const wibTime = new Date(now.getTime() + 7 * 60 * 60 * 1000); // WIB (UTC+7)
+  const nextConversion = new Date(wibTime);
+  nextConversion.setUTCHours(0, 0, 0, 0); // Jam 00:00 WIB
+  if (wibTime > nextConversion) nextConversion.setUTCDate(nextConversion.getUTCDate() + 1);
+
+  const timeUntilNext = nextConversion - wibTime;
+  setTimeout(async () => {
+    if (!user) return;
+    const userRef = doc(db, 'users', user.uid);
+    const docSnap = await getDoc(userRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const dailyConverted = data.dailyConverted || 0;
+      const convertiblePoints = Math.min(data.points || 0, 100000 - dailyConverted);
+      if (convertiblePoints > 0) {
+        await updateDoc(userRef, {
+          points: (data.points || 0) - convertiblePoints,
+          convertedPoints: (data.convertedPoints || 0) + convertiblePoints,
+          dailyConverted: (data.dailyConverted || 0) + convertiblePoints,
+          recentActivity: arrayUnion(`Konversi ${convertiblePoints} poin - ${new Date().toLocaleString('id-ID')}`).slice(-5)
+        });
+        await loadUserData();
+        showGamePopup(`Konversi ${convertiblePoints} poin berhasil!`);
+      }
+    }
+    startPointConversion(); // Ulangi setiap hari
+  }, timeUntilNext);
 }
 
 // Initialize
