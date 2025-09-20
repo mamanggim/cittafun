@@ -405,19 +405,19 @@ body.dark .profile-info small {
 /* Cards row */
 .cards-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Diubah dari 280px ke 220px */
-  gap: 16px; /* Mengurangi gap dari 20px ke 16px */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
   margin-bottom: 20px;
 }
 
 .card {
   background: var(--card-bg);
-  padding: 15px; /* Mengurangi padding dari 20px ke 15px untuk mobile */
+  padding: 12px; /* Mengurangi padding dari 15px ke 12px untuk lebih kompak */
   border-radius: 16px;
   box-shadow: var(--shadow);
   transition: transform 0.3s, box-shadow 0.3s;
-  min-width: 0; /* Menambahkan untuk mencegah teks meluber */
-  word-wrap: break-word; /* Memastikan teks wrap dengan rapi */
+  min-width: 0;
+  word-wrap: break-word;
 }
 
 .card:hover {
@@ -426,42 +426,42 @@ body.dark .profile-info small {
 }
 
 .card.balance-card h3 {
-  font-size: 1rem;
-  color: var(--citta-blue); /* Saldo Poin selalu biru */
-  margin-bottom: 10px;
+  font-size: 0.85rem; /* Menurunkan ukuran untuk mobile */
+  color: var(--citta-blue);
+  margin-bottom: 8px;
 }
 
 .card.balance-card .big {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 800;
-  margin: 8px 0;
-  color: var(--citta-blue); /* Nilai Saldo Poin selalu biru */
+  margin: 6px 0; /* Mengurangi margin */
+  color: var(--citta-blue);
 }
 
 .card.balance-card .label {
-  font-size: 0.8rem;
-  margin-bottom: 4px;
-  color: var(--fun-orange); /* Saldo Rupiah selalu oranye */
+  font-size: 0.7rem;
+  margin-bottom: 2px; /* Mengurangi margin */
+  color: var(--fun-orange);
 }
 
 #points-balance {
-  color: var(--citta-blue); /* Pastikan nilai Saldo Poin biru */
+  color: var(--citta-blue);
 }
 
 #points-rupiah {
-  color: var(--fun-orange); /* Pastikan nilai Saldo Rupiah oranye */
+  color: var(--fun-orange);
 }
 
 .card.balance-card small {
-  font-size: 0.8rem;
-  color: var(--fun-orange); /* Nilai Rupiah selalu oranye */
+  font-size: 0.7rem;
+  color: var(--fun-orange);
 }
 
 .card.balance-card .info-icon {
-  font-size: 0.8rem;
+  font-size: 0.7rem; /* Menyesuaikan ukuran info-icon */
   color: #6b7280;
   cursor: pointer;
-  margin-left: 5px;
+  margin-left: 4px; /* Mengurangi margin */
   display: inline-block;
 }
 
@@ -470,24 +470,24 @@ body.dark .card.balance-card .info-icon {
 }
 
 .card.referral-card h3 {
-  font-size: 1rem;
+  font-size: 0.85rem; /* Menurunkan ukuran untuk mobile */
   color: var(--citta-blue);
 }
 
 .card.referral-card p {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 800;
-  margin: 8px 0;
+  margin: 6px 0; /* Mengurangi margin */
   color: var(--citta-blue);
 }
 
 .card.referral-card small {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: var(--fun-orange);
 }
 
 .card.referral-card small a {
-  color: var(--fun-orange); /* Teks Total Teman oranye */
+  color: var(--fun-orange);
   text-decoration: none;
   cursor: pointer;
 }
@@ -497,19 +497,20 @@ body.dark .card.balance-card .info-icon {
 }
 
 .card.actions-card h3 {
-  font-size: 1rem;
+  font-size: 0.85rem; /* Menurunkan ukuran untuk mobile */
   color: var(--citta-blue);
 }
 
 .actions .btn {
   display: inline-block;
-  padding: 10px 16px;
+  padding: 8px 12px; /* Mengurangi padding */
   background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
   color: white;
   border: none;
   border-radius: 10px;
   font-weight: 700;
   cursor: pointer;
+  font-size: 0.8rem; /* Menyesuaikan ukuran teks tombol */
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
@@ -522,10 +523,11 @@ body.dark .card.balance-card .info-icon {
   background: none;
   border: 1px solid var(--citta-blue);
   color: var(--citta-blue);
-  padding: 10px 16px;
+  padding: 8px 12px; /* Mengurangi padding */
   border-radius: 10px;
   font-weight: 700;
   cursor: pointer;
+  font-size: 0.8rem; /* Menyesuaikan ukuran teks tombol */
   transition: background 0.3s, color 0.3s;
 }
 
@@ -998,10 +1000,10 @@ body.dark .search-suggestions div {
 
 /* Info Icon */
 .info-icon {
-  font-size: 0.8rem;
+  font-size: 0.7rem; /* Menyesuaikan ukuran info-icon */
   color: #6b7280;
   cursor: pointer;
-  margin-left: 5px;
+  margin-left: 4px; /* Mengurangi margin */
   display: inline-block;
 }
 
@@ -1011,7 +1013,7 @@ body.dark .info-icon {
 
 /* Clickable Total Teman */
 #total-teman-link {
-  color: var(--fun-orange); /* Teks Total Teman oranye */
+  color: var(--fun-orange);
   text-decoration: none;
   cursor: pointer;
 }
@@ -1021,7 +1023,7 @@ body.dark .info-icon {
 }
 
 #ref-count {
-  color: var(--citta-blue); /* Angka 0 biru */
+  color: var(--citta-blue);
 }
 
 /* Leaderboard */
@@ -1065,7 +1067,7 @@ body.dark #leaderboard-list li span {
 }
 
 #leaderboard-list li:first-child span {
-  color: var(--bonus-green); /* Peringkat 1 hijau */
+  color: var(--bonus-green);
 }
 
 /* Responsive */
@@ -1087,14 +1089,14 @@ body.dark #leaderboard-list li span {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
   .page-title {
-    font-size: 1.1rem; /* Mengurangi ukuran untuk mobile */
+    font-size: 1.1rem;
   }
   .section.active h3 {
-    display: none; /* Menghilangkan judul di konten */
+    display: none;
   }
   h1 { font-size: 1.6rem; }
   h2 { font-size: 1.4rem; }
-  h3 { font-size: 1rem; }
+  h3 { font-size: 0.85rem; } /* Menyesuaikan ukuran h3 untuk mobile */
   h4 { font-size: 0.9rem; }
   p { font-size: 0.85rem !important; }
   .btn, .btn-claim, .btn-outline, .btn-logout, .btn-lesson {
@@ -1123,10 +1125,16 @@ body.dark #leaderboard-list li span {
   #leaderboard-list li span {
     margin: 5px 0;
   }
-  .card.balance-card h3 { font-size: 1rem; } /* Ukuran font dinaikkan */
-  .card.balance-card .big { font-size: 1.4rem; } /* Ukuran font dinaikkan */
-  .card.balance-card .label { font-size: 0.8rem; } /* Ukuran font dinaikkan */
-  .card.balance-card small { font-size: 0.8rem; } /* Ukuran font dinaikkan */
+  .card.balance-card h3 { font-size: 0.85rem; }
+  .card.balance-card .big { font-size: 1.4rem; }
+  .card.balance-card .label { font-size: 0.7rem; }
+  .card.balance-card small { font-size: 0.7rem; }
+  .card.referral-card h3 { font-size: 0.85rem; }
+  .card.referral-card p { font-size: 1.4rem; }
+  .card.referral-card small { font-size: 0.7rem; }
+  .card.actions-card h3 { font-size: 0.85rem; }
+  .actions .btn { font-size: 0.8rem; }
+  .actions .btn-outline { font-size: 0.8rem; }
 }
 
 @media (min-width: 901px) {
