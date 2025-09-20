@@ -1,5 +1,3 @@
-/* style/dashboard.css */
-
 /* Reset minimal */
 * {
   margin: 0;
@@ -423,26 +421,19 @@ body.dark .profile-info small {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-.card h3 {
+.card.balance-card h3 {
   font-size: 1rem;
-  color: var(--citta-blue); /* Saldo Poin selalu biru terang */
+  color: var(--citta-blue); /* Saldo Poin hanya biru dengan tanda tanya */
+  margin-bottom: 10px;
 }
 
-body.dark .card h3 {
-  color: var(--citta-blue); /* Tetap biru terang di dark mode */
-}
-
-.card .label {
+.card.balance-card .label {
   font-size: 0.8rem;
   margin-bottom: 4px;
   color: var(--fun-orange); /* Saldo Rupiah selalu oranye */
 }
 
-body.dark .card .label {
-  color: var(--fun-orange); /* Tetap oranye di dark mode */
-}
-
-.card .big {
+.card.balance-card .big {
   font-size: 1.6rem;
   font-weight: 800;
   margin: 8px 0;
@@ -457,13 +448,34 @@ body.dark .card .label {
   color: var(--fun-orange); /* Pastikan nilai Saldo Rupiah oranye */
 }
 
-.card small {
+.card.balance-card small {
   font-size: 0.8rem;
   color: var(--fun-orange); /* Nilai Rupiah selalu oranye */
 }
 
-body.dark .card small {
-  color: var(--fun-orange); /* Tetap oranye di dark mode */
+.card.referral-card h3 {
+  font-size: 1rem;
+  color: var(--citta-blue);
+}
+
+.card.referral-card p {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 8px 0;
+  color: var(--citta-blue);
+}
+
+.card.referral-card small a {
+  color: var(--fun-orange);
+}
+
+.card.referral-card small a:hover {
+  color: var(--citta-blue-dark);
+}
+
+.card.actions-card h3 {
+  font-size: 1rem;
+  color: var(--citta-blue);
 }
 
 .actions .btn {
@@ -1021,12 +1033,12 @@ body.dark .info-icon {
 
 #leaderboard-list li span:first-child {
   flex: 2; /* Nama lebih lebar */
-  color: var(--text-light);
+  color: var(--citta-blue); /* Nama biru */
 }
 
 #leaderboard-list li span:nth-child(2) {
   flex: 1;
-  color: var(--citta-blue); /* Peringkat biru */
+  color: #000000; /* Peringkat hitam di light mode */
   font-weight: 700;
 }
 
@@ -1037,7 +1049,15 @@ body.dark .info-icon {
 }
 
 body.dark #leaderboard-list li span:first-child {
-  color: var(--text-dark);
+  color: #66ccff; /* Nama biru lebih lembut di dark mode */
+}
+
+body.dark #leaderboard-list li span:nth-child(2) {
+  color: #ffffff; /* Peringkat putih di dark mode */
+}
+
+body.dark #leaderboard-list li span:last-child {
+  color: var(--fun-orange); /* Poin oranye tetap sama */
 }
 
 #leaderboard-list li:nth-child(1) span:nth-child(2)::before {
@@ -1104,11 +1124,16 @@ body.dark #leaderboard-list li span:first-child {
   }
   .leaderboard-header,
   #leaderboard-list li {
-    flex-direction: column;
-    text-align: left;
+    flex-wrap: wrap; /* Membungkus elemen jika sempit, tapi tetap horizontal */
   }
   #leaderboard-list li span {
-    margin: 5px 0;
+    flex: 1 1 100px; /* Minimum lebar untuk mencegah tumpang tindih */
+    text-align: left;
+    margin: 2px 0;
+  }
+  #leaderboard-list li span:nth-child(2),
+  #leaderboard-list li span:last-child {
+    text-align: right;
   }
 }
 
