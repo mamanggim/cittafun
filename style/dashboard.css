@@ -431,11 +431,27 @@ body.dark .card h3 {
   color: #9ca3af;
 }
 
+.card .label {
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+}
+
+body.dark .card .label {
+  color: #9ca3af;
+}
+
 .card .big {
   font-size: 1.6rem;
   font-weight: 800;
   margin: 8px 0;
-  color: var(--citta-blue);
+}
+
+#points-balance {
+  color: var(--citta-blue); /* Warna biru untuk Saldo Poin */
+}
+
+#points-rupiah {
+  color: var(--fun-orange); /* Warna oranye untuk Saldo Rupiah */
 }
 
 .card small {
@@ -502,38 +518,6 @@ body.dark .card small {
 
 body.dark .list-muted li {
   color: #9ca3af;
-}
-
-/* Tambahkan di dalam file dashboard.css */
-.card .label {
-  font-size: 0.8rem;
-  color: #6b7280;
-  margin-bottom: 4px;
-}
-
-body.dark .card .label {
-  color: #9ca3af;
-}
-
-.info-icon {
-  font-size: 0.8rem;
-  color: #6b7280;
-  cursor: pointer;
-  margin-left: 5px;
-}
-
-body.dark .info-icon {
-  color: #9ca3af;
-}
-
-.clickable {
-  color: var(--citta-blue);
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.clickable:hover {
-  color: var(--citta-blue-dark);
 }
 
 /* Missions */
@@ -972,6 +956,30 @@ body.dark .search-suggestions div {
   transition: none;
   pointer-events: none;
   z-index: 1000;
+}
+
+/* Info Icon */
+.info-icon {
+  font-size: 0.8rem;
+  color: #6b7280;
+  cursor: pointer;
+  margin-left: 5px;
+  display: inline-block; /* Pastikan terlihat */
+}
+
+body.dark .info-icon {
+  color: #9ca3af;
+}
+
+/* Clickable Total Teman */
+#total-teman-link {
+  color: var(--citta-blue);
+  text-decoration: none; /* Hapus garis bawah */
+  cursor: pointer;
+}
+
+#total-teman-link:hover {
+  color: var(--citta-blue-dark);
 }
 
 /* Responsive */
