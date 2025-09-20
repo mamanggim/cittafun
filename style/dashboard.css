@@ -423,30 +423,23 @@ body.dark .profile-info small {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-.card h3 {
+.card.balance-card h3 {
   font-size: 1rem;
   color: var(--citta-blue); /* Saldo Poin selalu biru */
+  margin-bottom: 10px;
 }
 
-body.dark .card h3 {
-  color: var(--citta-blue); /* Tetap biru di dark mode */
-}
-
-.card .label {
-  font-size: 0.8rem;
-  margin-bottom: 4px;
-  color: var(--fun-orange); /* Saldo Rupiah selalu oranye */
-}
-
-body.dark .card .label {
-  color: var(--fun-orange); /* Tetap oranye di dark mode */
-}
-
-.card .big {
+.card.balance-card .big {
   font-size: 1.6rem;
   font-weight: 800;
   margin: 8px 0;
   color: var(--citta-blue); /* Nilai Saldo Poin selalu biru */
+}
+
+.card.balance-card .label {
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+  color: var(--fun-orange); /* Saldo Rupiah selalu oranye */
 }
 
 #points-balance {
@@ -457,13 +450,53 @@ body.dark .card .label {
   color: var(--fun-orange); /* Pastikan nilai Saldo Rupiah oranye */
 }
 
-.card small {
+.card.balance-card small {
   font-size: 0.8rem;
   color: var(--fun-orange); /* Nilai Rupiah selalu oranye */
 }
 
-body.dark .card small {
-  color: var(--fun-orange); /* Tetap oranye di dark mode */
+.card.balance-card .info-icon {
+  font-size: 0.8rem;
+  color: #6b7280;
+  cursor: pointer;
+  margin-left: 5px;
+  display: inline-block;
+}
+
+body.dark .card.balance-card .info-icon {
+  color: #9ca3af;
+}
+
+.card.referral-card h3 {
+  font-size: 1rem;
+  color: var(--citta-blue);
+}
+
+.card.referral-card p {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 8px 0;
+  color: var(--citta-blue);
+}
+
+.card.referral-card small {
+  font-size: 0.8rem;
+  color: var(--fun-orange);
+}
+
+.card.referral-card small a {
+  color: var(--fun-orange); /* Teks Total Teman oranye */
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.card.referral-card small a:hover {
+  color: var(--citta-blue-dark);
+}
+
+.card.actions-card h3 {
+  font-size: 1rem;
+  color: var(--citta-blue);
 }
 
 .actions .btn {
@@ -1087,6 +1120,18 @@ body.dark #leaderboard-list li span {
   }
   #leaderboard-list li span {
     margin: 5px 0;
+  }
+  .card.balance-card h3 {
+    font-size: 0.9rem; /* Mengurangi ukuran teks untuk mobile */
+  }
+  .card.balance-card .big {
+    font-size: 1.2rem; /* Mengurangi ukuran angka untuk mobile */
+  }
+  .card.balance-card .label {
+    font-size: 0.7rem; /* Mengurangi ukuran label untuk mobile */
+  }
+  .card.balance-card small {
+    font-size: 0.7rem; /* Mengurangi ukuran small untuk mobile */
   }
 }
 
