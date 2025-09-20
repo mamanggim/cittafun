@@ -405,17 +405,19 @@ body.dark .profile-info small {
 /* Cards row */
 .cards-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Diubah dari 280px ke 220px */
+  gap: 16px; /* Mengurangi gap dari 20px ke 16px */
   margin-bottom: 20px;
 }
 
 .card {
   background: var(--card-bg);
-  padding: 20px;
+  padding: 15px; /* Mengurangi padding dari 20px ke 15px untuk mobile */
   border-radius: 16px;
   box-shadow: var(--shadow);
   transition: transform 0.3s, box-shadow 0.3s;
+  min-width: 0; /* Menambahkan untuk mencegah teks meluber */
+  word-wrap: break-word; /* Memastikan teks wrap dengan rapi */
 }
 
 .card:hover {
@@ -1082,7 +1084,7 @@ body.dark #leaderboard-list li span {
   .cards-row,
   .missions-grid,
   .lessons-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
   .page-title {
     font-size: 1.1rem; /* Mengurangi ukuran untuk mobile */
@@ -1121,18 +1123,10 @@ body.dark #leaderboard-list li span {
   #leaderboard-list li span {
     margin: 5px 0;
   }
-  .card.balance-card h3 {
-    font-size: 0.9rem; /* Mengurangi ukuran teks untuk mobile */
-  }
-  .card.balance-card .big {
-    font-size: 1.2rem; /* Mengurangi ukuran angka untuk mobile */
-  }
-  .card.balance-card .label {
-    font-size: 0.7rem; /* Mengurangi ukuran label untuk mobile */
-  }
-  .card.balance-card small {
-    font-size: 0.7rem; /* Mengurangi ukuran small untuk mobile */
-  }
+  .card.balance-card h3 { font-size: 1rem; } /* Ukuran font dinaikkan */
+  .card.balance-card .big { font-size: 1.4rem; } /* Ukuran font dinaikkan */
+  .card.balance-card .label { font-size: 0.8rem; } /* Ukuran font dinaikkan */
+  .card.balance-card small { font-size: 0.8rem; } /* Ukuran font dinaikkan */
 }
 
 @media (min-width: 901px) {
