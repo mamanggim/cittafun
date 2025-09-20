@@ -265,7 +265,9 @@ async function loadUserData() {
     userEmail.textContent = data.email || user.email || '-';
     userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
     pointsBalance.textContent = data.points || 0;
+    pointsBalance.style.color = data.points > 0 ? 'var(--citta-blue)' : '#6b7280'; // Warna biru jika > 0
     pointsRupiah.textContent = `Rp${convertPointsToRupiah(data.convertedPoints || 0).toLocaleString('id-ID')}`;
+    pointsRupiah.style.color = data.convertedPoints > 0 ? 'var(--fun-orange)' : '#6b7280'; // Warna oranye jika > 0
     refCount.textContent = data.referrals?.length || 0;
     recentActivity.innerHTML = data.recentActivity?.length 
       ? data.recentActivity.map(act => `<li>${act}</li>`).join('')
