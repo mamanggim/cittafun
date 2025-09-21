@@ -129,37 +129,39 @@ body.dark .reload-icon {
   transform: rotate(360deg);
 }
 
-/* Exit Dropdown */
+/* Exit Dropdown (menggunakan foto profil) */
 .exit-dropdown {
   position: relative;
+  display: flex; /* Tambahkan ini agar toggle dan menu bisa diatur */
+  align-items: center;
 }
 
-.btn-icon {
-  background: none;
-  border: none;
-  font-size: 1.3rem;
-  padding: 8px;
-  cursor: pointer;
-  color: var(--citta-blue);
-  transition: transform 0.3s ease;
+.profile-picture-toggle { /* BARU */
+    width: 32px; 
+    height: 32px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    cursor: pointer;
+    border: 2px solid var(--citta-blue); 
+    transition: border-color 0.3s ease;
 }
 
-.btn-icon.active {
-  transform: rotate(180deg);
+body.dark .profile-picture-toggle {
+    border: 2px solid var(--fun-orange);
 }
 
-body.dark .btn-icon {
-  color: var(--fun-orange);
+.profile-picture-toggle.active {
+    border-color: var(--fun-orange); 
 }
 
-.btn-icon:hover {
-  transform: rotate(180deg);
+body.dark .profile-picture-toggle.active {
+    border-color: var(--citta-blue);
 }
 
 .exit-menu {
   position: absolute;
-  top: 40px;
-  right: 20px;
+  top: 45px; /* Sesuaikan posisi agar di bawah foto profil */
+  right: 0; /* Pastikan menu muncul di sebelah kanan foto profil */
   background: white;
   border-radius: 12px;
   box-shadow: var(--shadow);
@@ -187,6 +189,11 @@ body.dark .exit-menu {
   font-size: 0.9rem;
   font-weight: 600;
   text-decoration: none;
+  background: none; /* Untuk tombol logout */
+  border: none; /* Untuk tombol logout */
+  text-align: left; /* Untuk tombol logout */
+  width: 100%; /* Untuk tombol logout */
+  cursor: pointer; /* Untuk tombol logout */
   transition: background 0.3s, color 0.3s, transform 0.2s;
 }
 
@@ -423,12 +430,13 @@ body.dark .floating-points {
     font-size: 0.9rem;
     padding: 5px 10px;
   }
-  .btn-icon {
-    font-size: 1.2rem;
-    padding: 6px;
+  /* Sesuaikan ukuran foto profil di mobile */
+  .profile-picture-toggle {
+    width: 28px;
+    height: 28px;
   }
   .exit-menu {
-    right: 15px;
+    right: 0; /* Sesuaikan agar tetap di kanan */
     min-width: 140px;
     max-width: calc(100vw - 30px);
   }
