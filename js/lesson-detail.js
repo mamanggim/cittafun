@@ -1,14 +1,15 @@
 // js/lesson-detail.js
 document.addEventListener('DOMContentLoaded', () => {
     const lessonTitle = document.getElementById('lesson-title');
-    const lessonContentContainer = document.getElementById('lesson-content'); // Mengganti lessonContent menjadi lessonContentContainer
+    const lessonContentContainer = document.getElementById('lesson-content'); 
     const timerDisplay = document.getElementById('timer');
     const pointsEarned = document.getElementById('points-earned');
-    const exitToggle = document.getElementById('exit-toggle');
+    const profilePictureToggle = document.getElementById('profile-picture-toggle'); // Elemen foto profil
     const exitMenu = document.getElementById('exit-menu');
     const themeToggle = document.getElementById('theme-toggle');
     const reloadTimer = document.getElementById('reload-timer');
-    const pageIndicator = document.getElementById('page-indicator'); // Tetap gunakan elemen yang ada di HTML
+    const pageIndicator = document.getElementById('page-indicator'); 
+    const logoutButton = document.getElementById('logout-button'); // Tombol Logout
 
     let timerInterval;
     let timeRemaining = 10 * 60 * 1000; // 10 menit dalam ms
@@ -20,10 +21,45 @@ document.addEventListener('DOMContentLoaded', () => {
     let isDragging = false;
     let startX = 0;
     let startTouchX = 0;
+    let isLessonLoaded = false; // Flag untuk memastikan pelajaran hanya dimuat sekali
 
-    // ... (Fungsi getCurrentSession, Dark/Light Mode, getUserProgress, setUserProgress, formatTime, showFloatingPoints, showGamePopup, savePoints tetap sama) ...
-    // Pastikan Firebase sudah diinisialisasi di firebase-config.js dan tidak ada error di sana.
-    // ...
+    // Tentukan sesi berdasarkan waktu WIB
+    function getCurrentSession() {
+        const now = new Date();
+        const hours = now.getHours();
+        let date = now.toISOString().split('T')[0]; // Tanggal YYYY-MM-DD
+        let sessionName;
+
+        if (hours >= 6 && hours < 9) sessionName = 'Pagi1';
+        else if (hours >= 9 && hours < 12) sessionName = 'Pagi2';
+        else if (hours >= 12 && hours < 15) sessionName = 'Siang';
+        else if (hours >= 15 && hours < 18) sessionName = 'Sore';
+        else if (hours >= 18 && hours < 21) sessionName = 'Malam';
+        else {
+            sessionName = 'Pagi1';
+            const tomorrow = new Date(now);
+            tomorrow.setDate(now.getDate() + 1);
+            date = tomorrow.toISOString().split('T')[0];
+        }
+        return { sessionName, sessionKey: `session_${sessionName}_${date}`, date };
+    }
+
+    // Inisialisasi sesi
+    const { sessionName, sessionKey, date } = getCurrentSession();
+    let currentSessionKey = localStorage.getItem('currentSessionKey') || sessionKey;
+
+    // Cek sesi baru
+    const savedSessionDate = localStorage.getItem('currentSessionDate');
+    const savedSessionKey = localStorage.getItem('currentSessionKey');
+    if (savedSessionDate !== date || savedSessionKey !== sessionKey) {
+        localStorage.setItem('currentSessionDate', date);
+        localStorage.setItem('currentSessionKey', sessionKey);
+        const progress = getUserProgress();
+        delete progress.sessionCompleted; // Reset status completed
+        delete progress[`sessionTimer_${currentSessionKey}`]; // Reset timer sesi lama
+        setUserProgress(progress);
+    }
+    localStorage.setItem('currentSessionKey', currentSessionKey); // Update currentSessionKey di localStorage
 
     // Dark/Light Mode
     const savedTheme = localStorage.getItem('theme') || 'light';
@@ -42,13 +78,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!lessonId) {
         lessonTitle.textContent = 'Error';
-        lessonContentContainer.innerHTML = '<p>ID pelajaran tidak ditemukan di URL.</p>'; // Langsung tampilkan di container
+        lessonContentContainer.innerHTML = '<div class="page active" data-page="0"><p>ID pelajaran tidak ditemukan di URL.</p></div>';
         pageIndicator.textContent = 'Halaman 1 / 1';
+        pages = ['<p>ID pelajaran tidak ditemukan di URL.</p>'];
         console.error('[Lesson Detail] No lesson ID provided in URL');
         return;
     }
 
-    async function loadLesson() {
+    // Fungsi untuk mendapatkan user dari Firebase
+    function getUser() {
+        return firebase.auth().currentUser;
+    }
+
+    // Fungsi untuk memperbarui foto profil
+    function updateProfilePicture() {
+        const user = getUser();
+        if (user && user.photoURL) {
+            profilePictureToggle.src = user.photoURL;
+        } else {
+            profilePictureToggle.src = 'img/default-profile.png'; // Pastikan path ini benar
+        }
+    }
+
+    // Panggil saat DOMContentLoaded dan saat autentikasi berubah
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            updateProfilePicture();
+        } else {
+            profilePictureToggle.src = 'img/default-profile.png';
+            // Redirect ke halaman login jika tidak ada user
+            window.location.href = 'index.html';
+        }
+    });
+
+    async function loadLessonContentData() { // Fungsi baru untuk memuat data pelajaran saja
         try {
             console.log('[Lesson Detail] Fetching lessons.json...');
             const response = await fetch('data/lessons.json');
@@ -58,62 +121,49 @@ document.addEventListener('DOMContentLoaded', () => {
             if (lesson) {
                 lessonTitle.textContent = lesson.title;
                 lessonTitle.dataset.fullTitle = lesson.title;
-                const fullContent = lesson.fullContent || '<p>Konten pelajaran belum tersedia.</p>';
-                console.log('[Lesson Detail] Full content loaded:', fullContent);
-                splitContentIntoPages(fullContent);
+                return lesson.fullContent || '<p>Konten pelajaran belum tersedia.</p>';
             } else {
-                lessonTitle.textContent = 'Pelajaran Tidak Ditemukan';
-                lessonContentContainer.innerHTML = '<p>Pelajaran dengan ID ini tidak ditemukan.</p>';
-                pageIndicator.textContent = 'Halaman 1 / 1';
-                pages = ['<p>Pelajaran dengan ID ini tidak ditemukan.</p>'];
-                renderCurrentPage(); // Render halaman error
                 console.error('[Lesson Detail] No lesson found with id:', lessonId);
+                lessonTitle.textContent = 'Pelajaran Tidak Ditemukan';
+                lessonTitle.dataset.fullTitle = 'Pelajaran Tidak Ditemukan';
+                return '<p>Pelajaran dengan ID ini tidak ditemukan.</p>';
             }
         } catch (err) {
             console.error('[Lesson Detail] Failed to load lesson:', err.message);
             lessonTitle.textContent = 'Error';
             lessonTitle.dataset.fullTitle = 'Error';
-            lessonContentContainer.innerHTML = '<p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid. Error: ' + err.message + '</p>';
-            pageIndicator.textContent = 'Halaman 1 / 1';
-            pages = ['<p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid. Error: ' + err.message + '</p>'];
-            renderCurrentPage(); // Render halaman error
+            return '<p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid. Error: ' + err.message + '</p>';
         }
     }
 
-    // Fungsi untuk merender halaman yang aktif ke DOM
-    function renderCurrentPage() {
-        // Hapus semua halaman yang ada di container
-        lessonContentContainer.querySelectorAll('.page').forEach(p => p.remove());
+    // Fungsi utama untuk memuat dan menampilkan pelajaran
+    async function initializeLessonDisplay() {
+        const fullContent = await loadLessonContentData();
 
-        // Buat dan tambahkan halaman-halaman ke DOM
-        pages.forEach((pageHtml, index) => {
-            const pageDiv = document.createElement('div');
-            pageDiv.className = 'page';
-            pageDiv.dataset.page = index;
-            pageDiv.innerHTML = pageHtml;
-            lessonContentContainer.appendChild(pageDiv);
+        // Tambahkan pesan sesi selesai jika diperlukan
+        const progress = getUserProgress();
+        if (progress.sessionCompleted) {
+            pages = ['<p style="color: var(--bonus-green); font-weight: 600;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p>'];
+            currentPage = 0;
+            renderCurrentPage();
+            return; // Hentikan eksekusi jika sesi sudah selesai
+        }
 
-            if (index === currentPage) {
-                pageDiv.classList.add('active');
-            } else if (index === currentPage + 1) {
-                pageDiv.classList.add('next');
-            } else if (index === currentPage - 1) {
-                pageDiv.classList.add('prev');
-            }
-        });
-        updatePageNavigation();
+        splitContentIntoPages(fullContent);
+        isLessonLoaded = true; // Set flag setelah pelajaran berhasil dimuat dan di-split
     }
-
 
     // Pecah konten menjadi halaman berdasarkan tinggi layar
     function splitContentIntoPages(content) {
         console.log('[splitContentIntoPages] Starting with content.');
         lessonContentContainer.innerHTML = ''; // Kosongkan konten sebelum split
 
+        // Buat temporary div untuk pengukuran
         const tempDiv = document.createElement('div');
         tempDiv.style.position = 'absolute';
         tempDiv.style.visibility = 'hidden';
-        tempDiv.style.width = `${lessonContentContainer.offsetWidth - 30}px`; // Kurangi padding horizontal (15px kiri + 15px kanan)
+        tempDiv.style.left = '-9999px'; // Pindahkan jauh dari viewport
+        tempDiv.style.width = `${lessonContentContainer.offsetWidth - 30}px`; // Kurangi padding horizontal (15px kiri + 15px kanan dari .page)
         tempDiv.style.padding = '15px'; // Sesuaikan dengan padding .page
         tempDiv.style.fontSize = '1rem';
         tempDiv.style.lineHeight = '1.8';
@@ -127,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
             cleanedContent = `<p>${content}</p>`;
         }
         
-        // Memparsing HTML string menjadi elemen DOM sementara
         const parser = new DOMParser();
         const doc = parser.parseFromString(cleanedContent, 'text/html');
         const elements = Array.from(doc.body.childNodes).filter(node => node.nodeType === 1 || (node.nodeType === 3 && node.textContent.trim()));
@@ -135,18 +184,38 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('[splitContentIntoPages] Elements parsed:', elements.length);
 
         let currentPageContentHtml = '';
-        const maxHeight = window.innerHeight - 120 - 30; // Tinggi viewport - header - padding container - padding page
+        
+        // Perhitungan tinggi yang lebih akurat
+        const headerHeight = document.querySelector('.header-fixed').offsetHeight; // Tinggi header
+        const contentMainElement = document.querySelector('.content'); // Elemen main.content
+        const mainContentTopPadding = parseInt(window.getComputedStyle(contentMainElement).paddingTop); // padding-top dari .content (60px)
+        const mainContentBottomPadding = parseInt(window.getComputedStyle(contentMainElement).paddingBottom); // padding-bottom dari .content (20px)
+        const lessonDetailPadding = 20; // padding dari .lesson-detail (20px top/bottom)
+        const pagePadding = 15; // padding dari .page (15px top/bottom)
+
+        // Tinggi yang tersedia untuk konten di dalam satu halaman
+        const availableHeight = window.innerHeight 
+                                - headerHeight 
+                                - mainContentTopPadding 
+                                - mainContentBottomPadding 
+                                - (2 * lessonDetailPadding) 
+                                - (2 * pagePadding);
+        
+        console.log(`[splitContentIntoPages] headerHeight: ${headerHeight}, mainContentTopPadding: ${mainContentTopPadding}, mainContentBottomPadding: ${mainContentBottomPadding}, lessonDetailPadding: ${lessonDetailPadding}, pagePadding: ${pagePadding}`);
+        console.log(`[splitContentIntoPages] Calculated availableHeight for page content: ${availableHeight}`);
+        
         pages = [];
 
         elements.forEach((el, index) => {
-            const elHtml = (el.nodeType === 1) ? el.outerHTML : `<p>${el.textContent.trim()}</p>`; // Pastikan text node juga dibungkus p
+            const elHtml = (el.nodeType === 1) ? el.outerHTML : `<p>${el.textContent.trim()}</p>`;
             
             tempDiv.innerHTML = currentPageContentHtml + elHtml;
-            const newHeight = tempDiv.scrollHeight;
+            const newHeight = tempDiv.scrollHeight; // Scroll height akan mengukur tinggi total konten
             
-            console.log(`[splitContentIntoPages] El ${index}, newHeight: ${newHeight}, currentPageContentHtml length: ${currentPageContentHtml.length}, maxHeight: ${maxHeight}`);
+            console.log(`[splitContentIntoPages] Element ${index}, newHeight: ${newHeight}, current page content HTML length: ${currentPageContentHtml.length}, availableHeight: ${availableHeight}`);
 
-            if (newHeight > maxHeight && currentPageContentHtml) {
+            if (newHeight > availableHeight && currentPageContentHtml) {
+                // Jika menambahkan elemen ini melebihi tinggi yang tersedia, buat halaman baru
                 pages.push(currentPageContentHtml);
                 console.log(`[splitContentIntoPages] Page ${pages.length} created.`);
                 currentPageContentHtml = elHtml; // Mulai halaman baru dengan elemen ini
@@ -155,11 +224,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Tambahkan sisa konten sebagai halaman terakhir
         if (currentPageContentHtml) {
             pages.push(currentPageContentHtml);
             console.log(`[splitContentIntoPages] Final page created.`);
         }
 
+        // Fallback jika tidak ada halaman yang dibuat (misal, konten kosong)
         if (pages.length === 0) {
             pages.push('<p>Konten pelajaran tidak dapat ditampilkan. Coba muat ulang halaman.</p>');
             console.warn('[splitContentIntoPages] No pages created, using fallback content.');
@@ -168,15 +239,33 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.removeChild(tempDiv);
         console.log('[splitContentIntoPages] Total pages:', pages.length);
 
-        // Tambahkan pesan sesi selesai jika diperlukan
-        const progress = getUserProgress();
-        if (progress.sessionCompleted) {
-            pages = ['<p style="color: var(--bonus-green); font-weight: 600;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p>'];
-            console.log('[splitContentIntoPages] Session completed, showing message.');
-        }
+        currentPage = 0; // Mulai dari halaman pertama
+        renderCurrentPage(); // Render halaman-halaman ke DOM
+    }
 
-        currentPage = 0;
-        renderCurrentPage(); // Panggil fungsi render untuk menampilkan halaman pertama
+    // Fungsi untuk merender halaman yang aktif ke DOM
+    function renderCurrentPage() {
+        // Hapus semua elemen '.page' yang ada di container
+        lessonContentContainer.querySelectorAll('.page').forEach(p => p.remove());
+
+        // Buat dan tambahkan halaman-halaman ke DOM
+        pages.forEach((pageHtml, index) => {
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'page';
+            pageDiv.dataset.page = index;
+            pageDiv.innerHTML = pageHtml;
+            lessonContentContainer.appendChild(pageDiv);
+
+            // Tentukan kelas untuk animasi
+            if (index === currentPage) {
+                pageDiv.classList.add('active');
+            } else if (index === currentPage + 1) { // Halaman berikutnya di kanan
+                pageDiv.classList.add('next');
+            } else if (index === currentPage - 1) { // Halaman sebelumnya di kiri
+                pageDiv.classList.add('prev');
+            }
+        });
+        updatePageNavigation(); // Perbarui indikator halaman
     }
 
     // Perbarui indikator halaman
@@ -189,59 +278,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Navigasi ke halaman berikutnya
     function goToNextPage() {
         if (currentPage < pages.length - 1) {
-            const current = lessonContentContainer.querySelector(`.page[data-page="${currentPage}"]`);
-            if (current) current.classList.remove('active');
-            
             currentPage++;
-            const next = lessonContentContainer.querySelector(`.page[data-page="${currentPage}"]`);
-            if (next) next.classList.add('active');
-            
-            // Perbarui kelas untuk animasi
-            lessonContentContainer.querySelectorAll('.page').forEach(pageEl => {
-                const index = parseInt(pageEl.dataset.page);
-                if (index < currentPage) {
-                    pageEl.classList.add('prev');
-                    pageEl.classList.remove('active', 'next');
-                } else if (index === currentPage) {
-                    pageEl.classList.add('active');
-                    pageEl.classList.remove('prev', 'next');
-                } else {
-                    pageEl.classList.add('next');
-                    pageEl.classList.remove('active', 'prev');
-                }
-            });
-            updatePageNavigation();
+            renderCurrentPage(); // Render ulang untuk animasi transisi
         }
     }
 
     // Navigasi ke halaman sebelumnya
     function goToPrevPage() {
         if (currentPage > 0) {
-            const current = lessonContentContainer.querySelector(`.page[data-page="${currentPage}"]`);
-            if (current) current.classList.remove('active');
-            
             currentPage--;
-            const prev = lessonContentContainer.querySelector(`.page[data-page="${currentPage}"]`);
-            if (prev) prev.classList.add('active');
-
-            // Perbarui kelas untuk animasi
-            lessonContentContainer.querySelectorAll('.page').forEach(pageEl => {
-                const index = parseInt(pageEl.dataset.page);
-                if (index > currentPage) {
-                    pageEl.classList.add('next');
-                    pageEl.classList.remove('active', 'prev');
-                } else if (index === currentPage) {
-                    pageEl.classList.add('active');
-                    pageEl.classList.remove('prev', 'next');
-                } else {
-                    pageEl.classList.add('prev');
-                    pageEl.classList.remove('active', 'next');
-                }
-            });
-            updatePageNavigation();
+            renderCurrentPage(); // Render ulang untuk animasi transisi
         }
     }
-
 
     // Deteksi swipe untuk mobile
     lessonContentContainer.addEventListener('touchstart', (e) => {
@@ -271,12 +319,14 @@ document.addEventListener('DOMContentLoaded', () => {
     lessonContentContainer.addEventListener('mousemove', (e) => {
         if (isDragging) {
             const deltaX = e.clientX - startX;
-            if (deltaX > 50) { // Geser ke kanan (prev)
-                goToPrevPage();
+            if (Math.abs(deltaX) > 50) { // Cukup geser 50px untuk memicu
+                if (deltaX > 0) { // Geser ke kanan
+                    goToPrevPage();
+                } else { // Geser ke kiri
+                    goToNextPage();
+                }
                 isDragging = false; // Hentikan drag setelah perpindahan
-            } else if (deltaX < -50) { // Geser ke kiri (next)
-                goToNextPage();
-                isDragging = false; // Hentikan drag setelah perpindahan
+                lessonContentContainer.style.cursor = 'grab'; // Reset kursor
             }
         }
     });
@@ -293,11 +343,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Deteksi tombol panah keyboard
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') goToPrevPage();
-        else if (e.key === 'ArrowRight') goToNextPage();
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault(); // Mencegah scroll default browser
+            goToPrevPage();
+        }
+        else if (e.key === 'ArrowRight') {
+            e.preventDefault(); // Mencegah scroll default browser
+            goToNextPage();
+        }
     });
 
-    // Title Popup (tetap sama)
+    // Title Popup
     lessonTitle.addEventListener('click', () => {
         const fullTitle = lessonTitle.dataset.fullTitle || lessonTitle.textContent;
         const popup = document.createElement('div');
@@ -311,14 +367,67 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000); // Popup 3 detik
     });
 
-    // Fungsi triggerAd (tetap sama)
+    function formatTime(ms) {
+        if (ms < 0) ms = 0;
+        const minutes = Math.floor(ms / 1000 / 60);
+        const seconds = Math.floor((ms / 1000) % 60);
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
     function triggerAd() {
         console.log('[Monetag] Iklan popunder ditampilkan');
         // Ganti dengan skrip Monetag sebenarnya
-        // Pastikan Anda sudah mengintegrasikan Monetag SDK di sini jika diperlukan
     }
 
-    // Fungsi untuk memulai timer dan pengelolaan poin
+    function showFloatingPoints(pointsToAdd) {
+        const pointsRect = pointsEarned.getBoundingClientRect();
+        const floatEl = document.createElement('span');
+        floatEl.className = 'floating-points';
+        floatEl.textContent = `+${pointsToAdd}`;
+        floatEl.style.position = 'absolute';
+        floatEl.style.left = `${pointsRect.left + pointsRect.width / 2}px`;
+        floatEl.style.top = `${pointsRect.top + 30}px`;
+        document.body.appendChild(floatEl);
+
+        let opacity = 1;
+        let y = 30;
+        const animate = () => {
+            y -= 1;
+            opacity -= 0.02;
+            floatEl.style.transform = `translate(-50%, ${-y}px)`;
+            floatEl.style.opacity = opacity;
+            if (y <= 0 || opacity <= 0) floatEl.remove();
+            else requestAnimationFrame(animate);
+        };
+        requestAnimationFrame(animate);
+    }
+
+    function showGamePopup(message) {
+        const popup = document.createElement('div');
+        popup.className = 'game-popup';
+        popup.textContent = message;
+        document.body.appendChild(popup);
+        setTimeout(() => popup.classList.add('show'), 10);
+        setTimeout(() => {
+            popup.classList.remove('show');
+            setTimeout(() => popup.remove(), 300);
+        }, 4000); // Popup 4 detik
+    }
+
+    function savePoints(pointsToAdd) {
+        const progress = getUserProgress();
+        progress.points = (progress.points || 0) + pointsToAdd;
+        setUserProgress(progress);
+    }
+
+    function getUserProgress() {
+        return JSON.parse(localStorage.getItem('userProgress') || '{}');
+    }
+
+    function setUserProgress(p) {
+        localStorage.setItem('userProgress', JSON.stringify(p));
+    }
+
     function startTimer() {
         const progress = getUserProgress();
         const timerKey = `sessionTimer_${currentSessionKey}`;
@@ -327,8 +436,8 @@ document.addEventListener('DOMContentLoaded', () => {
             timerDisplay.textContent = '00:00';
             pointsEarned.textContent = `Poin: 500`;
             // Pastikan konten di halaman diupdate untuk menunjukkan misi selesai
-            splitContentIntoPages('<p style="color: var(--bonus-green); font-weight: 600;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p>');
-            return;
+            // Tidak perlu panggil splitContentIntoPages lagi, karena sudah di initializeLessonDisplay
+            return; 
         }
 
         timeRemaining = progress[timerKey]?.remaining || 10 * 60 * 1000;
@@ -380,8 +489,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const progress = getUserProgress();
             progress[`sessionTimer_${currentSessionKey}`] = { remaining: timeRemaining };
             setUserProgress(progress);
-        } else if (isTabActive) { // Hanya mulai jika tab aktif dan timer belum berjalan
-             // Cek jika timer belum berjalan (misal setelah tab kembali aktif)
+        } else if (isTabActive) { 
+            // Cek jika timer belum berjalan (misal setelah tab kembali aktif)
             if (!timerInterval && timeRemaining > 0) {
                 startTimer();
             }
@@ -397,61 +506,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Fungsi untuk inisialisasi sesi (tetap sama)
-    function getCurrentSession() {
-        const now = new Date();
-        const hours = now.getHours();
-        let date = now.toISOString().split('T')[0]; // Tanggal YYYY-MM-DD
-        let sessionName;
-
-        if (hours >= 6 && hours < 9) sessionName = 'Pagi1';
-        else if (hours >= 9 && hours < 12) sessionName = 'Pagi2';
-        else if (hours >= 12 && hours < 15) sessionName = 'Siang';
-        else if (hours >= 15 && hours < 18) sessionName = 'Sore';
-        else if (hours >= 18 && hours < 21) sessionName = 'Malam';
-        else {
-            sessionName = 'Pagi1';
-            const tomorrow = new Date(now);
-            tomorrow.setDate(now.getDate() + 1);
-            date = tomorrow.toISOString().split('T')[0];
+    // Panggil initializeLessonDisplay setelah window load untuk memastikan DOM siap
+    window.addEventListener('load', initializeLessonDisplay); 
+    
+    // Juga panggil saat resize untuk menyesuaikan paging jika pelajaran sudah dimuat
+    window.addEventListener('resize', () => {
+        if (isLessonLoaded) { 
+            console.log('[Resize Event] Re-initializing lesson display...');
+            initializeLessonDisplay();
         }
-        return { sessionName, sessionKey: `session_${sessionName}_${date}`, date };
-    }
-
-    // Inisialisasi sesi
-    const { sessionName, sessionKey, date } = getCurrentSession();
-    let currentSessionKey = localStorage.getItem('currentSessionKey') || sessionKey;
-
-    // Cek sesi baru
-    const savedSessionDate = localStorage.getItem('currentSessionDate');
-    const savedSessionKey = localStorage.getItem('currentSessionKey');
-    if (savedSessionDate !== date || savedSessionKey !== sessionKey) {
-        localStorage.setItem('currentSessionDate', date);
-        localStorage.setItem('currentSessionKey', sessionKey);
-        const progress = getUserProgress();
-        delete progress.sessionCompleted; // Reset status completed
-        delete progress[`sessionTimer_${currentSessionKey}`]; // Reset timer sesi lama
-        setUserProgress(progress);
-    }
-    localStorage.setItem('currentSessionKey', currentSessionKey); // Update currentSessionKey di localStorage
-
-
-    // Panggil loadLesson dan startTimer
-    loadLesson();
-    startTimer();
-
-    exitToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isShown = exitMenu.classList.toggle('show');
-        exitToggle.classList.toggle('active', isShown);
-        exitMenu.setAttribute('aria-hidden', !isShown);
     });
 
+    // Mulai timer segera setelah DOMContentLoaded
+    startTimer();
+
+    // Event listener untuk foto profil (pengganti exitToggle)
+    profilePictureToggle.addEventListener('click', (e) => { 
+        e.stopPropagation(); // Mencegah event menyebar ke dokumen
+        const isShown = exitMenu.classList.toggle('show');
+        profilePictureToggle.classList.toggle('active', isShown); // Menambahkan kelas 'active' ke foto profil
+        exitMenu.setAttribute('aria-hidden', !isShown); // Mengatur atribut aria-hidden
+    });
+
+    // Menutup menu jika klik di luar
     document.addEventListener('click', (e) => {
-        if (!exitMenu.contains(e.target) && e.target !== exitToggle) {
+        if (!exitMenu.contains(e.target) && e.target !== profilePictureToggle) {
             exitMenu.classList.remove('show');
-            exitToggle.classList.remove('active');
+            profilePictureToggle.classList.remove('active');
             exitMenu.setAttribute('aria-hidden', 'true');
+        }
+    });
+
+    // Event listener untuk tombol Logout
+    logoutButton.addEventListener('click', async () => {
+        try {
+            await firebase.auth().signOut();
+            localStorage.removeItem('userProgress'); // Bersihkan progress lokal
+            window.location.href = 'index.html'; // Redirect ke halaman login
+        } catch (error) {
+            console.error("Error logging out:", error);
+            alert("Gagal logout. Silakan coba lagi.");
         }
     });
 });
