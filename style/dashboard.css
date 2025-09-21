@@ -1171,3 +1171,10 @@ body.dark #leaderboard-list li span {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Fix cards row di mobile */
+@media (max-width: 600px) {
+  .cards-row {
+    grid-template-columns: 1fr; /* Semua card full width */
+  }
+}
