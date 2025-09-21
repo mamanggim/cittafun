@@ -33,6 +33,7 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
+
   <div id="sidebar-overlay" class="overlay" aria-hidden="true"></div>
 
   <aside class="sidebar closed" id="sidebar" aria-label="sidebar">
@@ -142,12 +143,12 @@
 
         <div class="missions-grid">
           <div class="mission-card">
-            <h4>📚 Pelajaran</h4>
+            <h4>📚 Mata Pelajaran</h4>
             <p>Baca materi belajar dari 10 mata pelajaran.</p>
             <a href="lesson.html" class="btn">Mulai</a>
           </div>
           <div class="mission-card">
-            <h4>❓ Kuis</h4>
+            <h4>❓ Quiz Seru</h4>
             <p>Jawab pertanyaan kuis pilihan ganda seru.</p>
             <a href="quiz.html" class="btn">Mulai</a>
           </div>
@@ -157,7 +158,7 @@
             <a href="video.html" class="btn">Mulai</a>
           </div>
           <div class="mission-card">
-            <h4>📝 Ujian</h4>
+            <h4>📝 Ujian Pelajaran</h4>
             <p>Kerjakan soal & jawaban singkat.</p>
             <a href="exam.html" class="btn">Mulai</a>
           </div>
@@ -171,11 +172,11 @@
         <hr style="margin:20px 0;border:none;border-top:1px dashed rgba(0,0,0,0.06)">
 
         <div class="missions-slots">
-          <h4 style="margin-bottom:12px">Slot Waktu Misi Harian (Kerjakan 1x per slot)</h4>
+          <h4 style="margin-bottom:12px">5 Sesi Misi Harian</h4>
 
           <div class="mission-slot" data-mission="pagi1" data-start="06:00" data-end="08:59">
             <div class="slot-head">
-              <strong>🌅 Klaim Pagi 1</strong> — <small>06.00 s/d 08.59 WIB</small>
+              <strong>🌅 Sesi Pagi 1</strong> — <small>06.00 s/d 08.59 WIB</small>
             </div>
             <div class="slot-body">
               <button class="btn-claim" data-mission="pagi1">Kerjakan Misi</button>
@@ -185,7 +186,7 @@
 
           <div class="mission-slot" data-mission="pagi2" data-start="09:00" data-end="11:59">
             <div class="slot-head">
-              <strong>🌄 Klaim Pagi 2</strong> — <small>09.00 s/d 11.59 WIB</small>
+              <strong>🌄 Sesi Pagi 2</strong> — <small>09.00 s/d 11.59 WIB</small>
             </div>
             <div class="slot-body">
               <button class="btn-claim" data-mission="pagi2">Kerjakan Misi</button>
@@ -195,7 +196,7 @@
 
           <div class="mission-slot" data-mission="siang" data-start="12:00" data-end="14:59">
             <div class="slot-head">
-              <strong>🌞 Klaim Siang</strong> — <small>12.00 s/d 14.59 WIB</small>
+              <strong>🌞 Sesi Siang</strong> — <small>12.00 s/d 14.59 WIB</small>
             </div>
             <div class="slot-body">
               <button class="btn-claim" data-mission="siang">Kerjakan Misi</button>
@@ -205,7 +206,7 @@
 
           <div class="mission-slot" data-mission="sore" data-start="15:00" data-end="17:59">
             <div class="slot-head">
-              <strong>🌇 Klaim Sore</strong> — <small>15.00 s/d 17.59 WIB</small>
+              <strong>🌇 Sesi Sore</strong> — <small>15.00 s/d 17.59 WIB</small>
             </div>
             <div class="slot-body">
               <button class="btn-claim" data-mission="sore">Kerjakan Misi</button>
@@ -215,7 +216,7 @@
 
           <div class="mission-slot" data-mission="malam" data-start="18:00" data-end="20:59">
             <div class="slot-head">
-              <strong>🌙 Klaim Malam</strong> — <small>18.00 s/d 20.59 WIB</small>
+              <strong>🌙 Sesi Malam</strong> — <small>18.00 s/d 20.59 WIB</small>
             </div>
             <div class="slot-body">
               <button class="btn-claim" data-mission="malam">Kerjakan Misi</button>
@@ -237,31 +238,31 @@
 
         <div class="referral-missions">
           <div class="referral-slot" data-start="06:00" data-end="08:59">
-            <h4>🌅 Pagi 1 – 06.00 s/d 08.59 WIB</h4>
+            <h4>🌅 Sesi Pagi 1 – 06.00 s/d 08.59 WIB</h4>
             <button class="btn-claim" data-mission="ref-pagi1">Klaim 2%</button>
             <div class="countdown" id="countdown-ref-pagi1">⏳ …</div>
           </div>
 
           <div class="referral-slot" data-start="09:00" data-end="11:59">
-            <h4>🌄 Pagi 2 – 09.00 s/d 11.59 WIB</h4>
+            <h4>🌄 Sesi Pagi 2 – 09.00 s/d 11.59 WIB</h4>
             <button class="btn-claim" data-mission="ref-pagi2">Klaim 2%</button>
             <div class="countdown" id="countdown-ref-pagi2">⏳ …</div>
           </div>
 
           <div class="referral-slot" data-start="12:00" data-end="14:59">
-            <h4>🌞 Siang – 12.00 s/d 14.59 WIB</h4>
+            <h4>🌞 Sesi Siang – 12.00 s/d 14.59 WIB</h4>
             <button class="btn-claim" data-mission="ref-siang">Klaim 2%</button>
             <div class="countdown" id="countdown-ref-siang">⏳ …</div>
           </div>
 
           <div class="referral-slot" data-start="15:00" data-end="17:59">
-            <h4>🌇 Sore – 15.00 s/d 17.59 WIB</h4>
+            <h4>🌇 Sesi Sore – 15.00 s/d 17.59 WIB</h4>
             <button class="btn-claim" data-mission="ref-sore">Klaim 2%</button>
             <div class="countdown" id="countdown-ref-sore">⏳ …</div>
           </div>
 
-          <div class="referral-slot" data-start="18:00" data-end="20:59">
-            <h4>🌙 Malam – 18.00 s/d 20.59 WIB</h4>
+          <div class="referral-slot" data-mission="malam" data-start="18:00" data-end="20:59">
+            <h4>🌙 Sesi Malam – 18.00 s/d 20.59 WIB</h4>
             <button class="btn-claim" data-mission="ref-malam">Klaim 2%</button>
             <div class="countdown" id="countdown-ref-malam">⏳ …</div>
           </div>
