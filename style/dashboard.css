@@ -563,9 +563,8 @@ body.dark .list-muted li {
 /* Missions */
 .missions-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
-  margin-top: 20px;
 }
 
 .mission-card {
@@ -662,9 +661,8 @@ body.dark .lesson-card p {
 /* Lessons Grid */
 .lessons-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
-  padding: 20px 0;
 }
 
 /* Mission Slots */
@@ -1033,6 +1031,10 @@ body.dark .info-icon {
   border-radius: 16px;
   box-shadow: var(--shadow);
   margin-top: 20px;
+}
+
+.leaderboard {
+  overflow-x: auto; /* biar bisa scroll kalau kolom kepanjangan */
 }
 
 .leaderboard-header {
