@@ -399,7 +399,7 @@ function setupMissionSessionUI() {
             claimBtn.textContent = `Klaim ${earnedPoints} Poin`;
             claimBtn.disabled = false; // Memungkinkan klaim meskipun sesi sudah berakhir
             claimBtn.classList.add('active-mission'); // Tetap aktif agar bisa diklaim
-            countdownEl.textContent = '⏳ Sesi Berakhir';
+            countdownEl.textContent = '⏳ Sesi Berakhir'; // Diubah dari "Terlewat" menjadi "Berakhir"
         } else if (isSessionPassed) { // Jika sesi berakhir dan misi tidak dikerjakan
             claimBtn.textContent = 'Misi Gagal';
             countdownEl.textContent = '❌ Terlewat';
@@ -409,7 +409,7 @@ function setupMissionSessionUI() {
             if (isCompleted) {
                 claimBtn.textContent = `Klaim ${earnedPoints} Poin`;
             } else if (isInProgress) {
-                claimBtn.textContent = 'Lanjutkan Misi'; // Jika sudah di-progress
+                claimBtn.textContent = 'Lanjutkan Misi';
             } else {
                 claimBtn.textContent = 'Kerjakan Misi';
             }
@@ -480,8 +480,12 @@ function setupClaimListeners() {
             if (claimBtn.textContent === 'Kerjakan Misi' || claimBtn.textContent === 'Lanjutkan Misi') {
                 const missionsSection = document.getElementById('section-missions');
                 if (missionsSection) {
-                    missionsSection.scrollIntoView({ behavior: 'smooth' });
-                    // Aktifkan tab Misi Harian di sidebar
+                    // Hanya scroll jika section-missions belum active
+                    if (!missionsSection.classList.contains('active')) {
+                        missionsSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+
+                    // Aktifkan tab Misi Harian di sidebar (pastikan aktif jika belum)
                     navLinks.forEach(l => l.classList.remove('active'));
                     const missionNavLink = navLinks.find(link => link.getAttribute('data-section') === 'missions');
                     if(missionNavLink) missionNavLink.classList.add('active');
