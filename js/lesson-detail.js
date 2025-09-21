@@ -21,7 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let isDragging = false;
     let startX = 0;
     let startTouchX = 0;
-    let isLessonDisplayInitialized = false; // Mengganti isLessonLoaded untuk kontrol inisialisasi
+    let isLessonDisplayInitialized = false; 
+    let lessonDataFullContent = ''; // Menyimpan fullContent yang diambil
 
     // --- Sesi & Progress ---
     function getCurrentSession() {
@@ -36,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (hours >= 15 && hours < 18) sessionName = 'Sore';
         else if (hours >= 18 && hours < 21) sessionName = 'Malam';
         else {
-            sessionName = 'Pagi1'; // Default ke Pagi1, tapi untuk hari berikutnya
+            sessionName = 'Pagi1'; 
             const tomorrow = new Date(now);
             tomorrow.setDate(now.getDate() + 1);
             date = tomorrow.toISOString().split('T')[0];
@@ -55,13 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('currentSessionKey', sessionKey);
         const progress = getUserProgress();
         delete progress.sessionCompleted;
-        // Hapus timer sesi lama jika ada
         if (progress[`sessionTimer_${savedSessionKey}`]) {
             delete progress[`sessionTimer_${savedSessionKey}`];
         }
         setUserProgress(progress);
     }
-    localStorage.setItem('currentSessionKey', currentSessionKey); // Update currentSessionKey di localStorage
+    localStorage.setItem('currentSessionKey', currentSessionKey); 
 
     // --- Dark/Light Mode ---
     const savedTheme = localStorage.getItem('theme') || 'light';
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pageIndicator.textContent = 'Halaman 1 / 1';
         pages = ['<p>ID pelajaran tidak ditemukan di URL.</p>'];
         console.error('[Lesson Detail] No lesson ID provided in URL');
-        isLessonDisplayInitialized = true; // Set true agar resize tidak mencoba lagi
+        isLessonDisplayInitialized = true; 
         return;
     }
 
@@ -97,8 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const user = getUser();
         if (user && user.photoURL) {
             profilePictureToggle.src = user.photoURL;
+            console.log('[Profile Pic] User photoURL:', user.photoURL);
         } else {
             profilePictureToggle.src = 'img/default-profile.png';
+            console.log('[Profile Pic] Using default profile picture.');
         }
     }
 
@@ -107,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateProfilePicture();
         } else {
             profilePictureToggle.src = 'img/default-profile.png';
+            console.log('[Auth] User not logged in, redirecting to index.html');
             window.location.href = 'index.html';
         }
     });
@@ -122,31 +125,37 @@ document.addEventListener('DOMContentLoaded', () => {
             if (lesson) {
                 lessonTitle.textContent = lesson.title;
                 lessonTitle.dataset.fullTitle = lesson.title;
-                return lesson.fullContent || '<p>Konten pelajaran belum tersedia.</p>';
+                lessonDataFullContent = lesson.fullContent || '<p>Konten pelajaran belum tersedia.</p>'; // Simpan di variabel global
+                return lessonDataFullContent;
             } else {
                 console.error('[Lesson Detail] No lesson found with id:', lessonId);
                 lessonTitle.textContent = 'Pelajaran Tidak Ditemukan';
                 lessonTitle.dataset.fullTitle = 'Pelajaran Tidak Ditemukan';
-                return '<p>Pelajaran dengan ID ini tidak ditemukan.</p>';
+                lessonDataFullContent = '<p>Pelajaran dengan ID ini tidak ditemukan.</p>';
+                return lessonDataFullContent;
             }
         } catch (err) {
             console.error('[Lesson Detail] Failed to load lesson:', err.message);
             lessonTitle.textContent = 'Error';
             lessonTitle.dataset.fullTitle = 'Error';
-            return '<p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid. Error: ' + err.message + '</p>';
+            lessonDataFullContent = '<p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid. Error: ' + err.message + '</p>';
+            return lessonDataFullContent;
         }
     }
 
     // --- Main Lesson Display Initialization ---
-    async function initializeLessonDisplay() {
-        if (isLessonDisplayInitialized) {
-            console.log('[initializeLessonDisplay] Already initialized, skipping. Or re-initializing due to resize.');
-            // Jika ini dari resize, kita perlu set ulang flag untuk proses penuh
-            isLessonDisplayInitialized = false; 
+    async function initializeLessonDisplay(isResizing = false) {
+        if (isLessonDisplayInitialized && !isResizing) {
+            console.log('[initializeLessonDisplay] Already initialized, skipping (not a resize event).');
+            return;
         }
 
-        const fullContent = await loadLessonContentData();
-        console.log('[initializeLessonDisplay] Fetched full content:', fullContent.substring(0, 100) + '...'); // Log sebagian konten
+        console.log(`[initializeLessonDisplay] Initializing lesson display (isResizing: ${isResizing})...`);
+        
+        // Hanya muat konten jika belum pernah dimuat atau jika ini pertama kali
+        if (!isLessonDisplayInitialized || isResizing) {
+            await loadLessonContentData(); // Muat atau muat ulang konten
+        }
 
         const progress = getUserProgress();
         if (progress.sessionCompleted) {
@@ -157,8 +166,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        splitContentIntoPages(fullContent);
-        isLessonDisplayInitialized = true;
+        // Pastikan lessonDataFullContent sudah terisi
+        if (lessonDataFullContent) {
+            splitContentIntoPages(lessonDataFullContent);
+            isLessonDisplayInitialized = true;
+        } else {
+            console.error('[initializeLessonDisplay] lessonDataFullContent is empty after loading. Cannot split.');
+            pages = ['<p>Gagal memuat konten pelajaran.</p>'];
+            currentPage = 0;
+            renderCurrentPage();
+        }
     }
 
     // --- Split Content Into Pages ---
@@ -166,54 +183,43 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('[splitContentIntoPages] Starting content split.');
         lessonContentContainer.innerHTML = ''; // Kosongkan konten sebelum split
 
+        // Buat tempDiv untuk pengukuran yang akurat
         const tempDiv = document.createElement('div');
         tempDiv.style.position = 'absolute';
         tempDiv.style.visibility = 'hidden';
         tempDiv.style.left = '-9999px';
-        tempDiv.style.boxSizing = 'border-box'; // Penting: pastikan box-sizing konsisten
-        // Set lebar tempDiv berdasarkan lessonContentContainer, kurangi padding horizontal dari .page (15px kiri + 15px kanan)
-        tempDiv.style.width = `${lessonContentContainer.offsetWidth - 30}px`;
-        tempDiv.style.padding = '15px'; // Sesuaikan dengan padding .page
-        // Copy relevant styles for accurate measurement
+        tempDiv.style.width = `${lessonContentContainer.offsetWidth - 30}px`; // Lebar container dikurangi padding .page
+        tempDiv.style.padding = '15px'; // Padding internal untuk .page
+        tempDiv.style.boxSizing = 'border-box'; 
+        
+        // Salin gaya penting untuk pengukuran yang akurat
         const computedStyle = window.getComputedStyle(lessonContentContainer);
         tempDiv.style.fontSize = computedStyle.fontSize;
         tempDiv.style.lineHeight = computedStyle.lineHeight;
         tempDiv.style.fontFamily = computedStyle.fontFamily;
-        tempDiv.style.color = computedStyle.color;
+        tempDiv.style.fontWeight = computedStyle.fontWeight;
+        tempDiv.style.wordBreak = computedStyle.wordBreak;
+        tempDiv.style.whiteSpace = 'normal'; // Pastikan wrapping teks
+        tempDiv.style.color = 'black'; // Bisa di-override oleh CSS, tapi ini default aman
+        tempDiv.style.backgroundColor = 'white'; // Default aman
+
         document.body.appendChild(tempDiv);
 
-        let cleanedContent = content;
-        if (!content.trim().startsWith('<')) {
-            cleanedContent = `<p>${content}</p>`;
-        }
-        
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(cleanedContent, 'text/html');
-        const elements = Array.from(doc.body.childNodes).filter(node => node.nodeType === 1 || (node.nodeType === 3 && node.textContent.trim()));
-        
-        console.log(`[splitContentIntoPages] Elements parsed: ${elements.length}. First element type: ${elements.length > 0 ? elements[0].nodeName : 'N/A'}`);
-
-        let currentPageContentHtml = '';
-        
-        // Perhitungan tinggi yang lebih akurat
-        // Ambil elemen yang ada di HTML untuk mendapatkan tinggi sebenarnya
         const headerHeight = document.querySelector('.header-fixed').offsetHeight;
         const mainContentElement = document.querySelector('.content');
         const mainContentStyle = window.getComputedStyle(mainContentElement);
         const mainContentTopPadding = parseInt(mainContentStyle.paddingTop);
         const mainContentBottomPadding = parseInt(mainContentStyle.paddingBottom);
+        const lessonDetailPadding = 20; // Top/bottom padding dari .lesson-detail
+        const pagePadding = 15; // Top/bottom padding dari .page
         
-        // Asumsi .lesson-detail punya padding 20px top/bottom
-        const lessonDetailPadding = 20; 
-        // Asumsi .page punya padding 15px top/bottom
-        const pagePadding = 15; 
-
         const availableHeight = window.innerHeight 
                                 - headerHeight 
                                 - mainContentTopPadding 
                                 - mainContentBottomPadding 
                                 - (2 * lessonDetailPadding) 
-                                - (2 * pagePadding);
+                                - (2 * pagePadding)
+                                - 20; // Margin/offset kecil tambahan untuk amankah
         
         console.log(`[splitContentIntoPages] DYNAMICALLY CALCULATED HEIGHTS:`);
         console.log(`- window.innerHeight: ${window.innerHeight}px`);
@@ -222,11 +228,12 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`- mainContentBottomPadding: ${mainContentBottomPadding}px`);
         console.log(`- lessonDetailPadding (x2): ${2 * lessonDetailPadding}px`);
         console.log(`- pagePadding (x2): ${2 * pagePadding}px`);
+        console.log(`- Additional offset: 20px`);
         console.log(`- Resulting AVAILABLE_HEIGHT for page content: ${availableHeight}px`);
-        
-        if (availableHeight <= 0) {
-            console.error('[splitContentIntoPages] Calculated availableHeight is zero or negative. This will prevent content from splitting correctly.');
-            pages = ['<p>Kesalahan ukuran layar, tidak dapat membagi konten.</p><p>Coba sesuaikan ukuran jendela browser atau periksa CSS Anda.</p>'];
+
+        if (availableHeight <= 50) { // Set minimum height yang lebih masuk akal
+            console.error('[splitContentIntoPages] Calculated availableHeight is too small or negative. Cannot split content.');
+            pages = ['<p>Kesalahan ukuran layar atau CSS. Tidak dapat menampilkan konten.</p><p>Coba sesuaikan ukuran jendela browser.</p>'];
             document.body.removeChild(tempDiv);
             currentPage = 0;
             renderCurrentPage();
@@ -234,30 +241,57 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         pages = [];
+        let currentPageHtmlBuffer = '';
 
-        elements.forEach((el, index) => {
-            const elHtml = (el.nodeType === 1) ? el.outerHTML : `<p>${el.textContent.trim()}</p>`;
-            
-            // Coba tambahkan elemen saat ini ke currentPageContentHtml
-            tempDiv.innerHTML = currentPageContentHtml + elHtml;
-            const newHeight = tempDiv.scrollHeight;
-            
-            // Log setiap elemen yang diproses
-            console.log(`[splitContentIntoPages] Processing El ${index} (${el.nodeName}). Current tempDiv height (with new el): ${newHeight}px. Current page content length: ${currentPageContentHtml.length}.`);
+        // Parsing konten HTML ke elemen DOM sementara untuk pemisahan yang lebih baik
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(content, 'text/html');
+        const contentElements = Array.from(doc.body.children); // Ambil semua elemen anak tingkat atas
 
-            if (newHeight > availableHeight && currentPageContentHtml) {
-                // Jika menambahkan elemen ini melebihi tinggi yang tersedia DAN halaman saat ini tidak kosong
-                pages.push(currentPageContentHtml);
-                console.log(`[splitContentIntoPages] Page ${pages.length} created. Starting new page with El ${index}.`);
-                currentPageContentHtml = elHtml; // Mulai halaman baru dengan elemen ini
+        console.log(`[splitContentIntoPages] Total top-level elements from content: ${contentElements.length}`);
+
+        if (contentElements.length === 0 && content.trim()) {
+            // Jika tidak ada elemen top-level tapi ada konten, berarti teks biasa
+            contentElements.push(parser.parseFromString(`<p>${content.trim()}</p>`, 'text/html').body.firstChild);
+            console.log('[splitContentIntoPages] Content treated as plain text wrapped in <p>.');
+        } else if (contentElements.length === 0) {
+             pages = ['<p>Konten pelajaran kosong.</p>'];
+             document.body.removeChild(tempDiv);
+             currentPage = 0;
+             renderCurrentPage();
+             return;
+        }
+
+
+        contentElements.forEach((element, index) => {
+            // Append element to tempDiv to measure its height
+            tempDiv.innerHTML = currentPageHtmlBuffer + element.outerHTML;
+            const currentBufferHeight = tempDiv.scrollHeight;
+            
+            console.log(`[splitContentIntoPages] Processing element ${index} (${element.tagName}). Tentative buffer height: ${currentBufferHeight}px.`);
+
+            if (currentBufferHeight > availableHeight && currentPageHtmlBuffer.length > 0) {
+                // If adding this element exceeds the page height AND the buffer is not empty
+                pages.push(currentPageHtmlBuffer);
+                console.log(`[splitContentIntoPages] Page ${pages.length} created. Starting new page with element ${index}.`);
+                currentPageHtmlBuffer = element.outerHTML; // Start new page with current element
+                
+                // Reset tempDiv for the new page buffer to get accurate height for single element
+                tempDiv.innerHTML = currentPageHtmlBuffer;
+                const singleElementHeight = tempDiv.scrollHeight;
+                if (singleElementHeight > availableHeight) {
+                    console.warn(`[splitContentIntoPages] Element ${index} (${element.tagName}) is too large (${singleElementHeight}px) to fit on a single page (${availableHeight}px). It will overflow.`);
+                    // Jika elemen tunggal terlalu besar, biarkan saja agar tidak hilang, tapi log warning
+                }
+
             } else {
-                currentPageContentHtml += elHtml;
+                currentPageHtmlBuffer += element.outerHTML;
             }
         });
 
-        if (currentPageContentHtml) {
-            pages.push(currentPageContentHtml);
-            console.log(`[splitContentIntoPages] Final page created. Total pages: ${pages.length}`);
+        // Add any remaining content in the buffer as the last page
+        if (currentPageHtmlBuffer) {
+            pages.push(currentPageHtmlBuffer);
         }
 
         if (pages.length === 0) {
@@ -268,15 +302,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.removeChild(tempDiv);
         console.log('[splitContentIntoPages] Finished splitting. Total pages:', pages.length);
 
-        currentPage = 0;
+        currentPage = 0; // Reset ke halaman pertama setelah splitting
         renderCurrentPage();
     }
 
     // --- Render Current Page ---
     function renderCurrentPage() {
         console.log(`[renderCurrentPage] Rendering page ${currentPage + 1}/${pages.length}`);
-        // Hapus semua elemen '.page' yang ada di container
-        lessonContentContainer.querySelectorAll('.page').forEach(p => p.remove());
+        
+        // Hapus semua elemen '.page' yang ada di container saat ini
+        lessonContentContainer.innerHTML = ''; 
 
         // Pastikan ada halaman untuk dirender
         if (pages.length === 0) {
@@ -288,23 +323,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Buat dan tambahkan halaman-halaman ke DOM
-        pages.forEach((pageHtml, index) => {
-            const pageDiv = document.createElement('div');
-            pageDiv.className = 'page';
-            pageDiv.dataset.page = index;
-            pageDiv.innerHTML = pageHtml;
-            lessonContentContainer.appendChild(pageDiv);
+        // Buat elemen untuk halaman yang aktif
+        const activePageDiv = document.createElement('div');
+        activePageDiv.className = 'page active';
+        activePageDiv.dataset.page = currentPage;
+        activePageDiv.innerHTML = pages[currentPage];
+        lessonContentContainer.appendChild(activePageDiv);
 
-            if (index === currentPage) {
-                pageDiv.classList.add('active');
-            } else if (index === currentPage + 1) {
-                pageDiv.classList.add('next');
-            } else if (index === currentPage - 1) {
-                pageDiv.classList.add('prev');
-            }
-            // Halaman-halaman lain tidak perlu kelas khusus jika tidak aktif, next, atau prev.
-        });
         updatePageNavigation();
     }
 
@@ -313,14 +338,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pageIndicator && pages.length > 0) {
             pageIndicator.textContent = `Halaman ${currentPage + 1} / ${pages.length}`;
         } else if (pageIndicator) {
-            pageIndicator.textContent = 'Halaman 0 / 0'; // Jika tidak ada halaman
+            pageIndicator.textContent = 'Halaman 0 / 0'; 
         }
     }
 
     function goToNextPage() {
         if (currentPage < pages.length - 1) {
+            const currentPageDiv = lessonContentContainer.querySelector(`.page[data-page="${currentPage}"]`);
+            if (currentPageDiv) currentPageDiv.classList.add('leaving-left');
+
             currentPage++;
-            renderCurrentPage();
+            renderCurrentPage(); // Render halaman baru
+
+            const newPageDiv = lessonContentContainer.querySelector(`.page[data-page="${currentPage}"]`);
+            if (newPageDiv) {
+                newPageDiv.classList.add('entering-right');
+                setTimeout(() => {
+                    newPageDiv.classList.remove('entering-right');
+                    if (currentPageDiv) currentPageDiv.remove(); // Hapus halaman lama setelah transisi
+                }, 300); // Sesuaikan dengan durasi transisi CSS
+            }
         } else {
             console.log('[Page Navigation] Already on last page.');
         }
@@ -328,30 +365,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function goToPrevPage() {
         if (currentPage > 0) {
+            const currentPageDiv = lessonContentContainer.querySelector(`.page[data-page="${currentPage}"]`);
+            if (currentPageDiv) currentPageDiv.classList.add('leaving-right');
+
             currentPage--;
-            renderCurrentPage();
+            renderCurrentPage(); // Render halaman baru
+
+            const newPageDiv = lessonContentContainer.querySelector(`.page[data-page="${currentPage}"]`);
+            if (newPageDiv) {
+                newPageDiv.classList.add('entering-left');
+                setTimeout(() => {
+                    newPageDiv.classList.remove('entering-left');
+                    if (currentPageDiv) currentPageDiv.remove(); // Hapus halaman lama setelah transisi
+                }, 300); // Sesuaikan dengan durasi transisi CSS
+            }
         } else {
             console.log('[Page Navigation] Already on first page.');
         }
     }
 
     // --- Input Handling (Swipe, Drag, Keyboard) ---
+    // (Kode ini tetap sama dari revisi sebelumnya)
     lessonContentContainer.addEventListener('touchstart', (e) => {
         startTouchX = e.touches[0].clientX;
     });
 
     lessonContentContainer.addEventListener('touchmove', (e) => {
-        e.preventDefault();
+        // e.preventDefault(); // Tidak perlu prevent default di sini, biar scrolling vertical tetap jalan
         const touchX = e.touches[0].clientX;
         const deltaX = touchX - startTouchX;
-        if (deltaX > 50) {
-            goToPrevPage();
-            startTouchX = touchX;
-        } else if (deltaX < -50) {
-            goToNextPage();
-            startTouchX = touchX;
+        
+        // Hanya trigger swipe jika pergerakan horizontal lebih dominan
+        if (Math.abs(deltaX) > Math.abs(e.touches[0].clientY - e.changedTouches[0].clientY)) {
+            e.preventDefault(); // Sekarang bisa preventDefault
+            if (deltaX > 50) { // Geser ke kanan (prev)
+                goToPrevPage();
+                startTouchX = touchX; // Reset startX agar tidak terus menerus trigger
+            } else if (deltaX < -50) { // Geser ke kiri (next)
+                goToNextPage();
+                startTouchX = touchX; // Reset startX
+            }
         }
-    });
+    }, { passive: false }); // Gunakan passive: false agar preventDefault() berfungsi
 
     lessonContentContainer.addEventListener('mousedown', (e) => {
         isDragging = true;
@@ -482,6 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Pastikan timeRemaining diinisialisasi dari progress.
         timeRemaining = progress[timerKey]?.remaining || 10 * 60 * 1000;
         minutesCompleted = Math.floor((10 * 60 * 1000 - timeRemaining) / (60 * 1000));
         points = minutesCompleted * 50;
@@ -506,7 +562,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     points = 500;
                     pointsEarned.textContent = `Poin: ${points}`;
                     savePoints(500);
-                    // Gunakan setTimeout agar user bisa melihat popup sebelum redirect
                     setTimeout(() => window.location.href = 'dashboard.html#section-missions', 4000);
                 } else if (timeRemaining % (60 * 1000) === 0) { // Setiap 1 menit
                     minutesCompleted++;
@@ -526,13 +581,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('visibilitychange', () => {
         isTabActive = document.visibilityState === 'visible';
-        if (!isTabActive && timerInterval) {
-            clearInterval(timerInterval);
-            const progress = getUserProgress();
-            progress[`sessionTimer_${currentSessionKey}`] = { remaining: timeRemaining };
-            setUserProgress(progress);
-        } else if (isTabActive) { 
-            if (!timerInterval && timeRemaining > 0) {
+        if (!isTabActive) { // Tab tidak aktif
+            if (timerInterval) {
+                console.log('[Timer] Pausing timer due to tab inactivity.');
+                clearInterval(timerInterval);
+                const progress = getUserProgress();
+                progress[`sessionTimer_${currentSessionKey}`] = { remaining: timeRemaining };
+                setUserProgress(progress);
+                timerInterval = null; // Set null agar bisa di-restart
+            }
+        } else { // Tab aktif kembali
+            if (!timerInterval && timeRemaining > 0 && !getUserProgress().sessionCompleted) { // Hanya restart jika belum selesai dan timer belum jalan
+                console.log('[Timer] Resuming timer due to tab activity.');
                 startTimer();
             }
         }
@@ -549,11 +609,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners untuk Inisialisasi ---
     // Gunakan 'load' event untuk memastikan semua aset (CSS, gambar) telah dimuat
-    // sebelum kita mencoba mengukur elemen untuk splitContentIntoPages.
     window.addEventListener('load', () => {
         console.log('[Window Load] Starting initial lesson display and timer.');
         initializeLessonDisplay();
-        startTimer(); // Pastikan timer dimulai setelah semua inisialisasi awal
+        startTimer(); 
     });
     
     // Panggil saat resize untuk menyesuaikan paging jika pelajaran sudah dimuat
@@ -561,7 +620,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isLessonDisplayInitialized) { 
             console.log('[Resize Event] Re-initializing lesson display due to window resize...');
             // Beri sedikit delay agar DOM punya waktu untuk menyesuaikan setelah resize
-            setTimeout(() => initializeLessonDisplay(), 100); 
+            setTimeout(() => initializeLessonDisplay(true), 100); // Pass true untuk isResizing
         }
     });
 
