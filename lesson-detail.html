@@ -6,17 +6,13 @@
   <title>Detail Mata Pelajaran - CittaFun</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style/lesson-detail.css">
-  <!-- Firebase SDKs (v8 legacy for browser compatibility) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <!-- Firebase config -->
   <script src="js/firebase-config.js"></script>
-  <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-  <!-- Header Fixed -->
   <header class="header-fixed">
     <div class="header-title" id="lesson-title" title="Klik untuk melihat judul lengkap">Memuat...</div>
     <div class="header-right">
@@ -25,24 +21,24 @@
         <span id="timer" class="timer">10:00</span>
         <button id="reload-timer" class="btn-icon reload-icon" aria-label="Refresh halaman">↻</button>
       </div>
-      <!-- Exit Dropdown -->
       <div class="exit-dropdown">
-        <button id="exit-toggle" class="btn-icon" aria-label="Keluar">▾</button>
+        <img id="profile-picture-toggle" class="profile-picture-toggle" src="img/default-profile.png" alt="Foto Profil" aria-label="Menu Profil">
         <div id="exit-menu" class="exit-menu" aria-hidden="true">
           <a href="lesson.html" class="menu-link">Mata Pelajaran</a>
           <a href="dashboard.html" class="menu-link">Beranda</a>
           <button id="theme-toggle" class="theme-toggle" aria-label="Ganti tema">🌙</button>
+          <button id="logout-button" class="menu-link">Keluar</button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Content -->
   <main class="content">
     <section class="lesson-detail">
       <div id="lesson-content" class="lesson-content">
-        <div id="page-indicator" class="page-indicator">Halaman 1</div>
+        <div class="page active" data-page="0"><p>Memuat konten...</p></div>
       </div>
+      <div id="page-indicator" class="page-indicator">Halaman 1 / 1</div>
     </section>
   </main>
 
