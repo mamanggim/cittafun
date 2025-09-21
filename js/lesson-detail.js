@@ -1,5 +1,7 @@
 // js/lesson-detail.js
 import { auth, db } from './firebase-config.js';
+import { doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const lessonTitle = document.getElementById('lesson-title');
@@ -14,9 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutButton = document.getElementById('logout-button');
 
     let timerInterval;
-    let timeRemaining = 10 * 60 * 1000; // 10 menit dalam ms
-    let minutesCompleted = 0;
-    let points = 0;
+    let timeRemaining;
     let isTabActive = true;
     let currentPage = 0;
     let pages = [];
@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let startTouchX = 0;
     let isLessonDisplayInitialized = false; 
     let lessonDataFullContent = '';
+    let userDocRef;
 
     // --- Sesi & Progress ---
     function getCurrentSession() {
@@ -48,22 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const { sessionName, sessionKey, date } = getCurrentSession();
-    let currentSessionKey = localStorage.getItem('currentSessionKey') || sessionKey;
-
-    const savedSessionDate = localStorage.getItem('currentSessionDate');
-    const savedSessionKey = localStorage.getItem('currentSessionKey');
-    if (savedSessionDate !== date || savedSessionKey !== sessionKey) {
-        console.log('[Session] New session detected or date changed. Resetting progress.');
-        localStorage.setItem('currentSessionDate', date);
-        localStorage.setItem('currentSessionKey', sessionKey);
-        const progress = getUserProgress();
-        delete progress.sessionCompleted;
-        if (progress[`sessionTimer_${savedSessionKey}`]) {
-            delete progress[`sessionTimer_${savedSessionKey}`];
-        }
-        setUserProgress(progress);
-    }
-    localStorage.setItem('currentSessionKey', currentSessionKey); 
 
     // --- Dark/Light Mode ---
     const savedTheme = localStorage.getItem('theme') || 'light';
@@ -91,35 +76,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Firebase User & Profile Picture ---
-    function getUser() {
-        return auth.currentUser;
-    }
-
-    function updateProfilePicture() {
-        const user = getUser();
+    function updateProfilePicture(user) {
         if (user && user.photoURL) {
             profilePictureToggle.src = user.photoURL;
-            console.log('[Profile Pic] User photoURL:', user.photoURL);
         } else {
             profilePictureToggle.src = 'img/default-profile.png';
-            console.log('[Profile Pic] Using default profile picture.');
         }
     }
 
-    auth.onAuthStateChanged(user => {
+    onAuthStateChanged(auth, async user => {
         if (user) {
-            updateProfilePicture();
+            userDocRef = doc(db, "users", user.uid);
+            updateProfilePicture(user);
+            await checkAndResetSession(user);
+            initializeLessonAndTimer();
         } else {
-            profilePictureToggle.src = 'img/default-profile.png';
-            console.log('[Auth] User not logged in, redirecting to index.html');
             window.location.href = 'index.html';
         }
     });
 
+    async function checkAndResetSession() {
+      if (!userDocRef) return;
+      const userDocSnap = await getDoc(userDocRef);
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        const storedSessionDate = userData.sessions?.[sessionKey]?.date;
+
+        if (storedSessionDate !== date) {
+          console.log('[Session] New session detected. Resetting progress on Firestore.');
+          const newSessionData = {
+            [sessionKey]: {
+              date: date,
+              sessionCompleted: false,
+              timeRemaining: 10 * 60 * 1000,
+              pointsEarned: 0
+            }
+          };
+          await setDoc(userDocRef, { sessions: newSessionData }, { merge: true });
+        }
+      }
+    }
+
     // --- Load Lesson Content Data ---
     async function loadLessonContentData() {
         try {
-            console.log('[Lesson Detail] Fetching lessons.json...');
             const response = await fetch('data/lessons.json');
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             const lessons = await response.json();
@@ -130,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 lessonDataFullContent = lesson.fullContent || '<p>Konten pelajaran belum tersedia.</p>'; 
                 return lessonDataFullContent;
             } else {
-                console.error('[Lesson Detail] No lesson found with id:', lessonId);
                 lessonTitle.textContent = 'Pelajaran Tidak Ditemukan';
                 lessonTitle.dataset.fullTitle = 'Pelajaran Tidak Ditemukan';
                 lessonDataFullContent = '<p>Pelajaran dengan ID ini tidak ditemukan.</p>';
@@ -140,44 +139,41 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('[Lesson Detail] Failed to load lesson:', err.message);
             lessonTitle.textContent = 'Error';
             lessonTitle.dataset.fullTitle = 'Error';
-            lessonDataFullContent = '<p>Gagal memuat pelajaran. Pastikan file data/lessons.json ada dan valid. Error: ' + err.message + '</p>';
+            lessonDataFullContent = '<p>Gagal memuat pelajaran. Error: ' + err.message + '</p>';
             return lessonDataFullContent;
         }
     }
 
     // --- Main Lesson Display Initialization ---
-    async function initializeLessonDisplay(isResizing = false) {
+    async function initializeLessonAndTimer(isResizing = false) {
         if (isLessonDisplayInitialized && !isResizing) {
-            console.log('[initializeLessonDisplay] Already initialized, skipping (not a resize event).');
             return;
         }
 
-        console.log(`[initializeLessonDisplay] Initializing lesson display (isResizing: ${isResizing})...`);
-        
         if (!isLessonDisplayInitialized || isResizing || !lessonDataFullContent) {
             await loadLessonContentData(); 
         }
 
-        const progress = getUserProgress();
-        if (progress.sessionCompleted) {
+        const userDocSnap = await getDoc(userDocRef);
+        const userData = userDocSnap.data();
+        const sessionData = userData.sessions?.[sessionKey] || {};
+        
+        if (sessionData.sessionCompleted) {
             pages = ['<p style="color: var(--bonus-green); font-weight: 600;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p>'];
             currentPage = 0;
             renderCurrentPage();
-            isLessonDisplayInitialized = true;
-            return;
-        }
-
-        if (lessonDataFullContent) {
-            setTimeout(() => {
-                splitContentIntoPages(lessonDataFullContent);
-                isLessonDisplayInitialized = true;
-            }, 0); 
+            disableTimerAndPoints();
         } else {
-            console.error('[initializeLessonDisplay] lessonDataFullContent is empty after loading. Cannot split.');
-            pages = ['<p>Gagal memuat konten pelajaran.</p>'];
-            currentPage = 0;
-            renderCurrentPage();
+            if (lessonDataFullContent) {
+                splitContentIntoPages(lessonDataFullContent);
+            } else {
+                pages = ['<p>Gagal memuat konten pelajaran.</p>'];
+                currentPage = 0;
+                renderCurrentPage();
+            }
+            startGlobalTimer();
         }
+        isLessonDisplayInitialized = true;
     }
 
     // --- Split Content Into Pages ---
@@ -513,112 +509,105 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 4000);
     }
 
-    // --- Progress & Points Management ---
-    function savePoints(pointsToAdd) {
-        const progress = getUserProgress();
-        progress.points = (progress.points || 0) + pointsToAdd;
-        setUserProgress(progress);
+    // --- Firestore Timer & Points Logic ---
+    async function updatePointsInFirestore(pointsToAdd) {
+        if (!userDocRef) return;
+        const userDocSnap = await getDoc(userDocRef);
+        const currentPoints = userDocSnap.data().points || 0;
+        await setDoc(userDocRef, { points: currentPoints + pointsToAdd }, { merge: true });
     }
 
-    function getUserProgress() {
-        return JSON.parse(localStorage.getItem('userProgress') || '{}');
-    }
-
-    function setUserProgress(p) {
-        localStorage.setItem('userProgress', JSON.stringify(p));
-    }
-
-    // --- Timer Logic ---
-    function startTimer() {
-        const progress = getUserProgress();
-        const timerKey = `sessionTimer_${currentSessionKey}`;
-
-        if (progress.sessionCompleted) {
-            timerDisplay.textContent = '00:00';
-            pointsEarned.textContent = `Poin: 500`;
-            return;
-        }
-
-        timeRemaining = progress[timerKey]?.remaining || 10 * 60 * 1000;
-        minutesCompleted = Math.floor((10 * 60 * 1000 - timeRemaining) / (60 * 1000));
-        points = minutesCompleted * 50;
-        pointsEarned.textContent = `Poin: ${points}`;
-
-        timerDisplay.textContent = formatTime(timeRemaining);
+    function startGlobalTimer() {
         if (timerInterval) clearInterval(timerInterval); 
 
-        timerInterval = setInterval(() => {
+        const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+            const userData = docSnap.data();
+            const sessionData = userData.sessions?.[sessionKey] || {};
+            timeRemaining = sessionData.timeRemaining || 10 * 60 * 1000;
+            const sessionCompleted = sessionData.sessionCompleted || false;
+            
+            if (sessionCompleted) {
+                disableTimerAndPoints();
+                unsubscribe(); // Stop listening
+                return;
+            }
+
+            timerDisplay.textContent = formatTime(timeRemaining);
+            const minutesCompleted = Math.floor((10 * 60 * 1000 - timeRemaining) / (60 * 1000));
+            const calculatedPoints = minutesCompleted * 50;
+            pointsEarned.textContent = `Poin: ${calculatedPoints}`;
+        });
+
+        // Start local timer that syncs to Firestore
+        timerInterval = setInterval(async () => {
             if (isTabActive) {
                 timeRemaining -= 1000;
-                timerDisplay.textContent = formatTime(timeRemaining);
-                progress[timerKey] = { remaining: timeRemaining };
-                setUserProgress(progress);
+                
+                const userDocSnap = await getDoc(userDocRef);
+                const userData = userDocSnap.data();
+                const sessionData = userData.sessions?.[sessionKey] || {};
+
+                const minutesCompleted = Math.floor((10 * 60 * 1000 - timeRemaining) / (60 * 1000));
+                let newPointsEarned = minutesCompleted * 50;
+                let finalPointsToAdd = 0;
+
+                // Check for point milestones
+                if (timeRemaining <= 0) {
+                    newPointsEarned = 500; // Final bonus points
+                    finalPointsToAdd = 500 - (sessionData.pointsEarned || 0);
+                    // No need to save a separate sessionCompleted flag in Firestore, 
+                    // we can just check if timeRemaining is 0.
+                } else if (timeRemaining % (60 * 1000) === 0) {
+                    finalPointsToAdd = 50;
+                }
+
+                // Update Firestore
+                const updatedSessionData = {
+                  [sessionKey]: {
+                    timeRemaining: timeRemaining,
+                    pointsEarned: newPointsEarned,
+                    date: date
+                  }
+                };
+                await setDoc(userDocRef, { sessions: updatedSessionData }, { merge: true });
+                if (finalPointsToAdd > 0) {
+                    await updatePointsInFirestore(finalPointsToAdd);
+                }
 
                 if (timeRemaining <= 0) {
                     clearInterval(timerInterval);
-                    progress.sessionCompleted = true;
-                    setUserProgress(progress);
-                    showGamePopup('Waktu membaca selesai! Anda mendapatkan 500 poin.');
                     confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, duration: 2000 });
-                    points = 500;
-                    pointsEarned.textContent = `Poin: ${points}`;
-                    savePoints(500);
+                    showGamePopup('Waktu membaca selesai! Anda mendapatkan 500 poin.');
                     setTimeout(() => window.location.href = 'dashboard.html#section-missions', 4000);
-                } else if (timeRemaining % (60 * 1000) === 0) { // Setiap 1 menit
-                    minutesCompleted++;
+                } else if (timeRemaining % (60 * 1000) === 0) {
                     triggerAd();
                     showFloatingPoints(50);
                     showGamePopup('1 menit selesai! +50 poin');
                     confetti({ particleCount: 50, spread: 60, duration: 2000 });
-                    points += 50;
-                    pointsEarned.textContent = `Poin: ${points}`;
-                    savePoints(50);
                 }
             }
         }, 1000);
     }
+    
+    function disableTimerAndPoints() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerDisplay.style.color = 'gray';
+        pointsEarned.style.color = 'gray';
+        reloadTimer.style.display = 'none';
+        timerDisplay.textContent = 'Selesai';
+    }
 
-    reloadTimer.addEventListener('click', () => window.location.reload());
+    reloadTimer.addEventListener('click', () => {
+        window.location.reload();
+    });
 
     document.addEventListener('visibilitychange', () => {
         isTabActive = document.visibilityState === 'visible';
-        if (!isTabActive) { 
-            if (timerInterval) {
-                console.log('[Timer] Pausing timer due to tab inactivity.');
-                clearInterval(timerInterval);
-                const progress = getUserProgress();
-                progress[`sessionTimer_${currentSessionKey}`] = { remaining: timeRemaining };
-                setUserProgress(progress);
-                timerInterval = null; 
-            }
-        } else { 
-            if (!timerInterval && timeRemaining > 0 && !getUserProgress().sessionCompleted) { 
-                console.log('[Timer] Resuming timer due to tab activity.');
-                startTimer();
-            }
-        }
-    });
-
-    window.addEventListener('beforeunload', () => {
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            const progress = getUserProgress();
-            progress[`sessionTimer_${currentSessionKey}`] = { remaining: timeRemaining };
-            setUserProgress(progress);
-        }
-    });
-
-    // --- Event Listeners untuk Inisialisasi ---
-    window.addEventListener('load', () => {
-        console.log('[Window Load] Starting initial lesson display and timer.');
-        initializeLessonDisplay();
-        startTimer(); 
     });
     
     window.addEventListener('resize', () => {
         if (isLessonDisplayInitialized) { 
-            console.log('[Resize Event] Re-initializing lesson display due to window resize...');
-            setTimeout(() => initializeLessonDisplay(true), 100); 
+            setTimeout(() => initializeLessonAndTimer(true), 100); 
         }
     });
 
@@ -640,8 +629,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     logoutButton.addEventListener('click', async () => {
         try {
-            await auth.signOut();
-            localStorage.removeItem('userProgress');
+            await signOut(auth);
             window.location.href = 'index.html';
         } catch (error) {
             console.error("Error logging out:", error);
