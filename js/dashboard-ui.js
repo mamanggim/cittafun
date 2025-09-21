@@ -43,7 +43,7 @@ const totalTemanLink = document.getElementById('total-teman-link');
 const infoIcon = document.querySelector('.info-icon');
 const leaderboardList = document.getElementById('leaderboard-list');
 
-// MISSION SLOTS DOM Elements (new)
+// MISSION SLOTS DOM Elements
 const missionSlots = document.querySelectorAll('.mission-slot');
 
 // Helper Functions
@@ -334,8 +334,8 @@ async function getRegistrationId(uid) {
     const q = query(usersRef, orderBy('createdAt'));
     const snapshot = await getDocs(q);
     let index = 0;
-    for (const doc of snapshot.docs) { // Menggunakan for...of untuk async loop
-        if (doc.id === uid) break; // Keluar jika user ditemukan
+    for (const doc of snapshot.docs) {
+        if (doc.id === uid) break;
         index++;
     }
     return index + 1;
@@ -349,7 +349,6 @@ function setupMissionSessionUI() {
     if (!user || !userData) return;
 
     const wibTime = getWIBTime();
-    const currentHourWIB = wibTime.getHours();
     const todayDateString = wibTime.toISOString().slice(0, 10); // Format YYYY-MM-DD
 
     missionSlots.forEach(slot => {
@@ -359,16 +358,15 @@ function setupMissionSessionUI() {
         const countdownEl = slot.querySelector('.countdown');
         const claimBtn = slot.querySelector('.btn-claim');
 
-        // Pastikan claimBtn ada sebelum melanjutkan
         if (!claimBtn) return;
 
-        // Mendapatkan status misi dari userData.missionSessionStatus
-        // missionSessionStatus: { "pagi1": { "YYYY-MM-DD": { status: "completed" | "claimed" | "failed", points: 100 } } }
+        // missionSessionStatus: { "pagi1": { "YYYY-MM-DD": { status: "in_progress" | "completed" | "claimed" | "failed", points: 100 } } }
         const sessionStatusToday = userData.missionSessionStatus?.[missionId]?.[todayDateString];
+        const isInProgress = sessionStatusToday && sessionStatusToday.status === 'in_progress';
         const isCompleted = sessionStatusToday && sessionStatusToday.status === 'completed';
         const isClaimed = sessionStatusToday && sessionStatusToday.status === 'claimed';
         const isFailed = sessionStatusToday && sessionStatusToday.status === 'failed';
-        const earnedPoints = sessionStatusToday?.points || 0; // Poin yang didapat dari sesi ini
+        const earnedPoints = sessionStatusToday?.points || 0;
 
         let sessionStartTime = new Date(wibTime);
         sessionStartTime.setHours(startHour, 0, 0, 0);
@@ -376,7 +374,6 @@ function setupMissionSessionUI() {
         let sessionEndTime = new Date(wibTime);
         sessionEndTime.setHours(endHour, 59, 59, 999);
 
-        // Jika waktu berakhir < waktu mulai, berarti sesi melewati tengah malam
         if (sessionEndTime.getTime() < sessionStartTime.getTime()) {
             sessionEndTime.setDate(sessionEndTime.getDate() + 1);
         }
@@ -385,63 +382,49 @@ function setupMissionSessionUI() {
         const isSessionUpcoming = wibTime < sessionStartTime;
         const isSessionPassed = wibTime > sessionEndTime;
 
+        // Reset UI state
+        claimBtn.disabled = true;
+        claimBtn.classList.remove('active-mission');
+
         // --- Perbarui UI berdasarkan status sesi ---
 
-        // 1. Jika sudah diklaim
         if (isClaimed) {
             claimBtn.textContent = `Misi Selesai`;
-            claimBtn.disabled = true;
-            claimBtn.classList.remove('active-mission');
             countdownEl.textContent = '✅ Diklaim';
-            return; // Lewati logika lain
-        }
-
-        // 2. Jika sesi sudah berakhir dan belum diklaim (atau tidak dikerjakan)
-        if (isSessionPassed && !isClaimed) {
-             // Set status gagal jika belum ada status atau belum diklaim
-            if (!sessionStatusToday || sessionStatusToday.status !== 'completed') {
-                claimBtn.textContent = 'Misi Gagal';
-                countdownEl.textContent = '❌ Terlewat';
-            } else if (isCompleted) {
-                 // Jika misi selesai tapi belum diklaim setelah sesi berakhir
-                 claimBtn.textContent = `Klaim ${earnedPoints} Poin`;
-                 countdownEl.textContent = '⏳ Sesi Berakhir';
-                 claimBtn.disabled = false; // Biarkan bisa diklaim
-            }
-            claimBtn.disabled = true; // Nonaktifkan tombol untuk Sesi Gagal
-            claimBtn.classList.remove('active-mission');
-            return; // Lewati logika lain
-        }
-
-        // 3. Sesi aktif
-        if (isCurrentSessionActive) {
+        } else if (isFailed) {
+            claimBtn.textContent = 'Misi Gagal';
+            countdownEl.textContent = '❌ Terlewat';
+        } else if (isSessionPassed && (isCompleted || isInProgress)) {
+             // Jika sesi berakhir dan misi sudah dikerjakan/in_progress tapi belum diklaim
+            claimBtn.textContent = `Klaim ${earnedPoints} Poin`;
+            claimBtn.disabled = false; // Memungkinkan klaim meskipun sesi sudah berakhir
+            claimBtn.classList.add('active-mission'); // Tetap aktif agar bisa diklaim
+            countdownEl.textContent = '⏳ Sesi Berakhir';
+        } else if (isSessionPassed) { // Jika sesi berakhir dan misi tidak dikerjakan
+            claimBtn.textContent = 'Misi Gagal';
+            countdownEl.textContent = '❌ Terlewat';
+        } else if (isCurrentSessionActive) {
             claimBtn.disabled = false;
-            claimBtn.classList.add('active-mission'); // Menandai sesi aktif (bisa tambahkan styling di CSS)
-            // Cek apakah sudah "dikerjakan" (asumsi: saat tombol diklik pertama kali)
+            claimBtn.classList.add('active-mission');
             if (isCompleted) {
                 claimBtn.textContent = `Klaim ${earnedPoints} Poin`;
+            } else if (isInProgress) {
+                claimBtn.textContent = 'Lanjutkan Misi'; // Jika sudah di-progress
             } else {
                 claimBtn.textContent = 'Kerjakan Misi';
             }
             countdownEl.textContent = `⏳ Selesai ${formatTime(sessionEndTime - wibTime)}`;
-        }
-        // 4. Sesi akan datang
-        else if (isSessionUpcoming) {
+        } else if (isSessionUpcoming) {
             claimBtn.textContent = 'Kerjakan Misi';
-            claimBtn.disabled = true;
-            claimBtn.classList.remove('active-mission');
             countdownEl.textContent = `⏳ Mulai ${formatTime(sessionStartTime - wibTime)}`;
         }
     });
 
-    // Jalankan setupCountdowns() asli untuk referral slots (jika masih menggunakan logic yang sama)
     setupReferralCountdowns();
 }
 
-// Fungsi terpisah untuk countdown referral agar tidak bentrok
 function setupReferralCountdowns() {
     const wibTime = getWIBTime();
-    const currentHourWIB = wibTime.getHours();
 
     document.querySelectorAll('.referral-slot').forEach(slot => {
         const startHour = parseInt(slot.dataset.start.split(':')[0]);
@@ -466,23 +449,19 @@ function setupReferralCountdowns() {
             countdownEl.textContent = '⏳ Aktif sekarang';
         } else if (isSessionUpcoming) {
             countdownEl.textContent = `⏳ Mulai ${formatTime(sessionStartTime - wibTime)}`;
-        } else { // isSessionPassed
-            // Untuk referral, mungkin kita hanya perlu menunjukkan 'Terlewat' atau 'Besok'
+        } else {
             const nextDay = new Date(wibTime);
-            nextDay.setUTCDate(nextDay.getUTCDate() + 1); // Pindah ke hari berikutnya
-            nextDay.setUTCHours(startHour, 0, 0, 0); // Set jam mulai sesi untuk hari berikutnya
+            nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+            nextDay.setUTCHours(startHour, 0, 0, 0);
             countdownEl.textContent = `⏳ Besok ${formatTime(nextDay - wibTime)}`;
         }
     });
 }
 
-
 /**
  * Setup event listeners untuk tombol klaim misi harian dan referral.
- * Akan dimodifikasi untuk menangani logika "Kerjakan Misi" -> "Klaim Poin".
  */
 function setupClaimListeners() {
-    // Listener untuk misi harian (mission-slot)
     missionSlots.forEach(slot => {
         const claimBtn = slot.querySelector('.btn-claim');
         safeAddEvent(claimBtn, 'click', async (e) => {
@@ -497,40 +476,51 @@ function setupClaimListeners() {
             let currentMissionStatus = userData.missionSessionStatus || {};
             let sessionStatusForToday = currentMissionStatus[missionId]?.[todayDateString];
 
-            // Jika tombol bertuliskan "Kerjakan Misi"
-            if (claimBtn.textContent === 'Kerjakan Misi') {
-                // Simulasikan misi "dikerjakan"
-                const pointsEarned = 100; // Asumsi poin yang didapat dari mengerjakan misi
-                currentMissionStatus = {
-                    ...currentMissionStatus,
-                    [missionId]: {
-                        ...(currentMissionStatus[missionId] || {}),
-                        [todayDateString]: {
-                            status: 'completed',
-                            points: pointsEarned,
-                            timestamp: new Date().toISOString()
+            // Arahkan ke section-missions setiap kali tombol diklik jika tujuannya "mengerjakan/melanjutkan"
+            if (claimBtn.textContent === 'Kerjakan Misi' || claimBtn.textContent === 'Lanjutkan Misi') {
+                const missionsSection = document.getElementById('section-missions');
+                if (missionsSection) {
+                    missionsSection.scrollIntoView({ behavior: 'smooth' });
+                    // Aktifkan tab Misi Harian di sidebar
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    const missionNavLink = navLinks.find(link => link.getAttribute('data-section') === 'missions');
+                    if(missionNavLink) missionNavLink.classList.add('active');
+                    document.querySelector('.page-title').textContent = '🎯 Misi Harian';
+                    if (window.innerWidth <= 900) closeSidebar();
+                }
+
+                // Tandai misi sebagai 'in_progress' jika belum 'completed' atau 'claimed'
+                if (!sessionStatusForToday || (sessionStatusForToday.status !== 'completed' && sessionStatusForToday.status !== 'claimed')) {
+                    const pointsEarned = 100; // Asumsi poin yang didapat dari mengerjakan misi
+                    currentMissionStatus = {
+                        ...currentMissionStatus,
+                        [missionId]: {
+                            ...(currentMissionStatus[missionId] || {}),
+                            [todayDateString]: {
+                                status: 'in_progress', // Status baru
+                                points: pointsEarned,
+                                timestamp: new Date().toISOString()
+                            }
                         }
-                    }
-                };
+                    };
 
-                await updateDoc(userRef, {
-                    missionSessionStatus: currentMissionStatus,
-                    recentActivity: arrayUnion(`Mengerjakan misi ${missionId} - ${new Date().toLocaleString('id-ID')}`).slice(-5)
-                });
-
-                userData.missionSessionStatus = currentMissionStatus; // Update local data
-                showGamePopup('Misi berhasil dikerjakan!');
-                showFloatingPoints(claimBtn, 0, 'Misi Dikerjakan!'); // Pesan kustom
-                // Setelah dikerjakan, UI akan otomatis update di setupMissionSessionUI
+                    await updateDoc(userRef, {
+                        missionSessionStatus: currentMissionStatus,
+                        recentActivity: arrayUnion(`Memulai misi ${missionId} - ${new Date().toLocaleString('id-ID')}`).slice(-5)
+                    });
+                    userData.missionSessionStatus = currentMissionStatus; // Update local data
+                    showGamePopup('Misi dimulai!');
+                    showFloatingPoints(claimBtn, 0, 'Misi Dimulai!');
+                }
             }
             // Jika tombol bertuliskan "Klaim X Poin"
-            else if (claimBtn.textContent.startsWith('Klaim') && sessionStatusForToday?.status === 'completed') {
+            else if (claimBtn.textContent.startsWith('Klaim') && (sessionStatusForToday?.status === 'completed' || sessionStatusForToday?.status === 'in_progress')) {
                 const pointsToClaim = sessionStatusForToday.points;
 
                 // Klaim poin
                 await updateDoc(userRef, {
                     points: (userData.points || 0) + pointsToClaim,
-                    convertedPoints: (userData.convertedPoints || 0) + pointsToClaim, // Konversi langsung
+                    convertedPoints: (userData.convertedPoints || 0) + pointsToClaim,
                     missionSessionStatus: {
                         ...currentMissionStatus,
                         [missionId]: {
@@ -545,14 +535,13 @@ function setupClaimListeners() {
                     recentActivity: arrayUnion(`Klaim ${pointsToClaim} poin dari sesi ${missionId} - ${new Date().toLocaleString('id-ID')}`).slice(-5)
                 });
 
-                // Update local data
                 userData.points = (userData.points || 0) + pointsToClaim;
                 userData.convertedPoints = (userData.convertedPoints || 0) + pointsToClaim;
                 userData.missionSessionStatus[missionId][todayDateString].status = 'claimed';
                 userData.missionSessionStatus[missionId][todayDateString].claimTimestamp = new Date().toISOString();
 
-                await loadUserData(); // Perbarui tampilan saldo poin
-                await loadLeaderboard(); // Perbarui leaderboard
+                await loadUserData();
+                await loadLeaderboard();
                 showGamePopup(`Berhasil klaim ${pointsToClaim} poin!`);
                 showFloatingPoints(claimBtn, pointsToClaim);
                 if (window.confetti) confetti({
@@ -562,21 +551,6 @@ function setupClaimListeners() {
                         y: 0.6
                     }
                 });
-                // UI akan otomatis update di setupMissionSessionUI menjadi "Misi Selesai"
-            }
-
-            // Scroll ke section-missions setelah tombol aktif diklik
-            if (claimBtn.textContent === 'Kerjakan Misi' && !claimBtn.disabled) {
-                const missionsSection = document.getElementById('section-missions');
-                if (missionsSection) {
-                    missionsSection.scrollIntoView({ behavior: 'smooth' });
-                    // Aktifkan tab Misi Harian di sidebar
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    const missionNavLink = navLinks.find(link => link.getAttribute('data-section') === 'missions');
-                    if(missionNavLink) missionNavLink.classList.add('active');
-                    document.querySelector('.page-title').textContent = '🎯 Misi Harian';
-                    if (window.innerWidth <= 900) closeSidebar();
-                }
             }
         });
     });
@@ -584,7 +558,7 @@ function setupClaimListeners() {
     // Listener untuk tombol klaim referral (tetap seperti semula)
     document.querySelectorAll('.referral-slot .btn-claim').forEach(button => {
         button.addEventListener('click', async () => {
-            if (!user || button.disabled) return; // Nonaktifkan tombol untuk referral slots jika sedang dalam proses atau user belum login
+            if (!user || button.disabled) return;
 
             const mission = button.getAttribute('data-mission');
             const userRef = doc(db, 'users', user.uid);
@@ -617,11 +591,10 @@ function setupClaimListeners() {
                         y: 0.6
                     }
                 });
-                button.disabled = true; // Disable tombol setelah klaim
+                button.disabled = true;
             }
         });
     });
-
 
     safeAddEvent(checkProgressBtn, 'click', async () => {
         if (!user || checkProgressBtn.disabled) return;
@@ -649,7 +622,7 @@ function setupClaimListeners() {
             } else {
                 showGamePopup('Belum ada referral aktif 7 hari!');
             }
-            // checkProgressBtn.disabled = true; // Mengaktifkan kembali tombol setelah pengecekan
+            // checkProgressBtn.disabled = true;
         }
     });
 }
@@ -666,7 +639,7 @@ function startPointConversion() {
         nextConversion.setDate(nextConversion.getDate() + 1);
     }
 
-    const timeUntilNext = nextConversion.getTime() - wibTime.getTime(); // Hitung selisih dalam ms
+    const timeUntilNext = nextConversion.getTime() - wibTime.getTime();
 
     setTimeout(async () => {
         if (!user) return;
@@ -675,7 +648,6 @@ function startPointConversion() {
         if (docSnap.exists()) {
             const data = docSnap.data();
             const dailyConverted = data.dailyConverted || 0;
-            // Batasi konversi harian hingga 100.000 poin
             const convertiblePoints = Math.min(data.points || 0, 100000 - dailyConverted);
 
             if (convertiblePoints > 0) {
@@ -690,9 +662,8 @@ function startPointConversion() {
                 showGamePopup(`Konversi ${convertiblePoints} poin berhasil!`);
             }
         }
-        // Atur ulang timer untuk konversi hari berikutnya
         startPointConversion();
-    }, timeUntilNext + 1000); // Tambah sedikit waktu untuk memastikan sudah lewat 00:00
+    }, timeUntilNext + 1000);
 }
 
 // Initialize
