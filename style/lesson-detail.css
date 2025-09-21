@@ -1,446 +1,419 @@
-/* style/lesson-detail.css */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* General Lesson Detail Styles */
+.lesson-detail {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 20px; /* Umum untuk keseluruhan halaman */
+    box-sizing: border-box;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-html {
-  scroll-behavior: smooth;
+/* Header Section */
+.lesson-detail .header-fixed {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
 }
 
-body {
-  font-family: 'Nunito', sans-serif;
-  line-height: 1.6;
-  color: #333;
-  background: linear-gradient(135deg, #eaf2ff, #f9fbff);
-  transition: background 0.3s, color 0.3s;
-}
-
-body.dark {
-  background: linear-gradient(135deg, #1e1e2f, #2a2a3c);
-  color: #ddd;
-}
-
-/* Variabel Warna */
-:root {
-  --citta-blue: #0052cc;
-  --fun-orange: #ff6200;
-  --bg-light: linear-gradient(135deg, #eaf2ff, #f9fbff);
-  --bg-dark: linear-gradient(135deg, #1e1e2f, #2a2a3c);
-  --text-light: #333;
-  --text-dark: #ddd;
-  --card-bg: #f9fafb;
-  --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  --bonus-green: #22c55e;
-}
-
-/* Header Fixed */
-.header-fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 20px;
-  height: 50px;
-  z-index: 100;
-  transition: background 0.3s;
-}
-
-body.dark .header-fixed {
-  background: rgba(30, 30, 45, 0.95);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.header-title {
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: var(--citta-blue);
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: pointer;
-}
-
-body.dark .header-title {
-  color: var(--fun-orange);
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.header-stats {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.points-display {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--bonus-green);
-}
-
-body.dark .points-display {
-  color: #4ade80;
-}
-
-.timer {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--citta-blue);
-  background: white;
-  padding: 6px 12px;
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-  animation: pulse 2s infinite;
-}
-
-body.dark .timer {
-  color: var(--fun-orange);
-  background: #35354f;
-}
-
-.reload-icon {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  padding: 6px;
-  cursor: pointer;
-  color: var(--citta-blue);
-  transition: transform 0.5s ease-in-out;
-}
-
-body.dark .reload-icon {
-  color: var(--fun-orange);
-}
-
-.reload-icon:hover {
-  transform: rotate(360deg);
-}
-
-/* Exit Dropdown (menggunakan foto profil) */
-.exit-dropdown {
-  position: relative;
-  display: flex; /* Tambahkan ini agar toggle dan menu bisa diatur */
-  align-items: center;
-}
-
-.profile-picture-toggle { /* BARU */
-    width: 32px; 
-    height: 32px; 
-    border-radius: 50%; 
-    object-fit: cover; 
+.lesson-detail .header-fixed h1 {
+    font-size: 1.5em;
+    font-weight: 600;
+    margin: 0;
+    color: var(--primary-color);
     cursor: pointer;
-    border: 2px solid var(--citta-blue); 
-    transition: border-color 0.3s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: calc(100% - 150px); /* Sesuaikan dengan lebar elemen kanan */
 }
 
-body.dark .profile-picture-toggle {
-    border: 2px solid var(--fun-orange);
+.lesson-detail .header-fixed .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-.profile-picture-toggle.active {
-    border-color: var(--fun-orange); 
+.lesson-detail .header-fixed .profile-picture-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid var(--accent-color);
+    transition: transform 0.2s ease;
 }
 
-body.dark .profile-picture-toggle.active {
-    border-color: var(--citta-blue);
+.lesson-detail .header-fixed .profile-picture-toggle.active {
+    transform: scale(1.1);
 }
 
-.exit-menu {
-  position: absolute;
-  top: 45px; /* Sesuaikan posisi agar di bawah foto profil */
-  right: 0; /* Pastikan menu muncul di sebelah kanan foto profil */
-  background: white;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  padding: 10px;
-  min-width: 160px;
-  max-width: calc(100vw - 40px);
-  display: none;
-  z-index: 10;
-  animation: slideIn 0.3s ease;
-  font-family: 'Nunito', sans-serif;
+.lesson-detail .header-fixed .exit-menu {
+    position: absolute;
+    top: 60px; /* Sesuaikan dengan tinggi header */
+    right: 20px;
+    background-color: var(--card-background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
 }
 
-body.dark .exit-menu {
-  background: #35354f;
+.lesson-detail .header-fixed .exit-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
-.exit-menu.show {
-  display: block;
+.lesson-detail .header-fixed .exit-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.menu-link {
-  display: block;
-  padding: 8px 12px;
-  color: var(--text-light);
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-decoration: none;
-  background: none; /* Untuk tombol logout */
-  border: none; /* Untuk tombol logout */
-  text-align: left; /* Untuk tombol logout */
-  width: 100%; /* Untuk tombol logout */
-  cursor: pointer; /* Untuk tombol logout */
-  transition: background 0.3s, color 0.3s, transform 0.2s;
+.lesson-detail .header-fixed .exit-menu ul li {
+    padding: 10px 20px;
+    cursor: pointer;
+    color: var(--text-color);
+    white-space: nowrap;
 }
 
-.menu-link:hover {
-  background: var(--citta-blue);
-  color: white;
-  transform: translateX(5px);
+.lesson-detail .header-fixed .exit-menu ul li:hover {
+    background-color: var(--hover-color);
 }
 
-body.dark .menu-link {
-  color: var(--text-dark);
+.lesson-detail .header-fixed .exit-menu ul li:last-child {
+    border-top: 1px solid var(--border-color);
+    margin-top: 5px;
+    padding-top: 15px;
 }
 
-.theme-toggle {
-  display: block;
-  width: 100%;
-  padding: 8px 12px;
-  background: none;
-  border: none;
-  color: var(--text-light);
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.3s, color 0.3s, transform 0.2s;
+/* Main Content Area */
+.lesson-detail .content {
+    flex-grow: 1; /* Konten akan mengambil sisa ruang yang tersedia */
+    display: flex;
+    flex-direction: column;
+    position: relative; /* Penting untuk positioning anak-anaknya */
+    padding: 20px 0; /* Padding vertikal untuk keseluruhan area konten */
 }
 
-.theme-toggle:hover {
-  background: var(--citta-blue);
-  color: white;
-  transform: translateX(5px);
+/* Lesson Content Container for Paging */
+.lesson-detail .lesson-content {
+    flex-grow: 1; /* Agar mengambil sisa ruang yang tersedia */
+    position: relative; /* Penting untuk positioning absolut halaman */
+    overflow: hidden; /* Penting untuk menyembunyikan bagian halaman yang tidak aktif */
+    margin-bottom: 20px; /* Jarak dengan area timer/poin */
 }
 
-body.dark .theme-toggle {
-  color: var(--text-dark);
+/* Individual Page Styling */
+.lesson-content .page {
+    position: absolute; /* Penting untuk tumpukan dan transisi */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; /* Agar mengisi ruang yang tersedia */
+    padding: 15px; /* Padding internal untuk konten per halaman */
+    overflow-y: auto; /* Jika konten per halaman masih terlalu panjang, bisa di-scroll */
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out; /* Animasi transisi */
+    box-sizing: border-box;
+    background-color: var(--background-color); /* Pastikan background-nya sama dengan container */
+    color: var(--text-color);
+    z-index: 1; /* Default z-index */
+    display: flex; /* Untuk meratakan konten vertikal jika perlu */
+    flex-direction: column;
+    justify-content: flex-start; /* Konten mulai dari atas */
 }
 
-/* Title Popup */
+/* Styles for elements inside .page */
+.lesson-content .page p {
+    margin-bottom: 1em; /* Jarak antar paragraf */
+    line-height: 1.6;
+}
+
+.lesson-content .page ul,
+.lesson-content .page ol {
+    margin-bottom: 1em;
+    padding-left: 20px;
+}
+
+.lesson-content .page li {
+    margin-bottom: 0.5em;
+    line-height: 1.5;
+}
+
+.lesson-content .page h3 {
+    margin-top: 1.5em;
+    margin-bottom: 0.8em;
+    font-size: 1.2em;
+    color: var(--primary-color);
+}
+
+/* Halaman aktif */
+.lesson-content .page.active {
+    transform: translateX(0);
+    opacity: 1;
+    z-index: 2; /* Pastikan halaman aktif di atas */
+}
+
+/* Halaman yang keluar ke kiri */
+.lesson-content .page.leaving-left {
+    transform: translateX(-100%);
+    opacity: 0;
+    z-index: 1;
+}
+
+/* Halaman yang keluar ke kanan */
+.lesson-content .page.leaving-right {
+    transform: translateX(100%);
+    opacity: 0;
+    z-index: 1;
+}
+
+/* Halaman yang masuk dari kanan */
+.lesson-content .page.entering-right {
+    transform: translateX(100%);
+    opacity: 0;
+    z-index: 1;
+}
+
+/* Halaman yang masuk dari kiri */
+.lesson-content .page.entering-left {
+    transform: translateX(-100%);
+    opacity: 0;
+    z-index: 1;
+}
+
+/* After transition, entering page becomes active */
+.lesson-content .page.entering-right.active,
+.lesson-content .page.entering-left.active {
+    transform: translateX(0);
+    opacity: 1;
+    z-index: 2;
+}
+
+/* Footer Controls (Timer, Points, Page Indicator) */
+.lesson-detail .footer-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9em;
+    color: var(--text-color);
+    position: sticky; /* Agar tetap di bawah saat scroll (jika konten page terlalu panjang) */
+    bottom: 0;
+    background-color: var(--background-color);
+    z-index: 10;
+}
+
+.lesson-detail .footer-controls .timer,
+.lesson-detail .footer-controls .points-earned,
+.lesson-detail .footer-controls .page-indicator {
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: var(--card-background-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.lesson-detail .footer-controls .timer {
+    font-weight: bold;
+    color: var(--accent-color);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.lesson-detail .footer-controls .timer span {
+    cursor: pointer; /* Untuk ikon reload */
+}
+
+/* Theme Toggle Button */
+.lesson-detail .theme-toggle {
+    background: var(--button-background);
+    color: var(--button-text-color);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2em;
+    cursor: pointer;
+    box-shadow: var(--button-shadow);
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lesson-detail .theme-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--button-hover-shadow);
+}
+
+/* Popup Styles */
 .title-popup {
-  position: fixed;
-  top: 60px;
-  left: 50%;
-  transform: translateX(-50%) scale(0.8);
-  background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
-  color: white;
-  padding: 15px 20px;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-align: center;
-  max-width: calc(100vw - 40px);
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
-  z-index: 1000;
-}
-
-body.dark .title-popup {
-  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--card-background-color);
+    color: var(--text-color);
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    font-size: 1.2em;
+    font-weight: bold;
+    z-index: 1001;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    max-width: 90%;
+    text-align: center;
 }
 
 .title-popup.show {
-  opacity: 1;
-  transform: translateX(-50%) scale(1);
+    opacity: 1;
+    visibility: visible;
 }
 
-/* Content */
-.content {
-  padding: 60px 20px 20px;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.lesson-detail {
-  background: var(--card-bg);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  position: relative;
-}
-
-body.dark .lesson-detail {
-  background: #35354f;
-}
-
-/* Page Indicator */
-.page-indicator {
-  position: absolute;
-  bottom: 5px;
-  right: 10px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-light);
-  background: rgba(255, 255, 255, 0.8);
-  padding: 5px 10px;
-  border-radius: 8px;
-  z-index: 3;
-}
-
-body.dark .page-indicator {
-  color: var(--text-dark);
-  background: rgba(30, 30, 45, 0.8);
-}
-
-/* Lesson Content */
-.lesson-content {
-  font-size: 1rem;
-  color: #4b5563;
-  line-height: 1.8;
-  max-height: calc(100vh - 120px); /* Tinggi viewport dikurangi header dan padding */
-  overflow: hidden;
-  position: relative;
-  perspective: 1000px; /* Untuk efek 3D */
-  user-select: none; /* Cegah seleksi teks saat drag */
-}
-
-body.dark .lesson-content {
-  color: #9ca3af;
-}
-
-.page {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--card-bg);
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  transform: rotateY(90deg); /* Mulai di sisi */
-  opacity: 0;
-  transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
-  transform-origin: left center;
-  backface-visibility: hidden; /* Sembunyikan sisi belakang saat rotasi */
-}
-
-body.dark .page {
-  background: #35354f;
-}
-
-.page.active {
-  transform: rotateY(0deg); /* Halaman aktif terlihat */
-  opacity: 1;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  z-index: 2;
-}
-
-.page.next {
-  transform: rotateY(90deg); /* Halaman berikutnya mulai dari sisi kanan */
-  opacity: 0;
-  box-shadow: 5px 0 20px rgba(0, 0, 0, 0.15);
-  z-index: 1;
-}
-
-.page.prev {
-  transform: rotateY(-90deg); /* Halaman sebelumnya mulai dari sisi kiri */
-  opacity: 0;
-  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.15);
-  z-index: 1;
-}
-
-/* Game Popup */
 .game-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.8);
-  background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
-  color: white;
-  padding: 20px 30px;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  font-size: 1rem;
-  font-weight: 700;
-  text-align: center;
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
-  z-index: 1000;
+    position: fixed;
+    bottom: 80px; /* Di atas footer controls */
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background-color: var(--accent-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-size: 1.1em;
+    font-weight: 500;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s ease;
+    white-space: nowrap;
+    text-align: center;
 }
 
 .game-popup.show {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
 }
 
-body.dark .game-popup {
-  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
-}
-
-/* Floating Points */
 .floating-points {
-  position: absolute;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--bonus-green);
-  z-index: 1000;
-  transition: transform 1s ease, opacity 1s ease;
+    color: var(--bonus-green);
+    font-size: 1.5em;
+    font-weight: bold;
+    pointer-events: none;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    z-index: 1002;
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
 }
 
-body.dark .floating-points {
-  color: #4ade80;
-}
-
-/* Animations */
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Responsive */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-  .content {
-    padding: 55px 15px 15px;
-  }
-  .header-fixed {
-    padding: 6px 15px;
-    height: 45px;
-  }
-  .header-title {
-    font-size: 1rem;
-  }
-  .header-stats {
-    gap: 8px;
-  }
-  .points-display, .timer, .reload-icon {
-    font-size: 0.9rem;
-    padding: 5px 10px;
-  }
-  /* Sesuaikan ukuran foto profil di mobile */
-  .profile-picture-toggle {
-    width: 28px;
-    height: 28px;
-  }
-  .exit-menu {
-    right: 0; /* Sesuaikan agar tetap di kanan */
-    min-width: 140px;
-    max-width: calc(100vw - 30px);
-  }
-  .lesson-content {
-    max-height: calc(100vh - 110px);
-  }
+    .lesson-detail {
+        padding: 15px;
+    }
+
+    .lesson-detail .header-fixed h1 {
+        font-size: 1.3em;
+        max-width: calc(100% - 120px);
+    }
+
+    .lesson-detail .header-fixed .profile-picture-toggle {
+        width: 35px;
+        height: 35px;
+    }
+
+    .lesson-detail .header-fixed .exit-menu {
+        top: 55px;
+        right: 15px;
+    }
+
+    .lesson-detail .footer-controls {
+        flex-direction: column;
+        gap: 10px;
+        padding-bottom: 10px;
+    }
+
+    .lesson-detail .footer-controls > div {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .lesson-detail .header-fixed h1 {
+        font-size: 1.1em;
+        max-width: calc(100% - 100px);
+    }
+
+    .lesson-detail .header-fixed .header-controls {
+        gap: 10px;
+    }
+
+    .lesson-detail .header-fixed .profile-picture-toggle {
+        width: 30px;
+        height: 30px;
+    }
+
+    .lesson-detail .header-fixed .exit-menu {
+        top: 50px;
+        right: 10px;
+    }
+
+    .lesson-detail .theme-toggle {
+        width: 35px;
+        height: 35px;
+        font-size: 1em;
+    }
+
+    .game-popup {
+        font-size: 0.9em;
+        padding: 8px 15px;
+        bottom: 70px; /* Sesuaikan lagi untuk ukuran layar lebih kecil */
+    }
+}
+
+/* Dark Mode Specific Styles */
+body.dark {
+    --background-color: #212121;
+    --text-color: #e0e0e0;
+    --primary-color: #bb86fc; /* Purple */
+    --accent-color: #03dac6; /* Teal */
+    --card-background-color: #333333;
+    --border-color: #424242;
+    --hover-color: #4a4a4a;
+    --button-background: #bb86fc;
+    --button-text-color: #ffffff;
+    --button-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    --button-hover-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+    --bonus-green: #69f0ae; /* Light green for bonuses */
+}
+
+/* Light Mode (Default) */
+body {
+    --background-color: #f4f7f6;
+    --text-color: #333333;
+    --primary-color: #3498db; /* Blue */
+    --accent-color: #e74c3c; /* Red */
+    --card-background-color: #ffffff;
+    --border-color: #e0e0e0;
+    --hover-color: #f0f0f0;
+    --button-background: #3498db;
+    --button-text-color: #ffffff;
+    --button-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --button-hover-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    --bonus-green: #2ecc71; /* Green for bonuses */
 }
