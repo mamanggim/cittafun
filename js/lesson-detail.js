@@ -26,12 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let isLessonDisplayInitialized = false; 
     let lessonDataFullContent = '';
     let userDocRef;
+    let points = 0;
 
     // --- Sesi & Progress ---
     function getCurrentSession() {
         const now = new Date();
         const hours = now.getHours();
-        let date = now.toISOString().split('T')[0];
+        const date = now.toISOString().split('T')[0];
         let sessionName;
 
         if (hours >= 6 && hours < 9) sessionName = 'Pagi1';
@@ -43,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
             sessionName = 'Pagi1'; 
             const tomorrow = new Date(now);
             tomorrow.setDate(now.getDate() + 1);
-            date = tomorrow.toISOString().split('T')[0];
         }
         return { sessionName, sessionKey: `session_${sessionName}_${date}`, date };
     }
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (user) {
             userDocRef = doc(db, "users", user.uid);
             updateProfilePicture(user);
-            await checkAndResetSession(user);
+            await checkAndResetSession();
             initializeLessonAndTimer();
         } else {
             window.location.href = 'index.html';
@@ -109,7 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
               date: date,
               sessionCompleted: false,
               timeRemaining: 10 * 60 * 1000,
-              pointsEarned: 0
+              pointsEarned: 0,
+              missionClaimed: false // New field
             }
           };
           await setDoc(userDocRef, { sessions: newSessionData }, { merge: true });
@@ -162,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pages = ['<p style="color: var(--bonus-green); font-weight: 600;">Misi selesai untuk sesi ini. Tunggu sesi berikutnya!</p>'];
             currentPage = 0;
             renderCurrentPage();
-            disableTimerAndPoints();
+            disableTimerAndPoints(sessionData.pointsEarned);
         } else {
             if (lessonDataFullContent) {
                 splitContentIntoPages(lessonDataFullContent);
@@ -510,91 +511,91 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Firestore Timer & Points Logic ---
-    async function updatePointsInFirestore(pointsToAdd) {
-        if (!userDocRef) return;
-        const userDocSnap = await getDoc(userDocRef);
-        const currentPoints = userDocSnap.data().points || 0;
-        await setDoc(userDocRef, { points: currentPoints + pointsToAdd }, { merge: true });
-    }
-
     function startGlobalTimer() {
         if (timerInterval) clearInterval(timerInterval); 
 
         const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
             const userData = docSnap.data();
             const sessionData = userData.sessions?.[sessionKey] || {};
-            timeRemaining = sessionData.timeRemaining || 10 * 60 * 1000;
+            timeRemaining = sessionData.timeRemaining;
             const sessionCompleted = sessionData.sessionCompleted || false;
+            points = sessionData.pointsEarned || 0;
             
-            if (sessionCompleted) {
-                disableTimerAndPoints();
-                unsubscribe(); // Stop listening
+            if (sessionCompleted || timeRemaining <= 0) {
+                disableTimerAndPoints(points);
+                unsubscribe();
                 return;
             }
 
             timerDisplay.textContent = formatTime(timeRemaining);
-            const minutesCompleted = Math.floor((10 * 60 * 1000 - timeRemaining) / (60 * 1000));
-            const calculatedPoints = minutesCompleted * 50;
-            pointsEarned.textContent = `Poin: ${calculatedPoints}`;
+            pointsEarned.textContent = `Poin: ${points}`;
         });
 
-        // Start local timer that syncs to Firestore
         timerInterval = setInterval(async () => {
             if (isTabActive) {
-                timeRemaining -= 1000;
-                
                 const userDocSnap = await getDoc(userDocRef);
                 const userData = userDocSnap.data();
                 const sessionData = userData.sessions?.[sessionKey] || {};
-
-                const minutesCompleted = Math.floor((10 * 60 * 1000 - timeRemaining) / (60 * 1000));
-                let newPointsEarned = minutesCompleted * 50;
-                let finalPointsToAdd = 0;
-
-                // Check for point milestones
-                if (timeRemaining <= 0) {
-                    newPointsEarned = 500; // Final bonus points
-                    finalPointsToAdd = 500 - (sessionData.pointsEarned || 0);
-                    // No need to save a separate sessionCompleted flag in Firestore, 
-                    // we can just check if timeRemaining is 0.
-                } else if (timeRemaining % (60 * 1000) === 0) {
-                    finalPointsToAdd = 50;
+                
+                if (sessionData.sessionCompleted || sessionData.timeRemaining <= 0) {
+                     clearInterval(timerInterval);
+                     return;
                 }
 
-                // Update Firestore
-                const updatedSessionData = {
-                  [sessionKey]: {
-                    timeRemaining: timeRemaining,
-                    pointsEarned: newPointsEarned,
-                    date: date
-                  }
-                };
-                await setDoc(userDocRef, { sessions: updatedSessionData }, { merge: true });
-                if (finalPointsToAdd > 0) {
-                    await updatePointsInFirestore(finalPointsToAdd);
-                }
+                timeRemaining = sessionData.timeRemaining - 1000;
+                points = sessionData.pointsEarned;
 
                 if (timeRemaining <= 0) {
+                    points = 500;
+                    const updatedSessionData = {
+                        [sessionKey]: {
+                            timeRemaining: 0,
+                            pointsEarned: 500,
+                            date: date,
+                            sessionCompleted: true
+                        }
+                    };
+                    await setDoc(userDocRef, { sessions: updatedSessionData }, { merge: true });
+
                     clearInterval(timerInterval);
                     confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, duration: 2000 });
                     showGamePopup('Waktu membaca selesai! Anda mendapatkan 500 poin.');
-                    setTimeout(() => window.location.href = 'dashboard.html#section-missions', 4000);
                 } else if (timeRemaining % (60 * 1000) === 0) {
+                    points += 50;
+                    const updatedSessionData = {
+                        [sessionKey]: {
+                            timeRemaining: timeRemaining,
+                            pointsEarned: points,
+                            date: date
+                        }
+                    };
+                    await setDoc(userDocRef, { sessions: updatedSessionData }, { merge: true });
+
                     triggerAd();
                     showFloatingPoints(50);
                     showGamePopup('1 menit selesai! +50 poin');
                     confetti({ particleCount: 50, spread: 60, duration: 2000 });
+                } else {
+                    const updatedSessionData = {
+                        [sessionKey]: {
+                            timeRemaining: timeRemaining,
+                            pointsEarned: points,
+                            date: date
+                        }
+                    };
+                    await setDoc(userDocRef, { sessions: updatedSessionData }, { merge: true });
                 }
             }
         }, 1000);
     }
     
-    function disableTimerAndPoints() {
+    function disableTimerAndPoints(finalPoints = 0) {
         if (timerInterval) clearInterval(timerInterval);
         timerDisplay.style.color = 'gray';
         pointsEarned.style.color = 'gray';
         reloadTimer.style.display = 'none';
-        timerDisplay.textContent = 'Selesai';
+        timerDisplay.textContent = '00:00';
+        pointsEarned.textContent = `Poin: ${finalPoints}`;
     }
 
     reloadTimer.addEventListener('click', () => {
