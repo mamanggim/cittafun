@@ -1,4 +1,4 @@
-// auth.js (Google Login + Referral Pending Reward - Modular Firebase v11.0.1)
+// auth.js
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import {
@@ -14,12 +14,12 @@ import {
   collection,
   query,
   where,
-  getDocs,              // ✅ DITAMBAHKAN
+  getDocs,
   runTransaction,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-// 🔥 Firebase config
+// 🔥 Firebase config (Pastikan ini sesuai dengan proyek Anda)
 const firebaseConfig = {
   apiKey: "AIzaSyCkgqAz5OrTZgYoU_8LEH6WMhdOz_dy1sM",
   authDomain: "cittafun.firebaseapp.com",
@@ -29,7 +29,7 @@ const firebaseConfig = {
   appId: "1:419661983255:web:382aaa98136e13f1a9b652"
 };
 
-// 🔥 Init
+// 🔥 Init Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -54,85 +54,73 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const provider = new GoogleAuthProvider();
       loginBtn.disabled = true;
-
-      // simpan text asli agar bisa dipulihkan
-      const originalText = loginBtn.innerText;
-      loginBtn.innerText = 'Memproses...';
+      loginBtn.textContent = 'Memproses...';
 
       try {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
 
-        // Mendapatkan URL referral dari parameter
         const urlParams = new URLSearchParams(window.location.search);
         const referredByCode = urlParams.get("ref") || null;
 
         await runTransaction(db, async (transaction) => {
-          const userRef = doc(db, "users", user.uid);
-          const docSnap = await transaction.get(userRef);
+            const userRef = doc(db, "users", user.uid);
+            const docSnap = await transaction.get(userRef);
 
-          if (!docSnap.exists()) {
-            let uniqueReferralCode = generateRandomReferralCode();
-            let referredByUid = null;
+            if (!docSnap.exists()) {
+                let uniqueReferralCode = '';
+                let referredByUid = null;
+                let codeExists = true;
 
-            // Pastikan kode referral unik
-            const checkCodeUniqueness = async () => {
-              const q = query(collection(db, "users"), where("referralCode", "==", uniqueReferralCode));
-              const querySnapshot = await getDocs(q); // ✅ sudah bisa dipakai
-              return querySnapshot.empty;
-            };
+                // Loop untuk memastikan kode referral unik
+                while (codeExists) {
+                    uniqueReferralCode = generateRandomReferralCode();
+                    const q = query(collection(db, "users"), where("referralCode", "==", uniqueReferralCode));
+                    // Operasi transaksi yang benar
+                    const querySnapshot = await transaction.get(q);
+                    codeExists = !querySnapshot.empty;
+                }
 
-            while (!(await checkCodeUniqueness())) {
-              uniqueReferralCode = generateRandomReferralCode();
+                if (referredByCode) {
+                    const referrerQuery = query(collection(db, "users"), where("referralCode", "==", referredByCode));
+                    // Operasi transaksi yang benar
+                    const referrerSnapshot = await transaction.get(referrerQuery);
+                    if (!referrerSnapshot.empty) {
+                        referredByUid = referrerSnapshot.docs[0].id;
+                    }
+                }
+
+                transaction.set(userRef, {
+                    uid: user.uid,
+                    name: user.displayName,
+                    email: user.email,
+                    photo: user.photoURL,
+                    referralCode: uniqueReferralCode,
+                    referredByUid: referredByUid,
+                    points: 0,
+                    convertedPoints: 0,
+                    dailyConverted: 0,
+                    referrals: [],
+                    missionSessionStatus: {},
+                    recentActivity: [],
+                    createdAt: serverTimestamp()
+                });
+
+                if (referredByUid) {
+                    const pendingReferralRef = doc(db, `users/${referredByUid}/pendingReferrals`, user.uid);
+                    transaction.set(pendingReferralRef, {
+                      referredUserUid: user.uid,
+                      referralCodeUsed: referredByCode,
+                      isCompleted: false,
+                      isClaimed: false,
+                      createdAt: serverTimestamp()
+                    });
+                }
+            } else {
+                transaction.update(userRef, {
+                    lastLogin: serverTimestamp()
+                });
             }
-
-            // Cek referrer
-            let referrerSnapshot = null;
-            if (referredByCode) {
-              const referrerQuery = query(collection(db, "users"), where("referralCode", "==", referredByCode));
-              referrerSnapshot = await getDocs(referrerQuery);
-              if (!referrerSnapshot.empty) {
-                referredByUid = referrerSnapshot.docs[0].id;
-              }
-            }
-
-            // Buat dokumen user baru
-            transaction.set(userRef, {
-              uid: user.uid,
-              name: user.displayName,
-              email: user.email,
-              photo: user.photoURL,
-              referralCode: uniqueReferralCode,
-              referredByUid: referredByUid,
-              points: 0,
-              convertedPoints: 0,
-              dailyConverted: 0,
-              referrals: [],
-              missionSessionStatus: {},
-              recentActivity: [],
-              createdAt: serverTimestamp()
-            });
-
-            // Catat pending referral jika ada referrer
-            if (referredByUid) {
-              const pendingReferralRef = doc(db, `users/${referredByUid}/pendingReferrals`, user.uid);
-              transaction.set(pendingReferralRef, {
-                referredUserUid: user.uid,
-                referralCodeUsed: referredByCode,
-                isCompleted: false,
-                isClaimed: false,
-                createdAt: serverTimestamp()
-              });
-              console.log(`Pending referral dicatat untuk user: ${referredByUid}`);
-            }
-
-            console.log("Pengguna baru terdaftar dan data inisialisasi disimpan.");
-          } else {
-            console.log("Pengguna sudah terdaftar.");
-            transaction.update(userRef, {
-              lastLogin: serverTimestamp()
-            });
-          }
         });
 
         window.location.href = "dashboard.html";
@@ -141,17 +129,17 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Login gagal:", err);
         let userFacingMessage = "Terjadi kesalahan saat login. Mohon coba lagi.";
         if (err.code === "auth/popup-closed-by-user") {
-          userFacingMessage = "Login dibatalkan. Jendela pop-up ditutup.";
+            userFacingMessage = "Login dibatalkan. Jendela pop-up ditutup.";
         } else if (err.code === "auth/cancelled-popup-request") {
-          userFacingMessage = "Login dibatalkan karena ada permintaan pop-up lain.";
-        } else if (err.message.includes("undefined (reading 'path')")) {
-          userFacingMessage = "Login gagal: Ada masalah konfigurasi Firebase atau SDK. Pastikan cache browser bersih dan domain diotorisasi.";
+            userFacingMessage = "Login dibatalkan karena ada permintaan pop-up lain.";
+        } else if (err.message && err.message.includes("undefined (reading 'path')")) {
+             userFacingMessage = "Login gagal: Ada masalah konfigurasi atau SDK. Pastikan cache browser sudah bersih dan domain diotorisasi. (Error: 'path' undefined)";
         } else if (err.code === "permission-denied") {
-          userFacingMessage = "Akses ditolak. Periksa aturan keamanan Firestore di Firebase Console.";
+            userFacingMessage = "Akses ditolak. Periksa aturan keamanan Firestore di Firebase Console.";
         }
         alert(`Login gagal: ${userFacingMessage}`);
         loginBtn.disabled = false;
-        loginBtn.innerText = originalText;
+        loginBtn.textContent = 'Masuk dengan Google';
       }
     });
   } else {
