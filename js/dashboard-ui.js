@@ -23,7 +23,7 @@ const logoutBtn = document.getElementById('logout-btn');
 
 // Bagian 2: Logika Firebase
 import { auth, db } from './firebase-config.js';
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
   doc,
   getDoc,
@@ -59,7 +59,6 @@ const missionCompletionStatusDiv = document.getElementById('mission-completion-s
 const missionPointDisplay = document.getElementById('mission-point');
 const rewardClaimBtn = document.getElementById('reward-claim-btn');
 
-// Fungsi utama saat otentikasi
 onAuthStateChanged(auth, async (currentUser) => {
     if (!currentUser) {
         window.location.href = 'login.html';
@@ -90,13 +89,13 @@ async function loadUserData() {
         } else {
             console.error('Dokumen pengguna tidak ditemukan di Firestore!');
             alert('Data pengguna tidak ditemukan. Silakan login ulang.');
-            await auth.signOut();
+            await signOut(auth);
             window.location.href = 'login.html';
         }
     } catch (error) {
         console.error("Error loading user data:", error);
         alert('Gagal memuat data pengguna. Cek koneksi dan aturan Firebase.');
-        await auth.signOut();
+        await signOut(auth);
         window.location.href = 'login.html';
     }
 }
@@ -108,11 +107,11 @@ async function loadLeaderboard() {
         const querySnapshot = await getDocs(q);
 
         const usersData = querySnapshot.docs.map(doc => doc.data());
-        leaderboardList.innerHTML = '';
+        if (leaderboardList) leaderboardList.innerHTML = '';
         usersData.forEach((user, index) => {
             const listItem = document.createElement('li');
             listItem.innerHTML = `<span>${index + 1}.</span><span>${user.name}</span><span>${user.convertedPoints} Poin</span>`;
-            leaderboardList.appendChild(listItem);
+            if (leaderboardList) leaderboardList.appendChild(listItem);
         });
     } catch (error) {
         console.error("Error loading leaderboard:", error);
@@ -120,21 +119,20 @@ async function loadLeaderboard() {
 }
 
 async function checkPendingReferrals() {
+    if (!user || !rewardClaimBtn) return;
     const pendingRef = collection(db, `users/${user.uid}/pendingReferrals`);
     const q = query(pendingRef, where('isCompleted', '==', true), where('isClaimed', '==', false));
     const pendingSnapshot = await getDocs(q);
     
-    if (rewardClaimBtn) {
-        if (!pendingSnapshot.empty) {
-            rewardClaimBtn.style.display = 'block';
-        } else {
-            rewardClaimBtn.style.display = 'none';
-        }
+    if (!pendingSnapshot.empty) {
+        rewardClaimBtn.style.display = 'block';
+    } else {
+        rewardClaimBtn.style.display = 'none';
     }
 }
 
 function updatePointConversionStatus() {
-    if (!pointConversionResult || !pointInput || !convertBtn) return;
+    if (!pointConversionResult || !pointInput || !convertBtn || !userData) return;
     const dailyConverted = userData.dailyConverted || 0;
     pointConversionResult.textContent = `Poin yang dikonversi hari ini: ${dailyConverted}`;
     if (dailyConverted >= 1000) {
@@ -194,7 +192,7 @@ function startPointConversion() {
 }
 
 function setupMissionSessionUI() {
-    if (!missionCompletionStatusDiv || !misiHarianBtn) return;
+    if (!missionCompletionStatusDiv || !misiHarianBtn || !userData) return;
     if (dailyMissionCompleted) {
         missionCompletionStatusDiv.textContent = "Misi harian selesai.";
         misiHarianBtn.disabled = true;
@@ -232,7 +230,7 @@ function setupClaimListeners() {
     }
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
-            await auth.signOut();
+            await signOut(auth);
             window.location.href = 'login.html';
         });
     }
@@ -359,8 +357,8 @@ function setActiveButton(button) {
     }
 }
 
-menuIcon.addEventListener('click', openMenu);
-closeIcon.addEventListener('click', closeMenu);
+if (menuIcon) menuIcon.addEventListener('click', openMenu);
+if (closeIcon) closeIcon.addEventListener('click', closeMenu);
 
 if (dashboardBtn) dashboardBtn.addEventListener('click', () => {
     showContent('dashboard-content');
@@ -388,4 +386,4 @@ if (riwayatAktivitasBtn) riwayatAktivitasBtn.addEventListener('click', () => {
 });
 
 showContent('dashboard-content');
-setActiveButton(dashboardBtn);
+if (dashboardBtn) setActiveButton(dashboardBtn);
