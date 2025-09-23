@@ -1,9 +1,9 @@
-// js/firebase-config.js
+// firebase-config.js
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-// 🔥 Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCkgqAz5OrTZgYoU_8LEH6WMhdOz_dy1sM",
   authDomain: "cittafun.firebaseapp.com",
@@ -13,7 +13,13 @@ const firebaseConfig = {
   appId: "1:419661983255:web:382aaa98136e13f1a9b652"
 };
 
-// 🔥 Init
+// Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app); // Tambahkan ekspor db
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Export objek agar bisa digunakan di file lain
+export {
+  auth,
+  db
+};
