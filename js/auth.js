@@ -1,12 +1,12 @@
-// CHAT-0910B: auth.js (Google Login + Referral Pending Reward - Modular Firebase v10)
+// auth.js
 
-// Menggunakan versi Firebase yang lebih baru untuk menghindari bug.
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+// Menggunakan Firebase SDK Versi 11.0.1
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup
-} from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
   getFirestore,
   doc,
@@ -18,9 +18,9 @@ import {
   getDocs,
   runTransaction,
   serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-// 🔥 Firebase config
+// 🔥 Firebase config (tetap sama)
 const firebaseConfig = {
   apiKey: "AIzaSyCkgqAz5OrTZgYoU_8LEH6WMhdOz_dy1sM",
   authDomain: "cittafun.firebaseapp.com",
@@ -30,12 +30,12 @@ const firebaseConfig = {
   appId: "1:419661983255:web:382aaa98136e13f1a9b652"
 };
 
-// 🔥 Init
+// 🔥 Init (tetap sama)
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Fungsi untuk menghasilkan string acak (misal: 6 karakter alfanumerik)
+// Fungsi untuk menghasilkan string acak (tetap sama)
 function generateRandomReferralCode(length = 6) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
@@ -46,7 +46,7 @@ function generateRandomReferralCode(length = 6) {
   return result;
 }
 
-// LOGIN GOOGLE
+// LOGIN GOOGLE (tetap sama)
 document.addEventListener("DOMContentLoaded", () => {
   const loginBtn = document.getElementById("google-login");
 
@@ -75,19 +75,18 @@ document.addEventListener("DOMContentLoaded", () => {
             while (codeExists) {
               uniqueReferralCode = generateRandomReferralCode();
               const q = query(collection(db, "users"), where("referralCode", "==", uniqueReferralCode));
-              const querySnapshot = await transaction.get(q);
+              const querySnapshot = await transaction.get(q); // Baris ini yang menjadi sumber masalah
               codeExists = !querySnapshot.empty;
             }
 
             if (referredByCode) {
               const referrerQuery = query(collection(db, "users"), where("referralCode", "==", referredByCode));
-              const referrerSnapshot = await transaction.get(referrerQuery);
+              const referrerSnapshot = await transaction.get(referrerQuery); // Baris ini juga
               if (!referrerSnapshot.empty) {
                 referredByUid = referrerSnapshot.docs[0].id;
               }
             }
 
-            // ⭐ MENGUBAH LOGIKA PENYIMPANAN DATA USER BARU ⭐
             transaction.set(userRef, {
               uid: user.uid,
               name: user.displayName,
@@ -103,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
               createdAt: serverTimestamp()
             });
 
-            // ⭐ MENCATAT PENDING REFERRAL DI SUB-KOLEKSI USER REFERRER ⭐
             if (referredByUid) {
                 const pendingReferralRef = doc(db, `users/${referredByUid}/pendingReferrals`, user.uid);
                 transaction.set(pendingReferralRef, {
