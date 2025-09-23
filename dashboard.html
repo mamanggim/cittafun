@@ -1,297 +1,256 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Beranda - CittaFun</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style/dashboard.css">
-
-  <link rel="icon" type="image/x-icon" href="assets/ico16px.ico" sizes="16x16">
-  <link rel="icon" type="image/x-xicon" href="assets/ico32px.ico" sizes="32x32">
-  <link rel="icon" type="image/x-icon" href="assets/ico48px.ico" sizes="48x48">
-  <link rel="icon" type="image/x-icon" href="assets/ico64px.ico" sizes="64x64">
-  <link rel="icon" type="image/x-icon" href="assets/ico128px.ico" sizes="128x128">
-  <link rel="icon" type="image/x-icon" href="assets/ico256px.ico" sizes="256x256">
-
-  <link rel="apple-touch-icon" sizes="57x57" href="assets/ios57px.png">
-  <link rel="apple-touch-icon" sizes="76x76" href="assets/ios76px.png">
-  <link rel="apple-touch-icon" sizes="120x120" href="assets/ios120px.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="assets/ios152px.png">
-  <link rel="apple-touch-icon" sizes="167x167" href="assets/ios167px.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/ios180px.png">
-
-  <link rel="icon" type="image/png" sizes="48x48" href="assets/aos48px.png">
-  <link rel="icon" type="image/png" sizes="72x72" href="assets/aos72px.png">
-  <link rel="icon" type="image/png" sizes="96x96" href="assets/aos96px.png">
-  <link rel="icon" type="image/png" sizes="144x144" href="assets/aos144px.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="assets/aos192px.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="assets/aos512px.png">
-
-  <link rel="icon" type="image/x-icon" href="assets/ico256px.ico">
-
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Beranda - CittaFun</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style/dashboard.css">
+    <link rel="icon" type="image/x-icon" href="assets/ico256px.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/ios180px.png">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
-  <div id="sidebar-overlay" class="overlay" aria-hidden="true"></div>
+    <div id="sidebar-overlay" class="overlay"></div>
 
-  <aside class="sidebar closed" id="sidebar" aria-label="sidebar">
-    <div class="sidebar-top">
-      <img src="assets/logo.png" alt="Logo" class="sidebar-logo">
-      <div class="brand"><span class="citta blue">Citta</span><span class="fun orange">Fun</span></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-top">
+            <img src="assets/logo.png" alt="Logo" class="sidebar-logo">
+            <div class="brand"><span class="citta blue">Citta</span><span class="fun orange">Fun</span></div>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" data-section="overview" class="nav-link active">🏠 Beranda</a></li>
+                <li><a href="#" data-section="leaderboard" class="nav-link">🏆 Papan Peringkat</a></li>
+                <li><a href="#" data-section="missions" class="nav-link">🎯 Misi Harian</a></li>
+                <li><a href="#" data-section="penarikan" class="nav-link">💸 Penarikan</a></li>
+                <li><a href="#" data-section="referral" class="nav-link">👥 Ajak Teman</a></li>
+                <li><a href="#" data-section="stats" class="nav-link">📊 Statistik</a></li>
+                <li><a href="#" data-section="history" class="nav-link">📜 Riwayat</a></li>
+                <li><a href="#" data-section="events" class="nav-link">🎉 Event & Promo</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <small>Versi: 0.3 • <span class="citta blue">Citta</span><span class="fun orange">Fun</span></small>
+        </div>
+    </aside>
+
+    <div class="main">
+        <header class="topbar">
+            <button id="sidebar-toggle" class="btn-icon">☰</button>
+            <div class="topbar-left">
+                <h2 class="page-title">🏠 Beranda</h2>
+            </div>
+            <div class="topbar-right">
+                <div class="notif-icon" title="Notifikasi">
+                    <span class="badge" id="notif-count">0</span>
+                    🔔
+                </div>
+                <div class="profile" id="profile">
+                    <img id="user-photo" src="assets/icons/user-placeholder.png" alt="Pengguna" class="profile-photo">
+                    <div id="profile-menu" class="profile-menu">
+                        <div class="profile-info">
+                            <div id="user-name">Tamu</div>
+                            <small id="user-email">-</small>
+                        </div>
+                        <a href="profile.html">Profil</a>
+                        <a href="settings.html">Pengaturan</a>
+                        <button type="button" id="logout-btn-2" class="btn-logout">Keluar</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="content" id="content">
+            <section id="section-overview" class="section active">
+                <div class="cards-row">
+                    <div class="card balance-card">
+                        <h3>Saldo Poin <span class="info-icon" title="Info Konversi">?</span></h3>
+                        <p class="big" id="points-balance">0</p>
+                        <p class="label">Saldo Rupiah</p>
+                        <small id="points-rupiah">Rp0</small>
+                    </div>
+                    <div class="card referral-card">
+                        <h3>Ajak Teman</h3>
+                        <p id="ref-count">0</p>
+                        <small><a href="#" id="total-teman-link" class="clickable">Total Teman</a></small>
+                    </div>
+                    <div class="card actions-card">
+                        <h3>Aksi Cepat</h3>
+                        <div class="actions">
+                            <button id="btn-withdraw" class="btn">Tarik Saldo</button>
+                            <button id="btn-copy-ref" class="btn-outline">Salin Link Referral</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <h4>Aktivitas Terbaru</h4>
+                    <ul id="recent-activity" class="list-muted">
+                        <li>Tidak ada aktivitas.</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="section-leaderboard" class="section">
+                <h3>🏆 Papan Peringkat</h3>
+                <p>Peringkat pengguna berdasarkan poin & aktivitas.</p>
+                <div class="leaderboard-table">
+                    <div class="leaderboard-header">
+                        <span>Peringkat</span>
+                        <span>Nama</span>
+                        <span>Poin</span>
+                    </div>
+                    <ul id="leaderboard-list">
+                        <li><span>1</span><span>Ahmad</span><span>5000</span></li>
+                        <li><span>2</span><span>Budi</span><span>4500</span></li>
+                        <li><span>3</span><span>Citra</span><span>4000</span></li>
+                        <li><span>4</span><span>Dedi</span><span>3500</span></li>
+                        <li><span>5</span><span>Eka</span><span>3000</span></li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="section-missions" class="section">
+                <h3>🎯 Misi Harian</h3>
+                <p>Pilih misi yang ingin kamu kerjakan hari ini:</p>
+                <div class="missions-grid">
+                    <div class="mission-card">
+                        <h4>📚 Mata Pelajaran</h4>
+                        <p>Baca materi belajar dari 10 mata pelajaran.</p>
+                        <a href="lesson.html" class="btn">Mulai</a>
+                    </div>
+                    <div class="mission-card">
+                        <h4>❓ Quiz Seru</h4>
+                        <p>Jawab pertanyaan kuis pilihan ganda seru.</p>
+                        <a href="quiz.html" class="btn">Mulai</a>
+                    </div>
+                    <div class="mission-card">
+                        <h4>🎥 Video Edukasi</h4>
+                        <p>Tonton video pembelajaran singkat.</p>
+                        <a href="video.html" class="btn">Mulai</a>
+                    </div>
+                    <div class="mission-card">
+                        <h4>📝 Ujian Pelajaran</h4>
+                        <p>Kerjakan soal & jawaban singkat.</p>
+                        <a href="exam.html" class="btn">Mulai</a>
+                    </div>
+                    <div class="mission-card">
+                        <h4>🎮 Permainan Edukatif</h4>
+                        <p>Mainkan mini games untuk melatih otak.</p>
+                        <a href="game.html" class="btn">Mulai</a>
+                    </div>
+                </div>
+                <hr style="margin:20px 0;border:none;border-top:1px dashed rgba(0,0,0,0.06)">
+                <div class="missions-slots">
+                    <h4 style="margin-bottom:12px">5 Sesi Misi Harian</h4>
+                    <div class="mission-slot" data-mission="pagi1" data-start="06:00" data-end="08:59">
+                        <div class="slot-head">
+                            <strong>🌅 Sesi Pagi 1</strong> — <small>06.00 s/d 08.59 WIB</small>
+                        </div>
+                        <div class="slot-body">
+                            <button class="btn-claim" data-mission="pagi1">Kerjakan Misi</button>
+                            <div class="countdown" id="countdown-pagi1">⏳ …</div>
+                        </div>
+                    </div>
+                    <div class="mission-slot" data-mission="pagi2" data-start="09:00" data-end="11:59">
+                        <div class="slot-head">
+                            <strong>🌄 Sesi Pagi 2</strong> — <small>09.00 s/d 11.59 WIB</small>
+                        </div>
+                        <div class="slot-body">
+                            <button class="btn-claim" data-mission="pagi2">Kerjakan Misi</button>
+                            <div class="countdown" id="countdown-pagi2">⏳ …</div>
+                        </div>
+                    </div>
+                    <div class="mission-slot" data-mission="siang" data-start="12:00" data-end="14:59">
+                        <div class="slot-head">
+                            <strong>🌞 Sesi Siang</strong> — <small>12.00 s/d 14.59 WIB</small>
+                        </div>
+                        <div class="slot-body">
+                            <button class="btn-claim" data-mission="siang">Kerjakan Misi</button>
+                            <div class="countdown" id="countdown-siang">⏳ …</div>
+                        </div>
+                    </div>
+                    <div class="mission-slot" data-mission="sore" data-start="15:00" data-end="17:59">
+                        <div class="slot-head">
+                            <strong>🌇 Sesi Sore</strong> — <small>15.00 s/d 17.59 WIB</small>
+                        </div>
+                        <div class="slot-body">
+                            <button class="btn-claim" data-mission="sore">Kerjakan Misi</button>
+                            <div class="countdown" id="countdown-sore">⏳ …</div>
+                        </div>
+                    </div>
+                    <div class="mission-slot" data-mission="malam" data-start="18:00" data-end="20:59">
+                        <div class="slot-head">
+                            <strong>🌙 Sesi Malam</strong> — <small>18.00 s/d 20.59 WIB</small>
+                        </div>
+                        <div class="slot-body">
+                            <button class="btn-claim" data-mission="malam">Kerjakan Misi</button>
+                            <div class="countdown" id="countdown-malam">⏳ …</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="section-penarikan" class="section">
+                <h3>💸 Penarikan</h3>
+                <p>Kelola dan tarik saldo poinmu di sini.</p>
+            </section>
+            
+            <section id="section-referral" class="section">
+                <h3>👥 Ajak Teman</h3>
+                <p>Bagikan link referral dan dapatkan bonus pasif poin hingga 10%.</p>
+                <p class="bonus-passive">Bonus Pasif Poin: <span id="total-bonus-percentage">0%</span></p>
+                <div class="referral-missions">
+                    <div class="referral-slot" data-mission="ref-pagi1" data-start="06:00" data-end="08:59">
+                        <h4>🌅 Sesi Pagi 1 – 06.00 s/d 08.59 WIB</h4>
+                        <button class="btn-claim" data-mission="ref-pagi1">Klaim 2%</button>
+                        <div class="countdown" id="countdown-ref-pagi1">⏳ …</div>
+                    </div>
+                    <div class="referral-slot" data-mission="ref-pagi2" data-start="09:00" data-end="11:59">
+                        <h4>🌄 Sesi Pagi 2 – 09.00 s/d 11.59 WIB</h4>
+                        <button class="btn-claim" data-mission="ref-pagi2">Klaim 2%</button>
+                        <div class="countdown" id="countdown-ref-pagi2">⏳ …</div>
+                    </div>
+                    <div class="referral-slot" data-mission="ref-siang" data-start="12:00" data-end="14:59">
+                        <h4>🌞 Sesi Siang – 12.00 s/d 14.59 WIB</h4>
+                        <button class="btn-claim" data-mission="ref-siang">Klaim 2%</button>
+                        <div class="countdown" id="countdown-ref-siang">⏳ …</div>
+                    </div>
+                    <div class="referral-slot" data-mission="ref-sore" data-start="15:00" data-end="17:59">
+                        <h4>🌇 Sesi Sore – 15.00 s/d 17.59 WIB</h4>
+                        <button class="btn-claim" data-mission="ref-sore">Klaim 2%</button>
+                        <div class="countdown" id="countdown-ref-sore">⏳ …</div>
+                    </div>
+                    <div class="referral-slot" data-mission="ref-malam" data-start="18:00" data-end="20:59">
+                        <h4>🌙 Sesi Malam – 18.00 s/d 20.59 WIB</h4>
+                        <button class="btn-claim" data-mission="ref-malam">Klaim 2%</button>
+                        <div class="countdown" id="countdown-ref-malam">⏳ …</div>
+                    </div>
+                </div>
+                <div class="referral-bonus">
+                    <h4>🎁 Bonus Ajak Teman 50.000 Poin</h4>
+                    <button class="btn-claim" id="check-progress-btn">Cek Progres Harian</button>
+                    <p>Pastikan referral aktif 7 hari penuh untuk klaim.</p>
+                </div>
+            </section>
+            
+            <section id="section-stats" class="section">
+                <h3>📊 Statistik</h3>
+                <p>Data lengkap penggunaan dan progresmu.</p>
+            </section>
+            
+            <section id="section-history" class="section">
+                <h3>📜 Riwayat</h3>
+                <p>Riwayat aktivitas & transaksi poin.</p>
+            </section>
+            
+            <section id="section-events" class="section">
+                <h3>🎉 Event & Promo</h3>
+                <p>Informasi acara & promo terbaru.</p>
+            </section>
+        </main>
     </div>
-
-    <nav class="sidebar-nav" role="navigation">
-      <ul>
-        <li><a href="#" data-section="overview" class="nav-link active">🏠 Beranda</a></li>
-        <li><a href="#" data-section="leaderboard" class="nav-link">🏆 Papan Peringkat</a></li>
-        <li><a href="#" data-section="missions" class="nav-link">🎯 Misi Harian</a></li>
-        <li><a href="#" data-section="penarikan" class="nav-link">💸 Penarikan</a></li>
-        <li><a href="#" data-section="referral" class="nav-link">👥 Ajak Teman</a></li>
-        <li><a href="#" data-section="stats" class="nav-link">📊 Statistik</a></li>
-        <li><a href="#" data-section="history" class="nav-link">📜 Riwayat</a></li>
-        <li><a href="#" data-section="events" class="nav-link">🎉 Event & Promo</a></li>
-      </ul>
-    </nav>
-
-    <div class="sidebar-footer">
-      <small>Versi: 0.3 • <span class="citta blue">Citta</span><span class="fun orange">Fun</span></small>
-    </div>
-  </aside>
-
-  <div class="main">
-    <header class="topbar">
-      <button id="sidebar-toggle" class="btn-icon" aria-label="Buka/tutup menu">☰</button>
-
-      <div class="topbar-left">
-        <h2 class="page-title">🏠 Beranda</h2>
-      </div>
-
-      <div class="topbar-right">
-        <div class="notif-icon" title="Notifikasi">🔔<span class="badge" id="notif-count">0</span></div>
-
-        <div class="profile" id="profile">
-          <img id="user-photo" src="assets/icons/user-placeholder.png" alt="Pengguna" class="profile-photo" aria-label="Buka menu profil">
-          <div id="profile-menu" class="profile-menu" aria-hidden="true">
-            <div class="profile-info">
-              <div id="user-name">Tamu</div>
-              <small id="user-email">-</small>
-            </div>
-            <a href="profile.html">Profil</a>
-            <a href="settings.html">Pengaturan</a>
-            <button id="theme-toggle" class="theme-toggle" aria-label="Ganti tema">🌙</button>
-            <button type="button" id="logout-btn-2" class="btn-logout">Keluar</button>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <main class="content" id="content">
-      <section id="section-overview" class="section active">
-        <div class="cards-row">
-          <div class="card balance-card">
-            <h3>Saldo Poin <span class="info-icon" title="Info Konversi">?</span></h3>
-            <p class="big" id="points-balance">0</p>
-            <p class="label">Saldo Rupiah</p>
-            <small id="points-rupiah">Rp0</small>
-          </div>
-          <div class="card referral-card">
-            <h3>Ajak Teman</h3>
-            <p id="ref-count">0</p>
-            <small><a href="#" id="total-teman-link" class="clickable">Total Teman</a></small>
-          </div>
-          <div class="card actions-card">
-            <h3>Aksi Cepat</h3>
-            <div class="actions">
-              <button id="btn-withdraw" class="btn">Tarik Saldo</button>
-              <button id="btn-copy-ref" class="btn-outline">Salin Link Referral</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <h4>Aktivitas Terbaru</h4>
-          <ul id="recent-activity" class="list-muted">
-            <li>Tidak ada aktivitas.</li>
-          </ul>
-        </div>
-      </section>
-
-      <section id="section-leaderboard" class="section">
-        <h3>🏆 Papan Peringkat</h3>
-        <p>Peringkat pengguna berdasarkan poin & aktivitas.</p>
-        <div class="leaderboard-table">
-          <div class="leaderboard-header">
-            <span>Peringkat</span>
-            <span>Nama</span>
-            <span>Poin</span>
-          </div>
-          <ul id="leaderboard-list" class="list-muted">
-            <li><span>1</span><span>Ahmad</span><span>5000</span></li>
-            <li><span>2</span><span>Budi</span><span>4500</span></li>
-            <li><span>3</span><span>Citra</span><span>4000</span></li>
-            <li><span>4</span><span>Dedi</span><span>3500</span></li>
-            <li><span>5</span><span>Eka</span><span>3000</span></li>
-          </ul>
-        </div>
-      </section>
-
-      <section id="section-missions" class="section">
-        <h3>🎯 Misi Harian</h3>
-        <p>Pilih misi yang ingin kamu kerjakan hari ini:</p>
-
-        <div class="missions-grid">
-          <div class="mission-card">
-            <h4>📚 Mata Pelajaran</h4>
-            <p>Baca materi belajar dari 10 mata pelajaran.</p>
-            <a href="lesson.html" class="btn">Mulai</a>
-          </div>
-          <div class="mission-card">
-            <h4>❓ Quiz Seru</h4>
-            <p>Jawab pertanyaan kuis pilihan ganda seru.</p>
-            <a href="quiz.html" class="btn">Mulai</a>
-          </div>
-          <div class="mission-card">
-            <h4>🎥 Video Edukasi</h4>
-            <p>Tonton video pembelajaran singkat.</p>
-            <a href="video.html" class="btn">Mulai</a>
-          </div>
-          <div class="mission-card">
-            <h4>📝 Ujian Pelajaran</h4>
-            <p>Kerjakan soal & jawaban singkat.</p>
-            <a href="exam.html" class="btn">Mulai</a>
-          </div>
-          <div class="mission-card">
-            <h4>🎮 Permainan Edukatif</h4>
-            <p>Mainkan mini games untuk melatih otak.</p>
-            <a href="game.html" class="btn">Mulai</a>
-          </div>
-        </div>
-
-        <hr style="margin:20px 0;border:none;border-top:1px dashed rgba(0,0,0,0.06)">
-
-        <div class="missions-slots">
-          <h4 style="margin-bottom:12px">5 Sesi Misi Harian</h4>
-
-          <div class="mission-slot" data-mission="pagi1" data-start="06:00" data-end="08:59">
-            <div class="slot-head">
-              <strong>🌅 Sesi Pagi 1</strong> — <small>06.00 s/d 08.59 WIB</small>
-            </div>
-            <div class="slot-body">
-              <button class="btn-claim" data-mission="pagi1">Kerjakan Misi</button>
-              <div class="countdown" id="countdown-pagi1">⏳ …</div>
-            </div>
-          </div>
-
-          <div class="mission-slot" data-mission="pagi2" data-start="09:00" data-end="11:59">
-            <div class="slot-head">
-              <strong>🌄 Sesi Pagi 2</strong> — <small>09.00 s/d 11.59 WIB</small>
-            </div>
-            <div class="slot-body">
-              <button class="btn-claim" data-mission="pagi2">Kerjakan Misi</button>
-              <div class="countdown" id="countdown-pagi2">⏳ …</div>
-            </div>
-          </div>
-
-          <div class="mission-slot" data-mission="siang" data-start="12:00" data-end="14:59">
-            <div class="slot-head">
-              <strong>🌞 Sesi Siang</strong> — <small>12.00 s/d 14.59 WIB</small>
-            </div>
-            <div class="slot-body">
-              <button class="btn-claim" data-mission="siang">Kerjakan Misi</button>
-              <div class="countdown" id="countdown-siang">⏳ …</div>
-            </div>
-          </div>
-
-          <div class="mission-slot" data-mission="sore" data-start="15:00" data-end="17:59">
-            <div class="slot-head">
-              <strong>🌇 Sesi Sore</strong> — <small>15.00 s/d 17.59 WIB</small>
-            </div>
-            <div class="slot-body">
-              <button class="btn-claim" data-mission="sore">Kerjakan Misi</button>
-              <div class="countdown" id="countdown-sore">⏳ …</div>
-            </div>
-          </div>
-
-          <div class="mission-slot" data-mission="malam" data-start="18:00" data-end="20:59">
-            <div class="slot-head">
-              <strong>🌙 Sesi Malam</strong> — <small>18.00 s/d 20.59 WIB</small>
-            </div>
-            <div class="slot-body">
-              <button class="btn-claim" data-mission="malam">Kerjakan Misi</button>
-              <div class="countdown" id="countdown-malam">⏳ …</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="section-penarikan" class="section">
-        <h3>💸 Penarikan</h3>
-        <p>Kelola dan tarik saldo poinmu di sini.</p>
-      </section>
-
-      <section id="section-referral" class="section">
-        <h3>👥 Ajak Teman</h3>
-        <p>Bagikan link referral dan dapatkan bonus pasif poin hingga 10%.</p>
-        <p class="bonus-passive">Bonus Pasif Poin: <span id="total-bonus-percentage">0%</span></p>
-
-        <div class="referral-missions">
-          <div class="referral-slot" data-start="06:00" data-end="08:59">
-            <h4>🌅 Sesi Pagi 1 – 06.00 s/d 08.59 WIB</h4>
-            <button class="btn-claim" data-mission="ref-pagi1">Klaim 2%</button>
-            <div class="countdown" id="countdown-ref-pagi1">⏳ …</div>
-          </div>
-
-          <div class="referral-slot" data-start="09:00" data-end="11:59">
-            <h4>🌄 Sesi Pagi 2 – 09.00 s/d 11.59 WIB</h4>
-            <button class="btn-claim" data-mission="ref-pagi2">Klaim 2%</button>
-            <div class="countdown" id="countdown-ref-pagi2">⏳ …</div>
-          </div>
-
-          <div class="referral-slot" data-start="12:00" data-end="14:59">
-            <h4>🌞 Sesi Siang – 12.00 s/d 14.59 WIB</h4>
-            <button class="btn-claim" data-mission="ref-siang">Klaim 2%</button>
-            <div class="countdown" id="countdown-ref-siang">⏳ …</div>
-          </div>
-
-          <div class="referral-slot" data-start="15:00" data-end="17:59">
-            <h4>🌇 Sesi Sore – 15.00 s/d 17.59 WIB</h4>
-            <button class="btn-claim" data-mission="ref-sore">Klaim 2%</button>
-            <div class="countdown" id="countdown-ref-sore">⏳ …</div>
-          </div>
-
-          <div class="referral-slot" data-mission="malam" data-start="18:00" data-end="20:59">
-            <h4>🌙 Sesi Malam – 18.00 s/d 20.59 WIB</h4>
-            <button class="btn-claim" data-mission="ref-malam">Klaim 2%</button>
-            <div class="countdown" id="countdown-ref-malam">⏳ …</div>
-          </div>
-        </div>
-
-        <div class="referral-bonus">
-          <h4>🎁 Bonus Ajak Teman 50.000 Poin</h4>
-          <button class="btn-claim" id="check-progress-btn">Cek Progres Harian</button>
-          <p>Pastikan referral aktif 7 hari penuh untuk klaim.</p>
-        </div>
-      </section>
-
-      <section id="section-stats" class="section">
-        <h3>📊 Statistik</h3>
-        <p>Data lengkap penggunaan dan progresmu.</p>
-      </section>
-
-      <section id="section-history" class="section">
-        <h3>📜 Riwayat</h3>
-        <p>Riwayat aktivitas & transaksi poin.</p>
-      </section>
-
-      <section id="section-events" class="section">
-        <h3>🎉 Event & Promo</h3>
-        <p>Informasi acara & promo terbaru.</p>
-      </section>
-    </main>
-  </div>
-
-  <script src="js/dashboard-ui.js" type="module"></script>
+    <script src="js/dashboard-ui.js" type="module"></script>
 </body>
 </html>
