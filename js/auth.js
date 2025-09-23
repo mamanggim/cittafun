@@ -1,4 +1,4 @@
-// CHAT-0910B: auth.js (Google Login + Referral Code Aman dan Rapi - Modular Firebase v9)
+// CHAT-0910B: auth.js (Google Login + Referral Pending Reward - Modular Firebase v9)
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import {
@@ -79,13 +79,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (referredByCode) {
-                const referrerQuery = query(collection(db, "users"), where("referralCode", "==", referredByCode));
-                const referrerSnapshot = await transaction.get(referrerQuery);
-                if (!referrerSnapshot.empty) {
-                    referredByUid = referrerSnapshot.docs[0].id;
-                }
+              const referrerQuery = query(collection(db, "users"), where("referralCode", "==", referredByCode));
+              const referrerSnapshot = await transaction.get(referrerQuery);
+              if (!referrerSnapshot.empty) {
+                referredByUid = referrerSnapshot.docs[0].id;
+              }
             }
 
+            // ⭐ MENGUBAH LOGIKA PENYIMPANAN DATA USER BARU ⭐
             transaction.set(userRef, {
               uid: user.uid,
               name: user.displayName,
@@ -94,12 +95,28 @@ document.addEventListener("DOMContentLoaded", () => {
               referralCode: uniqueReferralCode,
               referredByUid: referredByUid,
               points: 0,
+              dailyProgress: {
+                  loginCount: 0,
+                  missionsCompleted: 0
+              },
               createdAt: serverTimestamp()
             });
-          });
 
+            // ⭐ MENCATAT PENDING REFERRAL DI SUB-KOLEKSI USER REFERRER ⭐
+            if (referredByUid) {
+                const pendingReferralRef = doc(db, `users/${referredByUid}/pendingReferrals`, user.uid);
+                transaction.set(pendingReferralRef, {
+                    referredUserUid: user.uid,
+                    referralCodeUsed: referredByCode,
+                    isCompleted: false,
+                    isClaimed: false,
+                    createdAt: serverTimestamp()
+                });
+                console.log(`Pending referral dicatat untuk user: ${referredByUid}`);
+            }
+          });
         } else {
-            console.log("Pengguna sudah terdaftar.");
+          console.log("Pengguna sudah terdaftar.");
         }
 
         window.location.href = "dashboard.html";
