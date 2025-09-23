@@ -1,21 +1,27 @@
+// dashboard-ui.js
+
+// ✅ Impor dari file konfigurasi lokal
 import {
-    auth,
-    db
+  auth,
+  db
 } from './firebase-config.js';
+
+// ✅ Impor modul otentikasi dan firestore dari SDK
 import {
-    onAuthStateChanged,
-    signOut
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
-    doc,
-    getDoc,
-    updateDoc,
-    arrayUnion,
-    query,
-    collection,
-    getDocs,
-    orderBy,
-    limit
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  query,
+  collection,
+  getDocs,
+  orderBy,
+  limit,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 // DOM Elements
@@ -38,12 +44,11 @@ const refCount = document.getElementById('ref-count');
 const recentActivity = document.getElementById('recent-activity');
 const btnWithdraw = document.getElementById('btn-withdraw');
 const btnCopyRef = document.getElementById('btn-copy-ref');
-const claimButtons = document.querySelectorAll('.btn-claim');
 const totalTemanLink = document.getElementById('total-teman-link');
 const infoIcon = document.querySelector('.info-icon');
 const leaderboardList = document.getElementById('leaderboard-list');
 const notifIcon = document.querySelector('.notif-icon');
-const msgIcon = document.querySelector('.msg-icon'); // DOM Element untuk ikon pesan
+const msgIcon = document.querySelector('.msg-icon');
 const notifBadge = document.getElementById('notif-badge');
 const msgBadge = document.getElementById('msg-badge');
 
@@ -75,7 +80,7 @@ function showFloatingPoints(button, points, message = null) {
     floatEl.style.position = 'absolute';
     floatEl.style.left = `${rect.left + rect.width / 2}px`;
     floatEl.style.top = `${rect.top - 10}px`;
-    floatEl.style.color = points > 0 ? '#22c55e' : '#f87171'; // Green for points, Red for progress checked (can be customized)
+    floatEl.style.color = points > 0 ? '#22c55e' : '#f87171';
     floatEl.style.fontSize = '1rem';
     floatEl.style.fontWeight = '700';
     document.body.appendChild(floatEl);
@@ -110,17 +115,13 @@ function formatTime(ms) {
 }
 
 function convertPointsToRupiah(points) {
-    return points * 10; // 1 poin = Rp10 (sesuaikan konversi jika berbeda)
+    return points * 10;
 }
 
-/**
- * Mengembalikan objek Date dalam zona waktu WIB (UTC+7).
- * @returns {Date} Waktu saat ini dalam WIB.
- */
 function getWIBTime() {
     const now = new Date();
     const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-    const wibOffset = 7 * 3600000; // +7 hours in milliseconds
+    const wibOffset = 7 * 3600000;
     return new Date(utc + wibOffset);
 }
 
@@ -243,8 +244,15 @@ safeAddEvent(btnWithdraw, 'click', () => {
 
 safeAddEvent(btnCopyRef, 'click', async () => {
     if (!user) return;
-    const registrationId = await getRegistrationId(user.uid);
-    const referralLink = `https://cittafun.com/referral?code=${registrationId}`;
+    const userRef = doc(db, 'users', user.uid);
+    const userSnap = await getDoc(userRef);
+    if (!userSnap.exists()) {
+        showGamePopup('Gagal menyalin link, data user tidak ditemukan!');
+        return;
+    }
+    const userData = userSnap.data();
+    const referralCode = userData.referralCode;
+    const referralLink = `https://cittafun.com/referral?ref=${referralCode}`;
     try {
         await navigator.clipboard.writeText(referralLink);
         showGamePopup('Link Referral disalin!');
@@ -264,49 +272,39 @@ safeAddEvent(infoIcon, 'click', () => {
     showGamePopup('Konversi poin otomatis setiap jam 00:00 WIB, maks. 100.000 poin/hari. Tingkatkan limit dengan KYC!');
 });
 
-/**
- * Fungsi baru untuk menampilkan notifikasi pop-up kecil di samping ikon.
- * @param {HTMLElement} iconElement - Elemen ikon (misal: notifIcon atau msgIcon).
- * @param {string} message - Teks yang akan ditampilkan.
- */
 function showNotificationPopup(iconElement, message) {
-    // Hapus pop-up yang mungkin sudah ada
     document.querySelectorAll('.notification-popup').forEach(el => el.remove());
 
     const popup = document.createElement('div');
     popup.className = 'notification-popup';
     popup.textContent = message;
 
-    // Masukkan pop-up ke dalam parent ikon
     const parent = iconElement.closest('.notif-icon') || iconElement.closest('.msg-icon');
     if (parent) {
-        parent.style.position = 'relative'; // Pastikan parent memiliki position: relative
+        parent.style.position = 'relative';
         parent.appendChild(popup);
         setTimeout(() => popup.classList.add('show'), 10);
         setTimeout(() => {
             popup.classList.remove('show');
             setTimeout(() => popup.remove(), 300);
-        }, 3000); // Durasi tampil pop-up
+        }, 3000);
     }
 }
 
-// Simulasikan notifikasi baru
 setInterval(() => {
     const notifCount = parseInt(notifBadge.textContent) || 0;
     const msgCount = parseInt(msgBadge.textContent) || 0;
-    
-    // Simulasikan notifikasi pesan baru
+
     if (Math.random() > 0.8 && msgIcon) {
         msgBadge.textContent = msgCount + 1;
         showNotificationPopup(msgIcon, 'Ada pesan baru untuk Anda!');
     }
 
-    // Simulasikan notifikasi umum baru
     if (Math.random() > 0.9 && notifIcon) {
         notifBadge.textContent = notifCount + 1;
         showNotificationPopup(notifIcon, 'Klaim bonus misi harianmu!');
     }
-}, 10000); // Cek notifikasi setiap 10 detik
+}, 10000);
 
 // Game-style Tutorial
 function startTutorial() {
@@ -317,7 +315,7 @@ function startTutorial() {
         { message: "Ayo kita ke menu 'Misi Harian' untuk memulai petualangan Anda!", duration: 4000, action: () => {
             const missionsLink = navLinks.find(link => link.getAttribute('data-section') === 'missions');
             if (missionsLink) missionsLink.click();
-        } },
+        }},
         { message: "Hebat! Misi-misi ini akan memberikan Anda poin. Kerjakan dan klaim poinnya!", duration: 4000, target: '#section-missions' },
         { message: "Jangan lupa cek profil Anda di sini untuk melihat info akun.", duration: 4000, target: '.profile' },
         { message: "Selesai! Sekarang Anda siap berpetualang dan kumpulkan poin sebanyak-banyaknya!", duration: 4000 },
@@ -338,14 +336,13 @@ function startTutorial() {
             const targetEl = document.querySelector(step.target);
             if (targetEl) {
                 targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                // Tambahkan kelas highlight sementara jika diperlukan
             }
         }
 
         if (step.action) {
             step.action();
         }
-        
+
         currentStep++;
         setTimeout(showNextStep, step.duration);
     }
@@ -353,27 +350,25 @@ function startTutorial() {
     showNextStep();
 }
 
-
 // Firebase Logic
 let user = null;
-let userData = null; // Menyimpan data user dari Firestore
+let userData = null;
 
 onAuthStateChanged(auth, async (currentUser) => {
     if (!currentUser) {
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
         return;
     }
     user = currentUser;
-    await loadUserData(); // Memuat data user dan missionSessionStatus
+    await loadUserData();
     await loadLeaderboard();
-    setupMissionSessionUI(); // Setup UI untuk misi sesi
-    setupClaimListeners(); // Setup listener untuk tombol klaim referral
+    setupMissionSessionUI();
+    setupClaimListeners();
     startPointConversion();
-    setInterval(setupMissionSessionUI, 1000); // Perbarui UI setiap detik untuk countdown dan status tombol
+    setInterval(setupMissionSessionUI, 1000);
 
-    // Jalankan tutorial jika belum pernah selesai
     if (localStorage.getItem('tutorial_completed') !== 'true') {
-        setTimeout(() => startTutorial(), 2000); // Tunda sedikit agar halaman termuat
+        setTimeout(() => startTutorial(), 2000);
     }
 });
 
@@ -382,7 +377,7 @@ async function loadUserData() {
     const userRef = doc(db, 'users', user.uid);
     const docSnap = await getDoc(userRef);
     if (docSnap.exists()) {
-        userData = docSnap.data(); // Simpan data user
+        userData = docSnap.data();
         userName.textContent = userData.name || user.displayName || 'Pengguna';
         userEmail.textContent = userData.email || user.email || '-';
         userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
@@ -394,7 +389,7 @@ async function loadUserData() {
             '<li>Tidak ada aktivitas.</li>';
         totalBonusPercentage.textContent = `${(userData.referrals?.length || 0) * 2}%`;
     } else {
-        userData = {}; // Inisialisasi kosong jika data belum ada
+        userData = {};
         userName.textContent = user.displayName || 'Pengguna';
         userEmail.textContent = user.email || '-';
         userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
@@ -428,27 +423,11 @@ async function loadLeaderboard() {
     }
 }
 
-async function getRegistrationId(uid) {
-    const usersRef = collection(db, 'users');
-    const q = query(usersRef, orderBy('createdAt'));
-    const snapshot = await getDocs(q);
-    let index = 0;
-    for (const doc of snapshot.docs) {
-        if (doc.id === uid) break;
-        index++;
-    }
-    return index + 1;
-}
-
-/**
- * Memperbarui UI untuk semua sesi misi harian (countdown, status tombol).
- * Ini akan dipanggil setiap detik atau saat data user berubah.
- */
 function setupMissionSessionUI() {
     if (!user || !userData) return;
 
     const wibTime = getWIBTime();
-    const todayDateString = wibTime.toISOString().slice(0, 10); // Format YYYY-MM-DD
+    const todayDateString = wibTime.toISOString().slice(0, 10);
 
     missionSlots.forEach(slot => {
         const missionId = slot.dataset.mission;
@@ -459,7 +438,6 @@ function setupMissionSessionUI() {
 
         if (!claimBtn) return;
 
-        // missionSessionStatus: { "pagi1": { "YYYY-MM-DD": { status: "in_progress" | "completed" | "claimed" | "failed", points: 100 } } }
         const sessionStatusToday = userData.missionSessionStatus?.[missionId]?.[todayDateString];
         const isInProgress = sessionStatusToday && sessionStatusToday.status === 'in_progress';
         const isCompleted = sessionStatusToday && sessionStatusToday.status === 'completed';
@@ -481,11 +459,8 @@ function setupMissionSessionUI() {
         const isSessionUpcoming = wibTime < sessionStartTime;
         const isSessionPassed = wibTime > sessionEndTime;
 
-        // Reset UI state
         claimBtn.disabled = true;
         claimBtn.classList.remove('active-mission');
-
-        // --- Perbarui UI berdasarkan status sesi ---
 
         if (isClaimed) {
             claimBtn.textContent = `Misi Selesai`;
@@ -494,12 +469,11 @@ function setupMissionSessionUI() {
             claimBtn.textContent = 'Misi Gagal';
             countdownEl.textContent = '❌ Terlewat';
         } else if (isSessionPassed && (isCompleted || isInProgress)) {
-            // Jika sesi berakhir dan misi sudah dikerjakan/in_progress tapi belum diklaim
             claimBtn.textContent = `Klaim ${earnedPoints} Poin`;
-            claimBtn.disabled = false; // Memungkinkan klaim meskipun sesi sudah berakhir
-            claimBtn.classList.add('active-mission'); // Tetap aktif agar bisa diklaim
-            countdownEl.textContent = '⏳ Sesi Berakhir'; // Diubah dari "Terlewat" menjadi "Berakhir"
-        } else if (isSessionPassed) { // Jika sesi berakhir dan misi tidak dikerjakan
+            claimBtn.disabled = false;
+            claimBtn.classList.add('active-mission');
+            countdownEl.textContent = '⏳ Sesi Berakhir';
+        } else if (isSessionPassed) {
             claimBtn.textContent = 'Misi Gagal';
             countdownEl.textContent = '❌ Terlewat';
         } else if (isCurrentSessionActive) {
@@ -550,16 +524,13 @@ function setupReferralCountdowns() {
             countdownEl.textContent = `⏳ Mulai ${formatTime(sessionStartTime - wibTime)}`;
         } else {
             const nextDay = new Date(wibTime);
-            nextDay.setUTCDate(nextDay.getUTCDate() + 1);
-            nextDay.setUTCHours(startHour, 0, 0, 0);
+            nextDay.setDate(nextDay.getDate() + 1);
+            nextDay.setHours(startHour, 0, 0, 0);
             countdownEl.textContent = `⏳ Besok ${formatTime(nextDay - wibTime)}`;
         }
     });
 }
 
-/**
- * Setup event listeners untuk tombol klaim misi harian dan referral.
- */
 function setupClaimListeners() {
     missionSlots.forEach(slot => {
         const claimBtn = slot.querySelector('.btn-claim');
@@ -575,16 +546,13 @@ function setupClaimListeners() {
             let currentMissionStatus = userData.missionSessionStatus || {};
             let sessionStatusForToday = currentMissionStatus[missionId]?.[todayDateString];
 
-            // Arahkan ke section-missions setiap kali tombol diklik jika tujuannya "mengerjakan/melanjutkan"
             if (claimBtn.textContent === 'Kerjakan Misi' || claimBtn.textContent === 'Lanjutkan Misi') {
                 const missionsSection = document.getElementById('section-missions');
                 if (missionsSection) {
-                    // Hanya scroll jika section-missions belum active
                     if (!missionsSection.classList.contains('active')) {
                         missionsSection.scrollIntoView({ behavior: 'smooth' });
                     }
 
-                    // Aktifkan tab Misi Harian di sidebar (pastikan aktif jika belum)
                     navLinks.forEach(l => l.classList.remove('active'));
                     const missionNavLink = navLinks.find(link => link.getAttribute('data-section') === 'missions');
                     if(missionNavLink) missionNavLink.classList.add('active');
@@ -592,17 +560,16 @@ function setupClaimListeners() {
                     if (window.innerWidth <= 900) closeSidebar();
                 }
 
-                // Tandai misi sebagai 'in_progress' jika belum 'completed' atau 'claimed'
                 if (!sessionStatusForToday || (sessionStatusForToday.status !== 'completed' && sessionStatusForToday.status !== 'claimed')) {
-                    const pointsEarned = 100; // Asumsi poin yang didapat dari mengerjakan misi
+                    const pointsEarned = parseInt(slot.dataset.points);
                     currentMissionStatus = {
                         ...currentMissionStatus,
                         [missionId]: {
                             ...(currentMissionStatus[missionId] || {}),
                             [todayDateString]: {
-                                status: 'in_progress', // Status baru
+                                status: 'in_progress',
                                 points: pointsEarned,
-                                timestamp: new Date().toISOString()
+                                timestamp: serverTimestamp()
                             }
                         }
                     };
@@ -611,28 +578,29 @@ function setupClaimListeners() {
                         missionSessionStatus: currentMissionStatus,
                         recentActivity: arrayUnion(`Memulai misi ${missionId} - ${new Date().toLocaleString('id-ID')}`).slice(-5)
                     });
-                    userData.missionSessionStatus = currentMissionStatus; // Update local data
+                    userData.missionSessionStatus = currentMissionStatus;
                     showGamePopup('Misi dimulai!');
                     showFloatingPoints(claimBtn, 0, 'Misi Dimulai!');
                 }
-            }
-            // Jika tombol bertuliskan "Klaim X Poin"
-            else if (claimBtn.textContent.startsWith('Klaim') && (sessionStatusForToday?.status === 'completed' || sessionStatusForToday?.status === 'in_progress')) {
+            } else if (claimBtn.textContent.startsWith('Klaim') && (sessionStatusForToday?.status === 'completed' || sessionStatusForToday?.status === 'in_progress')) {
                 const pointsToClaim = sessionStatusForToday.points;
+                const dailyLimit = 100000;
 
-                // Klaim poin
+                if ((userData.dailyConverted || 0) + pointsToClaim > dailyLimit) {
+                    showGamePopup('Klaim gagal: Melebihi limit konversi harian!');
+                    return;
+                }
+
                 await updateDoc(userRef, {
                     points: (userData.points || 0) + pointsToClaim,
                     convertedPoints: (userData.convertedPoints || 0) + pointsToClaim,
+                    dailyConverted: (userData.dailyConverted || 0) + pointsToClaim,
                     missionSessionStatus: {
                         ...currentMissionStatus,
                         [missionId]: {
-                            ...(currentMissionStatus[missionId] || {}),
-                            [todayDateString]: {
-                                ...sessionStatusForToday,
-                                status: 'claimed',
-                                claimTimestamp: new Date().toISOString()
-                            }
+                            ...sessionStatusForToday,
+                            status: 'claimed',
+                            claimTimestamp: serverTimestamp()
                         }
                     },
                     recentActivity: arrayUnion(`Klaim ${pointsToClaim} poin dari sesi ${missionId} - ${new Date().toLocaleString('id-ID')}`).slice(-5)
@@ -640,8 +608,9 @@ function setupClaimListeners() {
 
                 userData.points = (userData.points || 0) + pointsToClaim;
                 userData.convertedPoints = (userData.convertedPoints || 0) + pointsToClaim;
+                userData.dailyConverted = (userData.dailyConverted || 0) + pointsToClaim;
                 userData.missionSessionStatus[missionId][todayDateString].status = 'claimed';
-                userData.missionSessionStatus[missionId][todayDateString].claimTimestamp = new Date().toISOString();
+                userData.missionSessionStatus[missionId][todayDateString].claimTimestamp = new Date().toISOString(); // Note: This is client-side, Firestore will use serverTimestamp.
 
                 await loadUserData();
                 await loadLeaderboard();
@@ -658,87 +627,74 @@ function setupClaimListeners() {
         });
     });
 
-    // Listener untuk tombol klaim referral (tetap seperti semula)
-    document.querySelectorAll('.referral-slot .btn-claim').forEach(button => {
-        button.addEventListener('click', async () => {
-            if (!user || button.disabled) return;
-
-            const mission = button.getAttribute('data-mission');
-            const userRef = doc(db, 'users', user.uid);
-            const docSnap = await getDoc(userRef);
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                const missionsCompleted = data.missionsCompleted || {};
-                if (missionsCompleted[mission]?.includes(new Date().toDateString())) {
-                    showGamePopup('Misi referral sudah diklaim hari ini!');
-                    return;
-                }
-
-                const points = 100; // Poin untuk klaim referral
-                await updateDoc(userRef, {
-                    points: (data.points || 0) + points,
-                    missionsCompleted: {
-                        ...missionsCompleted,
-                        [mission]: [...(missionsCompleted[mission] || []), new Date().toDateString()]
-                    },
-                    recentActivity: arrayUnion(`Klaim ${mission} - ${new Date().toLocaleString('id-ID')}`).slice(-5)
-                });
-                await loadUserData();
-                await loadLeaderboard();
-                showGamePopup(`Berhasil klaim ${points} poin dari referral!`);
-                showFloatingPoints(button, points);
-                if (window.confetti) confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: {
-                        y: 0.6
-                    }
-                });
-                button.disabled = true;
-            }
-        });
-    });
-
     safeAddEvent(checkProgressBtn, 'click', async () => {
         if (!user || checkProgressBtn.disabled) return;
-        const userRef = doc(db, 'users', user.uid);
-        const docSnap = await getDoc(userRef);
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            if (data.referrals?.length >= 1) { // Hanya contoh, logika pengecekan 7 hari aktif perlu ditambahkan
-                const bonus = 50000;
-                await updateDoc(userRef, {
-                    points: (data.points || 0) + bonus,
-                    recentActivity: arrayUnion(`Bonus referral 50.000 poin - ${new Date().toLocaleString('id-ID')}`).slice(-5)
-                });
-                await loadUserData();
-                await loadLeaderboard();
-                showGamePopup(`Berhasil klaim bonus ${bonus} poin!`);
-                showFloatingPoints(checkProgressBtn, bonus);
-                if (window.confetti) confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: {
-                        y: 0.6
-                    }
-                });
-            } else {
-                showGamePopup('Belum ada referral aktif 7 hari!');
-            }
-            // checkProgressBtn.disabled = true;
+
+        const pendingReferralsRef = collection(db, 'users', user.uid, 'pendingReferrals');
+        const pendingQuery = query(pendingReferralsRef, where('isCompleted', '==', false));
+        const pendingSnap = await getDocs(pendingQuery);
+
+        if (pendingSnap.empty) {
+            showGamePopup('Tidak ada referral yang perlu diverifikasi!');
+            return;
         }
+
+        checkProgressBtn.disabled = true;
+        const promises = pendingSnap.docs.map(async (docSnap) => {
+            const referredUserRef = doc(db, 'users', docSnap.id);
+            const referredUserSnap = await getDoc(referredUserRef);
+            if (referredUserSnap.exists()) {
+                const referredUserData = referredUserSnap.data();
+                const now = getWIBTime().getTime();
+                const createdAt = referredUserData.createdAt?.toDate()?.getTime();
+                const sevenDaysInMillis = 7 * 24 * 60 * 60 * 1000;
+
+                if (createdAt && (now - createdAt) >= sevenDaysInMillis) {
+                    return { docId: docSnap.id, referredByUid: docSnap.data().referredUserUid };
+                }
+            }
+            return null;
+        });
+
+        const completedReferrals = (await Promise.all(promises)).filter(r => r !== null);
+        
+        if (completedReferrals.length > 0) {
+            const userRef = doc(db, 'users', user.uid);
+            await updateDoc(userRef, {
+                referrals: arrayUnion(...completedReferrals.map(r => r.docId)),
+                points: (userData.points || 0) + (50000 * completedReferrals.length),
+                recentActivity: arrayUnion(`Bonus referral ${50000 * completedReferrals.length} poin - ${new Date().toLocaleString('id-ID')}`).slice(-5)
+            });
+
+            await Promise.all(completedReferrals.map(r => 
+                updateDoc(doc(db, 'users', user.uid, 'pendingReferrals', r.docId), {
+                    isCompleted: true
+                })
+            ));
+
+            await loadUserData();
+            await loadLeaderboard();
+            showGamePopup(`Berhasil klaim bonus ${50000 * completedReferrals.length} poin!`);
+            showFloatingPoints(checkProgressBtn, 50000 * completedReferrals.length);
+            if (window.confetti) confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: {
+                    y: 0.6
+                }
+            });
+        } else {
+            showGamePopup('Belum ada referral yang memenuhi syarat klaim!');
+        }
+        checkProgressBtn.disabled = false;
     });
 }
 
-/**
- * Memulai proses konversi poin setiap hari pukul 00:00 WIB.
- * Poin yang dikonversi langsung masuk ke convertedPoints.
- */
 function startPointConversion() {
     const wibTime = getWIBTime();
     const nextConversion = new Date(wibTime);
-    nextConversion.setHours(0, 0, 0, 0); // Jam 00:00 WIB
-    if (wibTime >= nextConversion) { // Jika sudah melewati 00:00 hari ini, set untuk besok
+    nextConversion.setHours(0, 0, 0, 0);
+    if (wibTime >= nextConversion) {
         nextConversion.setDate(nextConversion.getDate() + 1);
     }
 
@@ -769,6 +725,4 @@ function startPointConversion() {
     }, timeUntilNext + 1000);
 }
 
-// Initialize
 setInitialSidebarState();
-// setupMissionSessionUI dan setupClaimListeners akan dipanggil setelah onAuthStateChanged
