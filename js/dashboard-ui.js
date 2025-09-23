@@ -1,76 +1,87 @@
 // dashboard-ui.js
 
-// Bagian 1: Inisialisasi dan Variabel UI
-const dashboardMenu = document.querySelector('.dashboard-menu');
-const mainContent = document.querySelector('.main-content');
-const menuIcon = document.getElementById('menu-icon');
-const closeIcon = document.getElementById('close-icon');
-
-const dashboardContent = document.getElementById('dashboard-content');
-const profileContent = document.getElementById('profile-content');
-const pelajaranContent = document.getElementById('pelajaran-content');
-const misiContent = document.getElementById('misi-content');
-const konversiPoinContent = document.getElementById('konversi-poin-content');
-const riwayatAktivitasContent = document.getElementById('riwayat-aktivitas-content');
-
-const dashboardBtn = document.getElementById('dashboard-btn');
-const profileBtn = document.getElementById('profile-btn');
-const pelajaranBtn = document.getElementById('pelajaran-btn');
-const misiBtn = document.getElementById('misi-btn');
-const konversiPoinBtn = document.getElementById('konversi-poin-btn');
-const riwayatAktivitasBtn = document.getElementById('riwayat-aktivitas-btn');
-const logoutBtn = document.getElementById('logout-btn');
-
-// Bagian 2: Logika Firebase
 import { auth, db } from './firebase-config.js';
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
-  doc,
-  getDoc,
-  updateDoc,
-  collection,
-  query,
-  getDocs,
-  where,
-  runTransaction,
-  serverTimestamp,
-  arrayUnion,
-  orderBy,
-  limit
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import {
+    doc,
+    getDoc,
+    updateDoc,
+    collection,
+    query,
+    getDocs,
+    where,
+    runTransaction,
+    serverTimestamp,
+    arrayUnion,
+    orderBy,
+    limit,
+    Timestamp
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-let user;
-let userData;
-let dailyMissionCompleted = false;
+// === Variabel Global ===
+let user = null;
+let userData = null;
+let dailyMissions = {};
+let dailyReferralMissions = {};
 
-const userName = document.getElementById("user-name");
-const userPointDisplay = document.getElementById("user-point");
-const userPhotoDisplay = document.getElementById("user-photo");
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const POINT_CONVERSION_RATE = 5000; // 5000 Poin = Rp1
 
-const pointInput = document.getElementById('point-input');
-const convertBtn = document.getElementById('convert-btn');
-const pointConversionResult = document.getElementById('point-conversion-result');
-const leaderboardList = document.getElementById('leaderboard-list');
-const referralCodeDisplay = document.getElementById('referral-code');
-const copyReferralCodeBtn = document.getElementById('copy-referral-code-btn');
+// === Element UI ===
+const sidebarToggle = document.getElementById('sidebar-toggle');
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebar-overlay');
+const profileToggle = document.getElementById('profile');
+const profileMenu = document.getElementById('profile-menu');
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('.section');
+const pageTitle = document.querySelector('.page-title');
 
-const misiHarianBtn = document.getElementById('misi-harian');
-const missionCompletionStatusDiv = document.getElementById('mission-completion-status');
-const missionPointDisplay = document.getElementById('mission-point');
-const rewardClaimBtn = document.getElementById('reward-claim-btn');
+// Dashboard UI
+const userNameEl = document.getElementById("user-name");
+const userEmailEl = document.getElementById("user-email");
+const userPhotoEl = document.getElementById("user-photo");
+const pointsBalanceEl = document.getElementById('points-balance');
+const pointsRupiahEl = document.getElementById('points-rupiah');
+const refCountEl = document.getElementById('ref-count');
+const recentActivityEl = document.getElementById('recent-activity');
+const copyRefBtn = document.getElementById('btn-copy-ref');
+const notifCountEl = document.getElementById('notif-count');
+const notifPopup = document.getElementById('notif-popup');
+
+// Missions UI
+const missionSlots = document.querySelectorAll('.mission-slot');
+const claimMissionBtns = document.querySelectorAll('.mission-slot .btn-claim');
+
+// Referral UI
+const referralSlots = document.querySelectorAll('.referral-slot');
+const claimRefBtns = document.querySelectorAll('.referral-slot .btn-claim');
+const totalBonusPercentageEl = document.getElementById('total-bonus-percentage');
+const checkProgressBtn = document.getElementById('check-progress-btn');
+
+// Leaderboard UI
+const leaderboardListEl = document.getElementById('leaderboard-list');
+
+// === Fungsi Utama ===
 
 onAuthStateChanged(auth, async (currentUser) => {
     if (!currentUser) {
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
         return;
     }
     user = currentUser;
     await loadUserData();
-    await loadLeaderboard();
-    setupMissionSessionUI();
-    setupClaimListeners();
-    startPointConversion();
-    setInterval(setupMissionSessionUI, 1000);
+    setupUI();
+    loadLeaderboard();
+    setupListeners();
+    // Panggil fungsi untuk memeriksa notifikasi saat load
+    checkAndDisplayNotifications();
+    
+    // Perbarui UI misi setiap detik
+    setInterval(updateMissionUI, 1000);
 });
 
 async function loadUserData() {
@@ -80,212 +91,205 @@ async function loadUserData() {
         const docSnap = await getDoc(userRef);
         if (docSnap.exists()) {
             userData = docSnap.data();
-            if (userName) userName.textContent = userData.name || user.displayName || 'Pengguna';
-            if (userPointDisplay) userPointDisplay.textContent = userData.points || 0;
-            if (userPhotoDisplay) userPhotoDisplay.src = userData.photo || user.photoURL;
-            if (referralCodeDisplay) referralCodeDisplay.textContent = userData.referralCode || 'Tidak Ada';
-            updatePointConversionStatus();
+            updateDashboardUI();
+            resetDailyPointsIfNewDay();
             await checkPendingReferrals();
         } else {
-            console.error('Dokumen pengguna tidak ditemukan di Firestore!');
+            console.error('Dokumen pengguna tidak ditemukan!');
             alert('Data pengguna tidak ditemukan. Silakan login ulang.');
             await signOut(auth);
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
     } catch (error) {
         console.error("Error loading user data:", error);
-        alert('Gagal memuat data pengguna. Cek koneksi dan aturan Firebase.');
-        await signOut(auth);
-        window.location.href = 'login.html';
+        alert('Gagal memuat data pengguna. Cek koneksi.');
     }
 }
 
-async function loadLeaderboard() {
-    try {
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, orderBy('convertedPoints', 'desc'), limit(5));
-        const querySnapshot = await getDocs(q);
+async function updateDashboardUI() {
+    if (!userData) return;
+    userNameEl.textContent = userData.name || 'Pengguna';
+    userEmailEl.textContent = userData.email || '-';
+    userPhotoEl.src = userData.photo || 'assets/icons/user-placeholder.png';
+    pointsBalanceEl.textContent = userData.points?.toLocaleString('id-ID') || '0';
+    pointsRupiahEl.textContent = `Rp${(userData.points / POINT_CONVERSION_RATE).toLocaleString('id-ID')}`;
+    refCountEl.textContent = userData.referrals?.length || 0;
+    updateRecentActivityUI();
+}
 
-        const usersData = querySnapshot.docs.map(doc => doc.data());
-        if (leaderboardList) leaderboardList.innerHTML = '';
-        usersData.forEach((user, index) => {
-            const listItem = document.createElement('li');
-            listItem.innerHTML = `<span>${index + 1}.</span><span>${user.name}</span><span>${user.convertedPoints} Poin</span>`;
-            if (leaderboardList) leaderboardList.appendChild(listItem);
+function updateRecentActivityUI() {
+    if (!userData || !recentActivityEl) return;
+
+    if (userData.recentActivity && userData.recentActivity.length > 0) {
+        recentActivityEl.innerHTML = '';
+        const activities = userData.recentActivity.slice(-5).reverse(); // Ambil 5 terakhir, urut dari terbaru
+        activities.forEach(activity => {
+            const li = document.createElement('li');
+            li.textContent = activity;
+            recentActivityEl.appendChild(li);
         });
-    } catch (error) {
-        console.error("Error loading leaderboard:", error);
-    }
-}
-
-async function checkPendingReferrals() {
-    if (!user || !rewardClaimBtn) return;
-    const pendingRef = collection(db, `users/${user.uid}/pendingReferrals`);
-    const q = query(pendingRef, where('isCompleted', '==', true), where('isClaimed', '==', false));
-    const pendingSnapshot = await getDocs(q);
-    
-    if (!pendingSnapshot.empty) {
-        rewardClaimBtn.style.display = 'block';
     } else {
-        rewardClaimBtn.style.display = 'none';
+        recentActivityEl.innerHTML = '<li>Tidak ada aktivitas.</li>';
     }
 }
 
-function updatePointConversionStatus() {
-    if (!pointConversionResult || !pointInput || !convertBtn || !userData) return;
-    const dailyConverted = userData.dailyConverted || 0;
-    pointConversionResult.textContent = `Poin yang dikonversi hari ini: ${dailyConverted}`;
-    if (dailyConverted >= 1000) {
-        pointInput.disabled = true;
-        convertBtn.disabled = true;
-        convertBtn.textContent = 'Batas Harian Tercapai';
-    } else {
-        pointInput.disabled = false;
-        convertBtn.disabled = false;
-        convertBtn.textContent = 'Konversi';
+async function resetDailyPointsIfNewDay() {
+    const lastLoginTimestamp = userData.lastLogin;
+    if (lastLoginTimestamp) {
+        const lastLoginDate = new Date(lastLoginTimestamp.toDate());
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (lastLoginDate < today) {
+            try {
+                await updateDoc(doc(db, 'users', user.uid), {
+                    dailyConverted: 0
+                });
+                console.log("dailyConverted berhasil di-reset.");
+            } catch (error) {
+                console.error("Gagal reset dailyConverted:", error);
+            }
+        }
     }
 }
 
-function startPointConversion() {
-    if (!convertBtn) return;
-    convertBtn.addEventListener('click', async () => {
-        const pointsToConvert = parseInt(pointInput.value, 10);
-        if (isNaN(pointsToConvert) || pointsToConvert <= 0) {
-            alert('Masukkan jumlah poin yang valid.');
-            return;
+// === Fungsi Misi Harian ===
+
+function updateMissionUI() {
+    const now = new Date();
+    const currentHour = now.getHours();
+
+    missionSlots.forEach(slot => {
+        const startHour = parseInt(slot.dataset.start.split(':')[0], 10);
+        const endHour = parseInt(slot.dataset.end.split(':')[0], 10);
+        const missionId = slot.dataset.mission;
+        const countdownEl = document.getElementById(`countdown-${missionId}`);
+        const claimBtn = slot.querySelector('.btn-claim');
+
+        // Reset status misi jika sudah hari baru
+        const lastMissionTime = userData.missionSessionStatus[missionId]?.timestamp;
+        if (lastMissionTime && (now.getTime() - lastMissionTime.toDate().getTime() > MS_PER_DAY)) {
+            dailyMissions[missionId] = null;
         }
 
-        const userRef = doc(db, 'users', user.uid);
-        try {
-            await runTransaction(db, async (transaction) => {
-                const docSnap = await transaction.get(userRef);
-                const currentData = docSnap.data();
-                const currentPoints = currentData.points || 0;
-                const currentDailyConverted = currentData.dailyConverted || 0;
+        const missionStatus = dailyMissions[missionId];
 
-                if (currentPoints < pointsToConvert) {
-                    throw new Error("Poin tidak mencukupi.");
-                }
+        if (currentHour >= startHour && currentHour < endHour) {
+            // Misi aktif
+            slot.classList.add('active');
+            slot.classList.remove('completed');
+            
+            const endTime = new Date(now);
+            endTime.setHours(endHour, 59, 59, 999);
+            const timeLeft = endTime - now;
+            const minutesLeft = Math.floor(timeLeft / (1000 * 60));
+            const secondsLeft = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-                if (currentDailyConverted + pointsToConvert > 1000) {
-                    throw new Error("Batas konversi harian 1000 poin tercapai.");
-                }
+            if (missionStatus === 'in-progress') {
+                countdownEl.textContent = `Sesi berjalan: ${minutesLeft}m ${secondsLeft}s`;
+                claimBtn.textContent = 'Misi Sedang Berjalan';
+                claimBtn.disabled = true;
+            } else if (missionStatus === 'completed') {
+                countdownEl.textContent = 'Misi selesai!';
+                claimBtn.textContent = 'Selesai';
+                claimBtn.disabled = true;
+                slot.classList.remove('active');
+                slot.classList.add('completed');
+            } else {
+                countdownEl.textContent = `Waktu tersisa: ${minutesLeft}m ${secondsLeft}s`;
+                claimBtn.textContent = 'Kerjakan Misi';
+                claimBtn.disabled = false;
+            }
 
-                const newPoints = currentPoints - pointsToConvert;
-                const newConvertedPoints = (currentData.convertedPoints || 0) + pointsToConvert;
-                const newDailyConverted = currentDailyConverted + pointsToConvert;
-
-                transaction.update(userRef, {
-                    points: newPoints,
-                    convertedPoints: newConvertedPoints,
-                    dailyConverted: newDailyConverted
-                });
-            });
-            alert('Poin berhasil dikonversi!');
-            loadUserData();
-            loadLeaderboard();
-        } catch (error) {
-            console.error("Transaction failed:", error);
-            alert(`Konversi gagal: ${error.message}`);
+        } else {
+            // Misi tidak aktif
+            slot.classList.remove('active');
+            claimBtn.disabled = true;
+            countdownEl.textContent = '⏳ ...';
         }
     });
 }
 
-function setupMissionSessionUI() {
-    if (!missionCompletionStatusDiv || !misiHarianBtn || !userData) return;
-    if (dailyMissionCompleted) {
-        missionCompletionStatusDiv.textContent = "Misi harian selesai.";
-        misiHarianBtn.disabled = true;
-        misiHarianBtn.textContent = 'Selesai';
-    } else {
-        const missionSessionStart = userData?.missionSessionStatus?.startTime;
-        if (missionSessionStart) {
-            const timeElapsed = Math.floor((Date.now() - missionSessionStart.toDate().getTime()) / 1000);
-            const remainingTime = Math.max(0, 60 - timeElapsed);
-            if(missionPointDisplay) missionPointDisplay.textContent = `Poin yang akan didapat: 100`;
-            missionCompletionStatusDiv.textContent = `Waktu tersisa: ${remainingTime} detik`;
-            if (remainingTime === 0) {
-                completeDailyMission();
+function setupMissionListeners() {
+    claimMissionBtns.forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const missionId = btn.dataset.mission;
+            if (dailyMissions[missionId] === 'completed') {
+                return;
             }
-        } else {
-            missionCompletionStatusDiv.textContent = "Misi belum dimulai.";
-            misiHarianBtn.disabled = false;
-            misiHarianBtn.textContent = 'Mulai Misi';
-        }
-    }
-}
-
-function setupClaimListeners() {
-    if (misiHarianBtn) misiHarianBtn.addEventListener('click', startDailyMission);
-    if (rewardClaimBtn) rewardClaimBtn.addEventListener('click', claimReferralRewards);
-    if (copyReferralCodeBtn) {
-        copyReferralCodeBtn.addEventListener('click', () => {
-            const code = referralCodeDisplay.textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                alert('Kode referral berhasil disalin!');
-            }).catch(err => {
-                console.error('Gagal menyalin kode:', err);
+            // Logic untuk memulai misi, misalnya arahkan ke halaman lain
+            alert(`Memulai misi ${missionId}. Kembali setelah selesai untuk klaim poin.`);
+            
+            dailyMissions[missionId] = 'in-progress';
+            // Simpan ke Firestore
+            await updateDoc(doc(db, 'users', user.uid), {
+                [`missionSessionStatus.${missionId}`]: {
+                    status: 'in-progress',
+                    timestamp: serverTimestamp()
+                }
             });
+            updateMissionUI();
         });
-    }
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
-            await signOut(auth);
-            window.location.href = 'login.html';
-        });
-    }
+    });
 }
 
-async function startDailyMission() {
-    if (!user || dailyMissionCompleted) return;
+// Fungsi untuk mengklaim poin misi harian
+async function claimMissionPoints(missionId) {
+    if (dailyMissions[missionId] === 'completed') return;
 
-    try {
-        await updateDoc(doc(db, 'users', user.uid), {
-            'missionSessionStatus.startTime': serverTimestamp()
-        });
-        alert('Misi harian dimulai. Silakan tunggu 60 detik.');
-        loadUserData();
-    } catch (error) {
-        console.error("Error starting mission:", error);
-    }
-}
-
-async function completeDailyMission() {
-    if (!user) return;
     try {
         await runTransaction(db, async (transaction) => {
             const userRef = doc(db, 'users', user.uid);
-            const docSnap = await transaction.get(userRef);
-            const currentData = docSnap.data();
-            const newPoints = (currentData.points || 0) + 100;
-            
+            const userSnap = await transaction.get(userRef);
+            const currentPoints = userSnap.data().points || 0;
+            const newPoints = currentPoints + 1000;
+
             transaction.update(userRef, {
                 points: newPoints,
-                missionSessionStatus: { completedAt: serverTimestamp() }
+                [`missionSessionStatus.${missionId}.status`]: 'completed'
             });
 
-            dailyMissionCompleted = true;
-            
-            const referredByUid = currentData.referredByUid;
-            if (referredByUid) {
-                const pendingRef = doc(db, `users/${referredByUid}/pendingReferrals`, user.uid);
-                transaction.update(pendingRef, {
-                    isCompleted: true
-                });
-            }
+            // Tambahkan aktivitas ke Firestore
+            transaction.update(userRef, {
+                recentActivity: arrayUnion(`Mengklaim poin dari misi harian: ${missionId}. (+1000 Poin)`)
+            });
         });
-        alert('Misi harian selesai! Anda mendapat 100 poin.');
-        loadUserData();
+        dailyMissions[missionId] = 'completed';
+        updateMissionUI();
+        alert('Misi selesai! Anda mendapatkan 1000 poin.');
+        loadUserData(); // Muat ulang data untuk update UI
     } catch (error) {
-        console.error("Error completing mission:", error);
-        alert("Gagal menyelesaikan misi. Silakan coba lagi.");
+        console.error("Gagal klaim misi:", error);
+        alert("Gagal mengklaim poin. Silakan coba lagi.");
+    }
+}
+
+// === Fungsi Referral ===
+
+async function checkPendingReferrals() {
+    if (!user) return;
+    const pendingRef = collection(db, `users/${user.uid}/pendingReferrals`);
+    const q = query(pendingRef, where('isCompleted', '==', true), where('isClaimed', '==', false));
+    const pendingSnapshot = await getDocs(q);
+
+    if (!pendingSnapshot.empty) {
+        notifCountEl.textContent = pendingSnapshot.size;
+        notifCountEl.style.display = 'block';
+    } else {
+        notifCountEl.textContent = '0';
+        notifCountEl.style.display = 'none';
+    }
+}
+
+function checkAndDisplayNotifications() {
+    // Tampilkan notifikasi jika ada
+    if (notifCountEl.textContent > 0) {
+        alert(`Anda memiliki ${notifCountEl.textContent} bonus referral yang bisa diklaim!`);
     }
 }
 
 async function claimReferralRewards() {
     if (!user) return;
-    const userRef = doc(db, 'users', user.uid);
-
     try {
         await runTransaction(db, async (transaction) => {
             const pendingRef = collection(db, `users/${user.uid}/pendingReferrals`);
@@ -299,7 +303,7 @@ async function claimReferralRewards() {
             let totalReward = 0;
             const updates = [];
             pendingSnapshot.forEach(docSnap => {
-                totalReward += 500;
+                totalReward += 50000;
                 updates.push(updateDoc(docSnap.ref, {
                     isClaimed: true,
                     claimedAt: serverTimestamp()
@@ -307,6 +311,7 @@ async function claimReferralRewards() {
             });
             await Promise.all(updates);
             
+            const userRef = doc(db, 'users', user.uid);
             const docSnap = await transaction.get(userRef);
             const currentPoints = docSnap.data().points || 0;
             transaction.update(userRef, {
@@ -322,68 +327,118 @@ async function claimReferralRewards() {
     }
 }
 
-// Bagian 3: Fungsi UI yang sudah disesuaikan
-function openMenu() {
-    if (dashboardMenu && mainContent) {
-        dashboardMenu.classList.add('active');
-        mainContent.classList.add('menu-open');
+function setupReferralListeners() {
+    if (copyRefBtn) {
+        copyRefBtn.addEventListener('click', async () => {
+            if (!userData || !userData.referralCode) {
+                alert('Kode referral belum tersedia.');
+                return;
+            }
+            const referralLink = `${window.location.origin}?ref=${userData.referralCode}`;
+            try {
+                await navigator.clipboard.writeText(referralLink);
+                alert('Tautan referral berhasil disalin!');
+            } catch (err) {
+                console.error('Gagal menyalin tautan:', err);
+                alert('Gagal menyalin tautan. Silakan coba lagi.');
+            }
+        });
     }
-}
 
-function closeMenu() {
-    if (dashboardMenu && mainContent) {
-        dashboardMenu.classList.remove('active');
-        mainContent.classList.remove('menu-open');
-    }
-}
-
-function showContent(contentId) {
-    const allContents = document.querySelectorAll('.content-section');
-    allContents.forEach(content => {
-        content.style.display = 'none';
+    // Logic untuk klaim bonus pasif referral
+    claimRefBtns.forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const missionId = btn.dataset.mission;
+            // Logic untuk klaim bonus, misal 2% dari poin referral
+            alert(`Bonus pasif ${missionId} berhasil diklaim!`);
+            // Implementasi Firebase untuk klaim bonus pasif
+        });
     });
-    const targetContent = document.getElementById(contentId);
-    if(targetContent) {
-        targetContent.style.display = 'block';
-    }
-    closeMenu();
 }
 
-function setActiveButton(button) {
-    const allButtons = document.querySelectorAll('.dashboard-menu button');
-    allButtons.forEach(btn => btn.classList.remove('active'));
-    if(button) {
-        button.classList.add('active');
+// === Fungsi Papan Peringkat ===
+
+async function loadLeaderboard() {
+    try {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, orderBy('convertedPoints', 'desc'), limit(5));
+        const querySnapshot = await getDocs(q);
+
+        const usersData = querySnapshot.docs.map(doc => doc.data());
+        if (leaderboardListEl) leaderboardListEl.innerHTML = '';
+        usersData.forEach((user, index) => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `<span>${index + 1}</span><span>${user.name}</span><span>${user.convertedPoints} Poin</span>`;
+            leaderboardListEl.appendChild(listItem);
+        });
+    } catch (error) {
+        console.error("Error loading leaderboard:", error);
     }
 }
 
-if (menuIcon) menuIcon.addEventListener('click', openMenu);
-if (closeIcon) closeIcon.addEventListener('click', closeMenu);
+// === Fungsi Navigasi & UI ===
 
-if (dashboardBtn) dashboardBtn.addEventListener('click', () => {
-    showContent('dashboard-content');
-    setActiveButton(dashboardBtn);
-});
-if (profileBtn) profileBtn.addEventListener('click', () => {
-    showContent('profile-content');
-    setActiveButton(profileBtn);
-});
-if (pelajaranBtn) pelajaranBtn.addEventListener('click', () => {
-    showContent('pelajaran-content');
-    setActiveButton(pelajaranBtn);
-});
-if (misiBtn) misiBtn.addEventListener('click', () => {
-    showContent('misi-content');
-    setActiveButton(misiBtn);
-});
-if (konversiPoinBtn) konversiPoinBtn.addEventListener('click', () => {
-    showContent('konversi-poin-content');
-    setActiveButton(konversiPoinBtn);
-});
-if (riwayatAktivitasBtn) riwayatAktivitasBtn.addEventListener('click', () => {
-    showContent('riwayat-aktivitas-content');
-    setActiveButton(riwayatAktivitasBtn);
-});
+function setupUI() {
+    // Sidebar & Menu Toggle
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('closed');
+        sidebarOverlay.classList.toggle('active');
+    });
 
-showContent('dashboard-content');
-if (dashboardBtn) setActiveButton(dashboardBtn);
+    sidebarOverlay.addEventListener('click', () => {
+        sidebar.classList.add('closed');
+        sidebarOverlay.classList.remove('active');
+    });
+
+    // Profile Menu Toggle
+    profileToggle.addEventListener('click', () => {
+        profileMenu.classList.toggle('active');
+    });
+
+    // Sembunyikan menu profil saat klik di luar
+    document.addEventListener('click', (event) => {
+        if (!profileToggle.contains(event.target) && !profileMenu.contains(event.target)) {
+            profileMenu.classList.remove('active');
+        }
+    });
+
+    // Navigasi
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const sectionId = e.target.dataset.section;
+            
+            navLinks.forEach(nav => nav.classList.remove('active'));
+            e.target.classList.add('active');
+
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            document.getElementById(`section-${sectionId}`).classList.add('active');
+
+            // Perbarui judul halaman
+            pageTitle.textContent = e.target.textContent;
+            
+            // Tutup sidebar di mobile setelah navigasi
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('closed');
+                sidebarOverlay.classList.remove('active');
+            }
+        });
+    });
+}
+
+function setupListeners() {
+    // Tombol Logout
+    const logoutBtn = document.getElementById('logout-btn-2');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            await signOut(auth);
+            window.location.href = 'index.html';
+        });
+    }
+
+    setupMissionListeners();
+    setupReferralListeners();
+}
