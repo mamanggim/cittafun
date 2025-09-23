@@ -1,40 +1,26 @@
 // auth.js
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+// ✅ Impor hanya dari file konfigurasi lokal
+import { auth, db } from './firebase-config.js';
+
 import {
-  getAuth,
   GoogleAuthProvider,
   signInWithPopup
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
-  getFirestore,
   doc,
   getDoc,
-  setDoc,
   collection,
   query,
   where,
-  getDocs,
   runTransaction,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-// 🔥 Firebase config (Pastikan ini sesuai dengan proyek Anda)
-const firebaseConfig = {
-  apiKey: "AIzaSyCkgqAz5OrTZgYoU_8LEH6WMhdOz_dy1sM",
-  authDomain: "cittafun.firebaseapp.com",
-  projectId: "cittafun",
-  storageBucket: "cittafun.firebasestorage.app",
-  messagingSenderId: "419661983255",
-  appId: "1:419661983255:web:382aaa98136e13f1a9b652"
-};
+// Hapus bagian firebaseConfig dan initializeApp(), karena sudah ada di firebase-config.js
+// ...
 
-// 🔥 Init Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// Fungsi untuk menghasilkan string acak (misal: 6 karakter alfanumerik)
+// Fungsi untuk menghasilkan string acak
 function generateRandomReferralCode(length = 6) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
@@ -48,7 +34,7 @@ function generateRandomReferralCode(length = 6) {
 // LOGIN GOOGLE
 document.addEventListener("DOMContentLoaded", () => {
   const loginBtn = document.getElementById("google-login");
-
+  
   if (loginBtn) {
     loginBtn.addEventListener("click", async (e) => {
       e.preventDefault();
@@ -72,18 +58,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 let referredByUid = null;
                 let codeExists = true;
 
-                // Loop untuk memastikan kode referral unik
                 while (codeExists) {
                     uniqueReferralCode = generateRandomReferralCode();
                     const q = query(collection(db, "users"), where("referralCode", "==", uniqueReferralCode));
-                    // Operasi transaksi yang benar
                     const querySnapshot = await transaction.get(q);
                     codeExists = !querySnapshot.empty;
                 }
 
                 if (referredByCode) {
                     const referrerQuery = query(collection(db, "users"), where("referralCode", "==", referredByCode));
-                    // Operasi transaksi yang benar
                     const referrerSnapshot = await transaction.get(referrerQuery);
                     if (!referrerSnapshot.empty) {
                         referredByUid = referrerSnapshot.docs[0].id;
