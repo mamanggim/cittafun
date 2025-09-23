@@ -38,10 +38,14 @@ const refCount = document.getElementById('ref-count');
 const recentActivity = document.getElementById('recent-activity');
 const btnWithdraw = document.getElementById('btn-withdraw');
 const btnCopyRef = document.getElementById('btn-copy-ref');
-const claimButtons = document.querySelectorAll('.btn-claim'); // Tetap digunakan untuk mission slots dan referral
+const claimButtons = document.querySelectorAll('.btn-claim');
 const totalTemanLink = document.getElementById('total-teman-link');
 const infoIcon = document.querySelector('.info-icon');
 const leaderboardList = document.getElementById('leaderboard-list');
+const notifIcon = document.querySelector('.notif-icon');
+const msgIcon = document.querySelector('.msg-icon'); // DOM Element untuk ikon pesan
+const notifBadge = document.getElementById('notif-badge');
+const msgBadge = document.getElementById('msg-badge');
 
 // MISSION SLOTS DOM Elements
 const missionSlots = document.querySelectorAll('.mission-slot');
@@ -260,6 +264,96 @@ safeAddEvent(infoIcon, 'click', () => {
     showGamePopup('Konversi poin otomatis setiap jam 00:00 WIB, maks. 100.000 poin/hari. Tingkatkan limit dengan KYC!');
 });
 
+/**
+ * Fungsi baru untuk menampilkan notifikasi pop-up kecil di samping ikon.
+ * @param {HTMLElement} iconElement - Elemen ikon (misal: notifIcon atau msgIcon).
+ * @param {string} message - Teks yang akan ditampilkan.
+ */
+function showNotificationPopup(iconElement, message) {
+    // Hapus pop-up yang mungkin sudah ada
+    document.querySelectorAll('.notification-popup').forEach(el => el.remove());
+
+    const popup = document.createElement('div');
+    popup.className = 'notification-popup';
+    popup.textContent = message;
+
+    // Masukkan pop-up ke dalam parent ikon
+    const parent = iconElement.closest('.notif-icon') || iconElement.closest('.msg-icon');
+    if (parent) {
+        parent.style.position = 'relative'; // Pastikan parent memiliki position: relative
+        parent.appendChild(popup);
+        setTimeout(() => popup.classList.add('show'), 10);
+        setTimeout(() => {
+            popup.classList.remove('show');
+            setTimeout(() => popup.remove(), 300);
+        }, 3000); // Durasi tampil pop-up
+    }
+}
+
+// Simulasikan notifikasi baru
+setInterval(() => {
+    const notifCount = parseInt(notifBadge.textContent) || 0;
+    const msgCount = parseInt(msgBadge.textContent) || 0;
+    
+    // Simulasikan notifikasi pesan baru
+    if (Math.random() > 0.8 && msgIcon) {
+        msgBadge.textContent = msgCount + 1;
+        showNotificationPopup(msgIcon, 'Ada pesan baru untuk Anda!');
+    }
+
+    // Simulasikan notifikasi umum baru
+    if (Math.random() > 0.9 && notifIcon) {
+        notifBadge.textContent = notifCount + 1;
+        showNotificationPopup(notifIcon, 'Klaim bonus misi harianmu!');
+    }
+}, 10000); // Cek notifikasi setiap 10 detik
+
+// Game-style Tutorial
+function startTutorial() {
+    const tutorialSteps = [
+        { message: "Selamat datang di Citta Fun! Mari saya tunjukkan caranya.", duration: 3000 },
+        { message: "Ini dashboard utama Anda, tempat Anda melihat poin dan misi.", duration: 3000 },
+        { message: "Lihat menu di samping? Ini semua fitur yang bisa Anda jelajahi!", duration: 3000, target: '.sidebar-nav' },
+        { message: "Ayo kita ke menu 'Misi Harian' untuk memulai petualangan Anda!", duration: 4000, action: () => {
+            const missionsLink = navLinks.find(link => link.getAttribute('data-section') === 'missions');
+            if (missionsLink) missionsLink.click();
+        } },
+        { message: "Hebat! Misi-misi ini akan memberikan Anda poin. Kerjakan dan klaim poinnya!", duration: 4000, target: '#section-missions' },
+        { message: "Jangan lupa cek profil Anda di sini untuk melihat info akun.", duration: 4000, target: '.profile' },
+        { message: "Selesai! Sekarang Anda siap berpetualang dan kumpulkan poin sebanyak-banyaknya!", duration: 4000 },
+    ];
+
+    let currentStep = 0;
+
+    function showNextStep() {
+        if (currentStep >= tutorialSteps.length) {
+            localStorage.setItem('tutorial_completed', 'true');
+            return;
+        }
+
+        const step = tutorialSteps[currentStep];
+        showGamePopup(step.message);
+
+        if (step.target) {
+            const targetEl = document.querySelector(step.target);
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Tambahkan kelas highlight sementara jika diperlukan
+            }
+        }
+
+        if (step.action) {
+            step.action();
+        }
+        
+        currentStep++;
+        setTimeout(showNextStep, step.duration);
+    }
+
+    showNextStep();
+}
+
+
 // Firebase Logic
 let user = null;
 let userData = null; // Menyimpan data user dari Firestore
@@ -276,6 +370,11 @@ onAuthStateChanged(auth, async (currentUser) => {
     setupClaimListeners(); // Setup listener untuk tombol klaim referral
     startPointConversion();
     setInterval(setupMissionSessionUI, 1000); // Perbarui UI setiap detik untuk countdown dan status tombol
+
+    // Jalankan tutorial jika belum pernah selesai
+    if (localStorage.getItem('tutorial_completed') !== 'true') {
+        setTimeout(() => startTutorial(), 2000); // Tunda sedikit agar halaman termuat
+    }
 });
 
 async function loadUserData() {
@@ -395,7 +494,7 @@ function setupMissionSessionUI() {
             claimBtn.textContent = 'Misi Gagal';
             countdownEl.textContent = '❌ Terlewat';
         } else if (isSessionPassed && (isCompleted || isInProgress)) {
-             // Jika sesi berakhir dan misi sudah dikerjakan/in_progress tapi belum diklaim
+            // Jika sesi berakhir dan misi sudah dikerjakan/in_progress tapi belum diklaim
             claimBtn.textContent = `Klaim ${earnedPoints} Poin`;
             claimBtn.disabled = false; // Memungkinkan klaim meskipun sesi sudah berakhir
             claimBtn.classList.add('active-mission'); // Tetap aktif agar bisa diklaim
