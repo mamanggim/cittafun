@@ -1,20 +1,20 @@
 // auth.js
 
-// ✅ Impor hanya dari file konfigurasi lokal
+// ✅ Impor HANYA dari file konfigurasi lokal.
+//    firebase-config.js akan menginisialisasi app, auth, dan db dengan SDK versi 11.0.1.
 import { auth, db } from './firebase-config.js';
 
+// ✅ Impor komponen Firebase yang spesifik TANPA inisialisasi ganda
 import {
   GoogleAuthProvider,
   signInWithPopup
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
   doc,
-  getDoc,
   collection,
   query,
   where,
-  getDocs,
-  runTransaction,
+  runTransaction, // Penting untuk transaksi
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
@@ -41,9 +41,9 @@ document.addEventListener("DOMContentLoaded", () => {
       loginBtn.textContent = 'Memproses...';
 
       try {
-        // Verifikasi inisialisasi Firebase
+        // Verifikasi inisialisasi Firebase (opsional, tapi bagus untuk debug)
         if (!auth || !db) {
-          throw new Error("Firebase tidak diinisialisasi dengan benar. Periksa firebase-config.js.");
+          throw new Error("Firebase Auth atau Firestore tidak diinisialisasi dengan benar dari firebase-config.js.");
         }
 
         const result = await signInWithPopup(auth, provider);
@@ -53,88 +53,87 @@ document.addEventListener("DOMContentLoaded", () => {
         const referredByCode = urlParams.get("ref") || null;
 
         await runTransaction(db, async (transaction) => {
-          const userRef = doc(db, "users", user.uid);
-          const docSnap = await transaction.get(userRef);
+            const userRef = doc(db, "users", user.uid);
+            const docSnap = await transaction.get(userRef);
 
-          if (!docSnap.exists()) {
-            let uniqueReferralCode = generateRandomReferralCode();
-            let referredByUid = null;
+            if (!docSnap.exists()) {
+                // Pengguna baru
+                let uniqueReferralCode = '';
+                let referredByUid = null;
+                let codeExists = true;
 
-            // Periksa keunikan referral code di luar transaksi
-            const checkCodeUniqueness = async () => {
-              const q = query(collection(db, "users"), where("referralCode", "==", uniqueReferralCode));
-              const querySnapshot = await getDocs(q);
-              return querySnapshot.empty;
-            };
+                // Loop dan periksa keunikan di DALAM transaksi
+                while (codeExists) {
+                    uniqueReferralCode = generateRandomReferralCode();
+                    const q = query(collection(db, "users"), where("referralCode", "==", uniqueReferralCode));
+                    // ✅ PENTING: Gunakan transaction.get() untuk query di dalam transaksi
+                    const querySnapshot = await transaction.get(q);
+                    codeExists = !querySnapshot.empty;
+                }
 
-            while (!(await checkCodeUniqueness())) {
-              uniqueReferralCode = generateRandomReferralCode();
+                // Cek referrer di DALAM transaksi
+                if (referredByCode) {
+                    const referrerQuery = query(collection(db, "users"), where("referralCode", "==", referredByCode));
+                    // ✅ PENTING: Gunakan transaction.get() untuk query di dalam transaksi
+                    const referrerSnapshot = await transaction.get(referrerQuery);
+                    if (!referrerSnapshot.empty) {
+                        referredByUid = referrerSnapshot.docs[0].id;
+                    }
+                }
+
+                // Set dokumen user baru dalam transaksi
+                transaction.set(userRef, {
+                    uid: user.uid,
+                    name: user.displayName,
+                    email: user.email,
+                    photo: user.photoURL,
+                    referralCode: uniqueReferralCode,
+                    referredByUid: referredByUid, // UID referrer, null jika tidak ada
+                    points: 0,
+                    convertedPoints: 0,
+                    dailyConverted: 0,
+                    referrals: [],
+                    missionSessionStatus: {},
+                    recentActivity: [],
+                    createdAt: serverTimestamp()
+                });
+
+                // Catat pending referral jika ada referrer
+                // Ini akan dibuat di sub-koleksi PENDINGREFERRALS MILIK REFERRER
+                if (referredByUid) {
+                    // Path: users/{referrerUid}/pendingReferrals/{referredUserUid}
+                    const pendingReferralRef = doc(db, `users/${referredByUid}/pendingReferrals`, user.uid);
+                    transaction.set(pendingReferralRef, {
+                      referredUserUid: user.uid, // UID user yang baru mendaftar
+                      referralCodeUsed: referredByCode,
+                      isCompleted: false, // Akan jadi true jika user baru menyelesaikan misi tertentu
+                      isClaimed: false, // Akan jadi true jika referrer sudah klaim hadiahnya
+                      createdAt: serverTimestamp()
+                    });
+                }
+            } else {
+                // Pengguna sudah ada, hanya update lastLogin
+                transaction.update(userRef, {
+                    lastLogin: serverTimestamp()
+                });
             }
-
-            // Periksa referrer di luar transaksi
-            let referrerSnapshot = null;
-            if (referredByCode) {
-              const referrerQuery = query(collection(db, "users"), where("referralCode", "==", referredByCode));
-              referrerSnapshot = await getDocs(referrerQuery);
-              if (!referrerSnapshot.empty) {
-                referredByUid = referrerSnapshot.docs[0].id;
-              }
-            }
-
-            // Buat dokumen user baru dalam transaksi
-            transaction.set(userRef, {
-              uid: user.uid,
-              name: user.displayName,
-              email: user.email,
-              photo: user.photoURL,
-              referralCode: uniqueReferralCode,
-              referredByUid: referredByUid,
-              points: 0,
-              convertedPoints: 0,
-              dailyConverted: 0,
-              referrals: [],
-              missionSessionStatus: {},
-              recentActivity: [],
-              createdAt: serverTimestamp()
-            });
-
-            // Catat pending referral jika ada referrer
-            if (referredByUid) {
-              const pendingReferralRef = doc(db, `users/${referredByUid}/pendingReferrals`, user.uid);
-              transaction.set(pendingReferralRef, {
-                referredUserUid: user.uid,
-                referralCodeUsed: referredByCode,
-                isCompleted: false,
-                isClaimed: false,
-                createdAt: serverTimestamp()
-              });
-            }
-
-            console.log("Pengguna baru terdaftar dan data inisialisasi disimpan.");
-          } else {
-            transaction.update(userRef, {
-              lastLogin: serverTimestamp()
-            });
-            console.log("Pengguna sudah terdaftar, memperbarui lastLogin.");
-          }
         });
 
-        // Redirect setelah transaksi berhasil
         window.location.href = "dashboard.html";
 
       } catch (err) {
         console.error("Login gagal:", err);
         let userFacingMessage = "Terjadi kesalahan saat login. Mohon coba lagi.";
         if (err.code === "auth/popup-closed-by-user") {
-          userFacingMessage = "Login dibatalkan. Jendela pop-up ditutup.";
+            userFacingMessage = "Login dibatalkan. Jendela pop-up ditutup.";
         } else if (err.code === "auth/cancelled-popup-request") {
-          userFacingMessage = "Login dibatalkan karena ada permintaan pop-up lain.";
-        } else if (err.message.includes("undefined (reading 'path')")) {
-          userFacingMessage = "Login gagal: Ada masalah konfigurasi Firebase atau SDK. Pastikan cache browser bersih dan domain diotorisasi.";
+            userFacingMessage = "Login dibatalkan karena ada permintaan pop-up lain.";
+        } else if (err.message && err.message.includes("undefined (reading 'path')")) {
+             userFacingMessage = "Login gagal: Ada masalah konfigurasi Firebase atau SDK. Pastikan cache browser bersih dan domain diotorisasi. (Error: 'path' undefined)";
         } else if (err.code === "permission-denied") {
-          userFacingMessage = "Akses ditolak. Periksa aturan keamanan Firestore di Firebase Console.";
+            userFacingMessage = "Akses ditolak. Periksa aturan keamanan Firestore di Firebase Console.";
         } else if (err.message.includes("Firebase not initialized")) {
-          userFacingMessage = "Firebase tidak diinisialisasi. Periksa firebase-config.js.";
+            userFacingMessage = "Firebase tidak diinisialisasi dengan benar. Periksa firebase-config.js.";
         }
         alert(`Login gagal: ${userFacingMessage}`);
         loginBtn.disabled = false;
