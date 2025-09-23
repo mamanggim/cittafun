@@ -11,7 +11,8 @@ import {
   query,
   where,
   runTransaction,
-  serverTimestamp
+  serverTimestamp,
+  arrayUnion
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 function generateRandomReferralCode(length = 6) {
@@ -87,6 +88,10 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if (referredByUid) {
+              const referrerRef = doc(db, "users", referredByUid);
+              transaction.update(referrerRef, {
+                  referredUsers: arrayUnion(user.uid)
+              });
               const pendingReferralRef = doc(db, `users/${referredByUid}/pendingReferrals`, user.uid);
               transaction.set(pendingReferralRef, {
                 referredUserUid: user.uid,
@@ -114,8 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
           userFacingMessage = "Login dibatalkan karena ada permintaan pop-up lain.";
         } else if (err.code === "permission-denied") {
           userFacingMessage = "Akses ditolak. Periksa aturan keamanan Firestore di Firebase Console.";
-        } else if (err.message && err.message.includes("undefined (reading 'path')")) {
-           userFacingMessage = "Login gagal: Ada masalah konfigurasi atau SDK. Pastikan cache browser bersih dan domain diotorisasi. (Error: 'path' undefined)";
         }
         alert(`Login gagal: ${userFacingMessage}`);
         loginBtn.disabled = false;
