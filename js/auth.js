@@ -11,8 +11,7 @@ import {
   query,
   where,
   runTransaction,
-  serverTimestamp,
-  arrayUnion
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 function generateRandomReferralCode(length = 6) {
@@ -90,7 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (referredByUid) {
               const referrerRef = doc(db, "users", referredByUid);
               transaction.update(referrerRef, {
-                  referredUsers: arrayUnion(user.uid)
+                  // Perbaikan: Gunakan logika di dashboard-ui.js untuk menambahkan referral
+                  // Logika di sini hanya untuk mencatat UID pengguna yang merujuk
               });
               const pendingReferralRef = doc(db, `users/${referredByUid}/pendingReferrals`, user.uid);
               transaction.set(pendingReferralRef, {
