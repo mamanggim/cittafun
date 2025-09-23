@@ -13,10 +13,8 @@ const firebaseConfig = {
   appId: "1:419661983255:web:382aaa98136e13f1a9b652"
 };
 
-// Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Export objek agar bisa digunakan di file lain
 export { auth, db };
