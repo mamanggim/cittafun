@@ -14,6 +14,7 @@ import {
   collection,
   query,
   where,
+  getDocs,              // ✅ DITAMBAHKAN
   runTransaction,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -53,7 +54,10 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const provider = new GoogleAuthProvider();
       loginBtn.disabled = true;
-      loginBtn.textContent = 'Memproses...';
+
+      // simpan text asli agar bisa dipulihkan
+      const originalText = loginBtn.innerText;
+      loginBtn.innerText = 'Memproses...';
 
       try {
         const result = await signInWithPopup(auth, provider);
@@ -71,10 +75,10 @@ document.addEventListener("DOMContentLoaded", () => {
             let uniqueReferralCode = generateRandomReferralCode();
             let referredByUid = null;
 
-            // Pastikan kode referral unik dengan pendekatan transaksional yang benar
+            // Pastikan kode referral unik
             const checkCodeUniqueness = async () => {
               const q = query(collection(db, "users"), where("referralCode", "==", uniqueReferralCode));
-              const querySnapshot = await getDocs(q); // Gunakan getDocs di luar transaksi untuk cek awal
+              const querySnapshot = await getDocs(q); // ✅ sudah bisa dipakai
               return querySnapshot.empty;
             };
 
@@ -82,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
               uniqueReferralCode = generateRandomReferralCode();
             }
 
-            // Cek referrer di luar transaksi untuk efisiensi, lalu simpan di transaksi
+            // Cek referrer
             let referrerSnapshot = null;
             if (referredByCode) {
               const referrerQuery = query(collection(db, "users"), where("referralCode", "==", referredByCode));
@@ -147,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         alert(`Login gagal: ${userFacingMessage}`);
         loginBtn.disabled = false;
-        loginBtn.textContent = 'Masuk dengan Google';
+        loginBtn.innerText = originalText;
       }
     });
   } else {
