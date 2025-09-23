@@ -1,11 +1,12 @@
-// CHAT-0910B: auth.js (Google Login + Referral Pending Reward - Modular Firebase v9)
+// CHAT-0910B: auth.js (Google Login + Referral Pending Reward - Modular Firebase v10)
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+// Menggunakan versi Firebase yang lebih baru untuk menghindari bug.
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 import {
   getFirestore,
   doc,
@@ -17,7 +18,7 @@ import {
   getDocs,
   runTransaction,
   serverTimestamp
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
 // 🔥 Firebase config
 const firebaseConfig = {
@@ -96,8 +97,8 @@ document.addEventListener("DOMContentLoaded", () => {
               referredByUid: referredByUid,
               points: 0,
               dailyProgress: {
-                  loginCount: 0,
-                  missionsCompleted: 0
+                loginCount: 0,
+                missionsCompleted: 0
               },
               createdAt: serverTimestamp()
             });
@@ -106,11 +107,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (referredByUid) {
                 const pendingReferralRef = doc(db, `users/${referredByUid}/pendingReferrals`, user.uid);
                 transaction.set(pendingReferralRef, {
-                    referredUserUid: user.uid,
-                    referralCodeUsed: referredByCode,
-                    isCompleted: false,
-                    isClaimed: false,
-                    createdAt: serverTimestamp()
+                  referredUserUid: user.uid,
+                  referralCodeUsed: referredByCode,
+                  isCompleted: false,
+                  isClaimed: false,
+                  createdAt: serverTimestamp()
                 });
                 console.log(`Pending referral dicatat untuk user: ${referredByUid}`);
             }
