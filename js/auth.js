@@ -1,22 +1,22 @@
-// CHAT-0910B: auth.js (Google Login + Referral ID - Modular Firebase v9)
+// CHAT-0910B: auth.js (Google Login + Referral Code Aman dan Rapi - Modular Firebase v9)
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { 
-  getAuth, 
-  GoogleAuthProvider, 
-  signInWithPopup 
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { 
-  getFirestore, 
-  doc, 
-  getDoc, 
-  setDoc, 
-  collection, 
-  query, 
-  orderBy, 
-  limit, 
-  getDocs, 
-  serverTimestamp 
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  runTransaction,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // 🔥 Firebase config
@@ -34,6 +34,17 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Fungsi untuk menghasilkan string acak (misal: 6 karakter alfanumerik)
+function generateRandomReferralCode(length = 6) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 // LOGIN GOOGLE
 document.addEventListener("DOMContentLoaded", () => {
   const loginBtn = document.getElementById("google-login");
@@ -42,6 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
     loginBtn.addEventListener("click", async (e) => {
       e.preventDefault();
       const provider = new GoogleAuthProvider();
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Memproses...';
 
       try {
         const result = await signInWithPopup(auth, provider);
@@ -49,38 +62,53 @@ document.addEventListener("DOMContentLoaded", () => {
         const userRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(userRef);
 
-        // cek referral dari URL
         const urlParams = new URLSearchParams(window.location.search);
-        const referredBy = urlParams.get("ref") || null;
+        const referredByCode = urlParams.get("ref") || null;
 
         if (!docSnap.exists()) {
-          // Ambil referralId terakhir
-          const q = query(collection(db, "users"), orderBy("referralId", "desc"), limit(1));
-          const lastUserSnap = await getDocs(q);
+          let uniqueReferralCode = '';
+          let referredByUid = null;
 
-          let newReferralId = 1;
-          if (!lastUserSnap.empty) {
-            newReferralId = lastUserSnap.docs[0].data().referralId + 1;
-          }
+          await runTransaction(db, async (transaction) => {
+            let codeExists = true;
+            while (codeExists) {
+              uniqueReferralCode = generateRandomReferralCode();
+              const q = query(collection(db, "users"), where("referralCode", "==", uniqueReferralCode));
+              const querySnapshot = await transaction.get(q);
+              codeExists = !querySnapshot.empty;
+            }
 
-          // simpan user baru
-          await setDoc(userRef, {
-            name: user.displayName,
-            email: user.email,
-            photo: user.photoURL,
-            referralId: newReferralId,
-            referredBy: referredBy ? parseInt(referredBy) : null,
-            points: 0,
-            createdAt: serverTimestamp()
+            if (referredByCode) {
+                const referrerQuery = query(collection(db, "users"), where("referralCode", "==", referredByCode));
+                const referrerSnapshot = await transaction.get(referrerQuery);
+                if (!referrerSnapshot.empty) {
+                    referredByUid = referrerSnapshot.docs[0].id;
+                }
+            }
+
+            transaction.set(userRef, {
+              uid: user.uid,
+              name: user.displayName,
+              email: user.email,
+              photo: user.photoURL,
+              referralCode: uniqueReferralCode,
+              referredByUid: referredByUid,
+              points: 0,
+              createdAt: serverTimestamp()
+            });
           });
+
+        } else {
+            console.log("Pengguna sudah terdaftar.");
         }
 
-        // redirect ke dashboard
         window.location.href = "dashboard.html";
 
       } catch (err) {
         console.error("Login gagal:", err);
-        alert("Login gagal, coba lagi.");
+        alert(`Login gagal: ${err.message}. Coba lagi.`);
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Masuk dengan Google';
       }
     });
   } else {
