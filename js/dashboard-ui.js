@@ -1,12 +1,9 @@
 // dashboard-ui.js
-
-// ✅ Impor dari file konfigurasi lokal
 import {
   auth,
   db
 } from './firebase-config.js';
 
-// ✅ Impor modul otentikasi dan firestore dari SDK
 import {
   onAuthStateChanged,
   signOut
@@ -51,8 +48,6 @@ const notifIcon = document.querySelector('.notif-icon');
 const msgIcon = document.querySelector('.msg-icon');
 const notifBadge = document.getElementById('notif-badge');
 const msgBadge = document.getElementById('msg-badge');
-
-// MISSION SLOTS DOM Elements
 const missionSlots = document.querySelectorAll('.mission-slot');
 
 // Helper Functions
@@ -96,13 +91,6 @@ function showFloatingPoints(button, points, message = null) {
         else requestAnimationFrame(animate);
     };
     requestAnimationFrame(animate);
-}
-
-function parseTimeToday(str) {
-    const [hh, mm] = str.split(':').map(Number);
-    const d = new Date();
-    d.setHours(hh, mm, 0, 0);
-    return d;
 }
 
 function formatTime(ms) {
@@ -149,23 +137,29 @@ window.addEventListener('resize', () => {
 });
 
 function openSidebar() {
-    sidebar?.classList.remove('closed');
-    sidebar?.classList.add('open');
-    overlay?.classList.add('show');
-    overlay?.setAttribute('aria-hidden', 'false');
+    if (!sidebar || !overlay) return;
+    sidebar.classList.remove('closed');
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden', 'false');
 }
 
 function closeSidebar() {
-    sidebar?.classList.remove('open');
-    sidebar?.classList.add('closed');
-    overlay?.classList.remove('show');
-    overlay?.setAttribute('aria-hidden', 'true');
+    if (!sidebar || !overlay) return;
+    sidebar.classList.remove('open');
+    sidebar.classList.add('closed');
+    overlay.classList.remove('show');
+    overlay.setAttribute('aria-hidden', 'true');
 }
 
 safeAddEvent(sidebarToggle, 'click', (e) => {
     e.preventDefault();
     if (window.innerWidth <= 900) {
-        sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+        if (sidebar?.classList.contains('open')) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
     }
 });
 
@@ -220,11 +214,11 @@ function applyTheme(mode) {
     mode = mode || 'light';
     if (mode === 'dark') {
         document.body.classList.add('dark');
-        themeToggle.textContent = '☀️';
+        if(themeToggle) themeToggle.textContent = '☀️';
         localStorage.setItem('theme', 'dark');
     } else {
         document.body.classList.remove('dark');
-        themeToggle.textContent = '🌙';
+        if(themeToggle) themeToggle.textContent = '🌙';
         localStorage.setItem('theme', 'light');
     }
 }
@@ -238,7 +232,8 @@ safeAddEvent(themeToggle, 'click', (e) => {
 
 // Button Functionality
 safeAddEvent(btnWithdraw, 'click', () => {
-    navLinks.find(link => link.getAttribute('data-section') === 'penarikan').click();
+    const penarikanLink = navLinks.find(link => link.getAttribute('data-section') === 'penarikan');
+    if (penarikanLink) penarikanLink.click();
     showGamePopup('Arahkan ke Penarikan!');
 });
 
@@ -264,7 +259,8 @@ safeAddEvent(btnCopyRef, 'click', async () => {
 
 safeAddEvent(totalTemanLink, 'click', (e) => {
     e.preventDefault();
-    navLinks.find(link => link.getAttribute('data-section') === 'referral').click();
+    const referralLink = navLinks.find(link => link.getAttribute('data-section') === 'referral');
+    if (referralLink) referralLink.click();
     showGamePopup('Arahkan ke Ajak Teman!');
 });
 
@@ -291,20 +287,23 @@ function showNotificationPopup(iconElement, message) {
     }
 }
 
-setInterval(() => {
-    const notifCount = parseInt(notifBadge.textContent) || 0;
-    const msgCount = parseInt(msgBadge.textContent) || 0;
+if(notifBadge && msgBadge){
+    setInterval(() => {
+        const notifCount = parseInt(notifBadge.textContent) || 0;
+        const msgCount = parseInt(msgBadge.textContent) || 0;
 
-    if (Math.random() > 0.8 && msgIcon) {
-        msgBadge.textContent = msgCount + 1;
-        showNotificationPopup(msgIcon, 'Ada pesan baru untuk Anda!');
-    }
+        if (Math.random() > 0.8 && msgIcon) {
+            msgBadge.textContent = msgCount + 1;
+            showNotificationPopup(msgIcon, 'Ada pesan baru untuk Anda!');
+        }
 
-    if (Math.random() > 0.9 && notifIcon) {
-        notifBadge.textContent = notifCount + 1;
-        showNotificationPopup(notifIcon, 'Klaim bonus misi harianmu!');
-    }
-}, 10000);
+        if (Math.random() > 0.9 && notifIcon) {
+            notifBadge.textContent = notifCount + 1;
+            showNotificationPopup(notifIcon, 'Klaim bonus misi harianmu!');
+        }
+    }, 10000);
+}
+
 
 // Game-style Tutorial
 function startTutorial() {
@@ -378,21 +377,23 @@ async function loadUserData() {
     const docSnap = await getDoc(userRef);
     if (docSnap.exists()) {
         userData = docSnap.data();
-        userName.textContent = userData.name || user.displayName || 'Pengguna';
-        userEmail.textContent = userData.email || user.email || '-';
-        userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
-        pointsBalance.textContent = userData.points || 0;
-        pointsRupiah.textContent = `Rp${convertPointsToRupiah(userData.convertedPoints || 0).toLocaleString('id-ID')}`;
-        refCount.textContent = userData.referrals?.length || 0;
-        recentActivity.innerHTML = userData.recentActivity?.length ?
-            userData.recentActivity.map(act => `<li>${act}</li>`).join('') :
-            '<li>Tidak ada aktivitas.</li>';
-        totalBonusPercentage.textContent = `${(userData.referrals?.length || 0) * 2}%`;
+        if (userName) userName.textContent = userData.name || user.displayName || 'Pengguna';
+        if (userEmail) userEmail.textContent = userData.email || user.email || '-';
+        if (userPhoto) userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
+        if (pointsBalance) pointsBalance.textContent = userData.points || 0;
+        if (pointsRupiah) pointsRupiah.textContent = `Rp${convertPointsToRupiah(userData.convertedPoints || 0).toLocaleString('id-ID')}`;
+        if (refCount) refCount.textContent = userData.referrals?.length || 0;
+        if (recentActivity) {
+            recentActivity.innerHTML = userData.recentActivity?.length ?
+                userData.recentActivity.map(act => `<li>${act}</li>`).join('') :
+                '<li>Tidak ada aktivitas.</li>';
+        }
+        if (totalBonusPercentage) totalBonusPercentage.textContent = `${(userData.referrals?.length || 0) * 2}%`;
     } else {
         userData = {};
-        userName.textContent = user.displayName || 'Pengguna';
-        userEmail.textContent = user.email || '-';
-        userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
+        if (userName) userName.textContent = user.displayName || 'Pengguna';
+        if (userEmail) userEmail.textContent = user.email || '-';
+        if (userPhoto) userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
     }
 }
 
@@ -436,7 +437,7 @@ function setupMissionSessionUI() {
         const countdownEl = slot.querySelector('.countdown');
         const claimBtn = slot.querySelector('.btn-claim');
 
-        if (!claimBtn) return;
+        if (!claimBtn || !countdownEl) return;
 
         const sessionStatusToday = userData.missionSessionStatus?.[missionId]?.[todayDateString];
         const isInProgress = sessionStatusToday && sessionStatusToday.status === 'in_progress';
@@ -504,6 +505,8 @@ function setupReferralCountdowns() {
         const endHour = parseInt(slot.dataset.end.split(':')[0]);
         const countdownEl = slot.querySelector('.countdown');
 
+        if (!countdownEl) return;
+
         let sessionStartTime = new Date(wibTime);
         sessionStartTime.setHours(startHour, 0, 0, 0);
 
@@ -516,7 +519,6 @@ function setupReferralCountdowns() {
 
         const isCurrentSessionActive = wibTime >= sessionStartTime && wibTime <= sessionEndTime;
         const isSessionUpcoming = wibTime < sessionStartTime;
-        const isSessionPassed = wibTime > sessionEndTime;
 
         if (isCurrentSessionActive) {
             countdownEl.textContent = '⏳ Aktif sekarang';
@@ -549,15 +551,9 @@ function setupClaimListeners() {
             if (claimBtn.textContent === 'Kerjakan Misi' || claimBtn.textContent === 'Lanjutkan Misi') {
                 const missionsSection = document.getElementById('section-missions');
                 if (missionsSection) {
-                    if (!missionsSection.classList.contains('active')) {
-                        missionsSection.scrollIntoView({ behavior: 'smooth' });
-                    }
-
                     navLinks.forEach(l => l.classList.remove('active'));
                     const missionNavLink = navLinks.find(link => link.getAttribute('data-section') === 'missions');
-                    if(missionNavLink) missionNavLink.classList.add('active');
-                    document.querySelector('.page-title').textContent = '🎯 Misi Harian';
-                    if (window.innerWidth <= 900) closeSidebar();
+                    if(missionNavLink) missionNavLink.click();
                 }
 
                 if (!sessionStatusForToday || (sessionStatusForToday.status !== 'completed' && sessionStatusForToday.status !== 'claimed')) {
@@ -610,7 +606,6 @@ function setupClaimListeners() {
                 userData.convertedPoints = (userData.convertedPoints || 0) + pointsToClaim;
                 userData.dailyConverted = (userData.dailyConverted || 0) + pointsToClaim;
                 userData.missionSessionStatus[missionId][todayDateString].status = 'claimed';
-                userData.missionSessionStatus[missionId][todayDateString].claimTimestamp = new Date().toISOString(); // Note: This is client-side, Firestore will use serverTimestamp.
 
                 await loadUserData();
                 await loadLeaderboard();
@@ -725,4 +720,6 @@ function startPointConversion() {
     }, timeUntilNext + 1000);
 }
 
-setInitialSidebarState();
+document.addEventListener("DOMContentLoaded", () => {
+    setInitialSidebarState();
+});
