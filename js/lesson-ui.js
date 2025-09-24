@@ -1,7 +1,7 @@
 // js/lesson-ui.js
 document.addEventListener('DOMContentLoaded', () => {
   const profile = document.getElementById('profile');
-  const profileMenu = document.getElementById('profile-menu');
+  const profileMenu = document.getElementById('exit-menu'); // Ubah ke exit-menu
   const lessonsGrid = document.querySelector('.lessons-grid');
   const searchInput = document.getElementById('search-input');
   const jenjangFilter = document.getElementById('jenjang-filter');
