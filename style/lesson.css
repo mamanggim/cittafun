@@ -50,6 +50,9 @@ body.dark {
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-icon:hover {
@@ -67,25 +70,23 @@ body.dark .btn-icon {
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid white;
-  box-shadow: var(--shadow);
 }
 
 .exit-menu {
   position: absolute;
-  top: 50px;
+  top: 60px;
   right: 0;
   background: white;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  padding: 10px;
-  min-width: 160px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 5px 0;
+  min-width: 150px;
   display: none;
   z-index: 10;
-  animation: slideIn 0.3s ease;
 }
 
 body.dark .exit-menu {
-  background: #35354f;
+  background: #2d2d44;
 }
 
 .exit-menu.show {
@@ -95,24 +96,22 @@ body.dark .exit-menu {
 .exit-menu a,
 .exit-menu button {
   display: block;
-  padding: 10px 14px;
+  padding: 10px 20px;
   color: var(--text-light);
   font-size: 0.95rem;
   font-weight: 600;
-  transition: background 0.3s, color 0.3s, transform 0.2s;
-  border: none; /* Menghilangkan garis bawah */
-  background: none;
-  text-decoration: none; /* Menghilangkan garis bawah pada tautan */
+  text-decoration: none;
+  transition: background 0.3s;
   width: 100%;
   text-align: left;
-  cursor: pointer;
+  border: none;
+  background: none;
 }
 
 .exit-menu a:hover,
 .exit-menu button:hover {
   background: var(--citta-blue);
   color: white;
-  transform: translateX(5px);
 }
 
 body.dark .exit-menu a,
@@ -131,13 +130,7 @@ body.dark .exit-menu button {
   font-size: 1.8rem;
   font-weight: 800;
   margin-bottom: 12px;
-  color: var(--text-light); /* Ubah dari biru ke hitam/putih berdasarkan mode */
-}
-
-.section h4 {
-  font-size: 1.1rem;
-  margin: 0 0 12px;
-  color: var(--text-light); /* Ubah dari biru ke hitam/putih berdasarkan mode */
+  color: var(--text-light);
 }
 
 .section p {
@@ -256,11 +249,11 @@ body.dark .search-suggestions {
 .lesson-card h4 {
   font-size: 1.1rem;
   margin: 0 0 12px;
-  color: var(--text-light); /* Ubah dari biru ke hitam/putih berdasarkan mode */
+  color: var(--text-light);
 }
 
 .lesson-card p {
-  font-size: 0.85rem !important;
+  font-size: 0.85rem;
   color: #6b7280;
   margin-bottom: 16px;
 }
@@ -278,12 +271,13 @@ body.dark .lesson-card p {
   padding: 12px 20px;
   background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
   color: white;
-  border: none; /* Menghilangkan garis bawah */
+  border: none;
   border-radius: 12px;
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
+  text-decoration: none;
 }
 
 .lesson-card .btn:hover {
@@ -309,7 +303,7 @@ body.dark .lesson-card p {
   font-weight: 700;
   cursor: pointer;
   transition: background 0.3s, color 0.3s, transform 0.2s;
-  text-decoration: none; /* Menghilangkan garis bawah */
+  text-decoration: none;
 }
 
 .pagination .btn-outline:hover {
@@ -411,7 +405,7 @@ body.dark .floating-points {
     font-size: 1rem;
   }
   .lesson-card p {
-    font-size: 0.8rem !important;
+    font-size: 0.8rem;
   }
   .lesson-card .btn {
     font-size: 0.85rem;
