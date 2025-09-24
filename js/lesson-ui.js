@@ -40,13 +40,15 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadLessons() {
     try {
       const response = await fetch('data/lessons.json');
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}. Pastikan file 'data/lessons.json' ada di direktori yang benar.`);
+      }
       lessonsData = await response.json();
       errorMessage.style.display = 'none';
       renderLessons();
     } catch (err) {
       console.error('[Lessons] Failed to load lessons:', err.message);
-      errorMessage.textContent = 'Gagal memuat pelajaran. Pastikan file data/lessons.json ada.';
+      errorMessage.textContent = err.message;
       errorMessage.style.display = 'block';
       lessonsGrid.innerHTML = '';
     }
@@ -146,19 +148,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
       searchSuggestions.classList.remove('show');
     }
+    if (!exitMenu.contains(e.target) && e.target !== exitToggle) {
+      exitMenu.classList.remove('show');
+      exitMenu.setAttribute('aria-hidden', 'true');
+    }
   });
 
   exitToggle.addEventListener('click', (e) => {
     e.stopPropagation();
     const isShown = exitMenu.classList.toggle('show');
     exitMenu.setAttribute('aria-hidden', !isShown);
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!exitMenu.contains(e.target) && e.target !== exitToggle) {
-      exitMenu.classList.remove('show');
-      exitMenu.setAttribute('aria-hidden', 'true');
-    }
   });
 
   loadLessons();
