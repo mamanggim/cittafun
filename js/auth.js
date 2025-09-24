@@ -13,8 +13,8 @@ import {
   runTransaction,
   serverTimestamp,
   getDocs,
-  getDoc, // PENTING: Tambahkan ini
-  updateDoc // PENTING: Tambahkan ini untuk update di luar transaksi
+  getDoc,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 function generateRandomReferralCode(length = 6) {
@@ -49,32 +49,40 @@ document.addEventListener("DOMContentLoaded", () => {
         const urlParams = new URLSearchParams(window.location.search);
         const referredByCode = urlParams.get("ref") || null;
 
-        // Cek apakah pengguna sudah ada sebelum memulai transaksi
         const userRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(userRef);
 
         if (!docSnap.exists()) {
-          // Logika pembuatan kode referral dan pencarian referrer harus di luar transaksi
           let uniqueReferralCode = '';
           let codeExists = true;
           while (codeExists) {
             uniqueReferralCode = generateRandomReferralCode();
             const q = query(collection(db, "users"), where("referralCode", "==", uniqueReferralCode));
-            const querySnapshot = await getDocs(q); // PENTING: gunakan getDocs() di luar transaksi
+            const querySnapshot = await getDocs(q);
             codeExists = !querySnapshot.empty;
           }
 
           let referredByUid = null;
           if (referredByCode) {
             const referrerQuery = query(collection(db, "users"), where("referralCode", "==", referredByCode));
-            const referrerSnapshot = await getDocs(referrerQuery); // PENTING: gunakan getDocs() di luar transaksi
+            const referrerSnapshot = await getDocs(referrerQuery);
             if (!referrerSnapshot.empty) {
               referredByUid = referrerSnapshot.docs[0].id;
+
+              // Cek batas referral harian referrer
+              const today = new Date().toISOString().split('T')[0];
+              const pendingRefQuery = query(collection(db, `users/${referredByUid}/pendingReferrals`), where("createdAt", ">=", new Date(today)));
+              const pendingCount = (await getDocs(pendingRefQuery)).size;
+              if (pendingCount >= 100) {
+                alert("Batas referral hari ini tercapai. Ajak teman lagi besok!");
+                loginBtn.disabled = false;
+                loginBtn.textContent = originalText;
+                return;
+              }
             }
           }
 
           await runTransaction(db, async (transaction) => {
-            // Di dalam transaksi, kita hanya melakukan operasi set/update yang atomik
             transaction.set(userRef, {
               uid: user.uid,
               name: user.displayName,
@@ -88,8 +96,11 @@ document.addEventListener("DOMContentLoaded", () => {
               referrals: [],
               missionSessionStatus: {},
               recentActivity: [],
+              loginDays: [new Date().toDateString()], // Mulai track login days
+              completedMissionsCount: 0, // Track misi selesai
               createdAt: serverTimestamp()
             });
+
             if (referredByUid) {
               const pendingReferralRef = doc(db, `users/${referredByUid}/pendingReferrals`, user.uid);
               transaction.set(pendingReferralRef, {
@@ -97,14 +108,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 referralCodeUsed: referredByCode,
                 isCompleted: false,
                 isClaimed: false,
+                loginDaysCount: 1, // Awal track
+                completedMissions: 0,
                 createdAt: serverTimestamp()
               });
             }
           });
 
         } else {
-          // Jika pengguna sudah ada, update lastLogin di luar transaksi
-          await updateDoc(userRef, { lastLogin: serverTimestamp() });
+          // Update login days jika user existing (untuk referral track jika dia referral)
+          const data = docSnap.data();
+          const loginDays = data.loginDays || [];
+          const today = new Date().toDateString();
+          if (!loginDays.includes(today)) {
+            await updateDoc(userRef, {
+              loginDays: [...loginDays, today],
+              lastLogin: serverTimestamp()
+            });
+
+            // Update pending referral di referrer jika ada
+            if (data.referredByUid) {
+              const pendingRef = doc(db, `users/${data.referredByUid}/pendingReferrals`, user.uid);
+              const pendingSnap = await getDoc(pendingRef);
+              if (pendingSnap.exists()) {
+                const pendingData = pendingSnap.data();
+                await updateDoc(pendingRef, {
+                  loginDaysCount: (pendingData.loginDaysCount || 0) + 1
+                });
+              }
+            }
+          }
         }
 
         window.location.href = "dashboard.html";
