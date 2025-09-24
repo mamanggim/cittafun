@@ -36,63 +36,12 @@ body.dark {
   --bonus-green: #22c55e;
 }
 
-/* Header (Sticky) */
-.topbar {
-  position: sticky;
-  top: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  background: linear-gradient(135deg, #eaf2ff, #f9fbff);
-  box-shadow: var(--shadow);
-  z-index: 1000;
-}
-
-body.dark .topbar {
-  background: linear-gradient(135deg, #1e1e2f, #2a2a3c);
-}
-
-.topbar-left .page-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--text-black);
-}
-
-body.dark .topbar-left .page-title {
-  color: var(--text-white);
-}
-
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.notif-icon {
-  position: relative;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--text-black);
-}
-
-body.dark .notif-icon {
-  color: var(--text-white);
-}
-
-.badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background: var(--fun-orange);
-  color: white;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 0.7rem;
-}
-
-.profile {
-  position: relative;
+/* Exit Dropdown */
+.exit-dropdown {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
 }
 
 .profile-photo {
@@ -110,10 +59,10 @@ body.dark .notif-icon {
   transform: scale(1.1);
 }
 
-.profile-menu {
+.exit-menu {
   position: absolute;
+  top: 50px;
   right: 0;
-  top: 60px;
   background: white;
   border-radius: 12px;
   box-shadow: var(--shadow);
@@ -124,15 +73,15 @@ body.dark .notif-icon {
   animation: slideIn 0.3s ease;
 }
 
-body.dark .profile-menu {
+body.dark .exit-menu {
   background: #35354f;
 }
 
-.profile-menu.show {
+.exit-menu.show {
   display: block;
 }
 
-.profile-menu a {
+.exit-menu a {
   display: block;
   padding: 10px 14px;
   color: var(--text-light);
@@ -142,13 +91,13 @@ body.dark .profile-menu {
   text-decoration: none;
 }
 
-.profile-menu a:hover {
+.exit-menu a:hover {
   background: var(--text-black);
   color: var(--text-white);
   transform: translateX(5px);
 }
 
-body.dark .profile-menu a {
+body.dark .exit-menu a {
   color: var(--text-dark);
 }
 
@@ -163,7 +112,7 @@ body.dark .profile-menu a {
   font-size: 1.8rem;
   font-weight: 800;
   margin-bottom: 12px;
-  color: var(--text-black);
+  color: var(--text-black); /* Ubah dari biru ke hitam */
 }
 
 .section p {
@@ -306,7 +255,7 @@ body.dark .lesson-card p {
 .lesson-card .btn {
   display: inline-block;
   padding: 12px 20px;
-  background: linear-gradient(45deg, var(--text-black), #666);
+  background: linear-gradient(45deg, var(--text-black), #666); /* Ubah dari biru ke hitam gradient */
   color: var(--text-white);
   border: none;
   border-radius: 12px;
@@ -333,9 +282,9 @@ body.dark .lesson-card p {
 
 .pagination .btn-outline {
   padding: 10px 20px;
-  border: 1px solid var(--text-black);
+  border: 1px solid var(--text-black); /* Ubah dari biru ke hitam */
   background: none;
-  color: var(--text-black);
+  color: var(--text-black); /* Ubah dari biru ke hitam */
   border-radius: 10px;
   font-weight: 700;
   cursor: pointer;
