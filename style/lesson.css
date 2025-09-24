@@ -29,18 +29,47 @@ body.dark {
   --bg-light: linear-gradient(135deg, #eaf2ff, #f9fbff);
   --bg-dark: linear-gradient(135deg, #1e1e2f, #2a2a3c);
   --text-light: #333;
-  --text-dark: #ddd;
+  --text-dark: #fff; /* Diubah ke putih untuk dark mode */
   --card-bg: #f1f5ff;
   --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   --bonus-green: #22c55e;
 }
 
+/* Header Statis */
+.header {
+  position: sticky;
+  top: 0;
+  background: var(--bg-light);
+  padding: 10px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+body.dark .header {
+  background: var(--bg-dark);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--citta-blue);
+}
+
+body.dark .header h1 {
+  color: #00d2ff;
+}
+
 /* Exit Dropdown */
 .exit-dropdown {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 100;
+  position: relative;
 }
 
 .btn-icon {
@@ -102,7 +131,7 @@ body.dark .exit-menu {
   font-weight: 600;
   text-decoration: none;
   transition: background 0.3s;
-  width: 100%;
+  width: 100;
   text-align: left;
   border: none;
   background: none;
@@ -124,6 +153,7 @@ body.dark .exit-menu button {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  margin-top: 70px; /* Memberi ruang di bawah header statis */
 }
 
 .section h3 {
@@ -413,5 +443,12 @@ body.dark .floating-points {
   }
   .pagination .btn-outline {
     padding: 8px 16px;
+  }
+  .header-content {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .header h1 {
+    font-size: 1.2rem;
   }
 }
