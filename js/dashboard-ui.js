@@ -144,7 +144,124 @@ function setInitialSidebarState() {
 let resizeTimer = null;
 window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(setInitialSidebarState, 100);
+    resizeTimer = setTimeout(setInitialSidebarState, 120);
+});
+
+function openSidebar() {
+    sidebar?.classList.remove('closed');
+    sidebar?.classList.add('open');
+    overlay?.classList.add('show');
+    overlay?.setAttribute('aria-hidden', 'false');
+}
+
+function closeSidebar() {
+    sidebar?.classList.remove('open');
+    sidebar?.classList.add('closed');
+    overlay?.classList.remove('show');
+    overlay?.setAttribute('aria-hidden', 'true');
+}
+
+safeAddEvent(sidebarToggle, 'click', (e) => {
+    e.preventDefault();
+    if (window.innerWidth <= 900) {
+        sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+    }
+});
+
+safeAddEvent(overlay, 'click', (e) => {
+    e.preventDefault();
+    closeSidebar();
+});
+
+safeAddEvent(userPhoto, 'click', (e) => {
+    e.stopPropagation();
+    profileMenu?.classList.toggle('show');
+    profileMenu?.setAttribute('aria-hidden', !profileMenu.classList.contains('show'));
+});
+
+document.addEventListener('click', (e) => {
+    if (profileMenu && !profileMenu.contains(e.target) && e.target !== userPhoto) {
+        profileMenu.classList.remove('show');
+        profileMenu.setAttribute('aria-hidden', 'true');
+    }
+});
+
+navLinks.forEach(link => {
+    safeAddEvent(link, 'click', (e) => {
+        e.preventDefault();
+        navLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        const key = link.getAttribute('data-section');
+        sections.forEach(sec => {
+            sec.classList.toggle('active', sec.id === `section-${key}`);
+        });
+        document.querySelector('.page-title').textContent = link.textContent.trim();
+        if (window.innerWidth <= 900) closeSidebar();
+    });
+});
+
+safeAddEvent(logoutBtn, 'click', async (e) => {
+    e.preventDefault();
+    if (logoutBtn.disabled) return;
+    logoutBtn.disabled = true;
+    try {
+        await signOut(auth);
+        window.location.href = 'index.html';
+    } catch (err) {
+        console.error('[Logout] Error:', err.message);
+        window.location.href = 'index.html';
+    } finally {
+        logoutBtn.disabled = false;
+    }
+});
+
+function applyTheme(mode) {
+    mode = mode || 'light';
+    if (mode === 'dark') {
+        document.body.classList.add('dark');
+        themeToggle.textContent = '☀️';
+        localStorage.setItem('theme', 'dark');
+    } else {
+        document.body.classList.remove('dark');
+        themeToggle.textContent = '🌙';
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+const savedTheme = localStorage.getItem('theme') || 'light';
+applyTheme(savedTheme);
+safeAddEvent(themeToggle, 'click', (e) => {
+    e.preventDefault();
+    applyTheme(document.body.classList.contains('dark') ? 'light' : 'dark');
+});
+
+// Button Functionality
+safeAddEvent(btnWithdraw, 'click', () => {
+    navLinks.find(link => link.getAttribute('data-section') === 'penarikan').click();
+    showGamePopup('Arahkan ke Penarikan!');
+});
+
+safeAddEvent(btnCopyRef, 'click', async () => {
+    if (!user) return;
+    const registrationId = await getRegistrationId(user.uid);
+    const referralLink = `https://cittafun.com/referral?code=${registrationId}`;
+    try {
+        await navigator.clipboard.writeText(referralLink);
+        showGamePopup('Link Referral disalin!');
+    } catch (err) {
+        console.error('Gagal menyalin link:', err);
+        showGamePopup('Gagal menyalin link, coba lagi!');
+    }
+});
+
+safeAddEvent(totalTemanLink, 'click', (e) => {
+    e.preventDefault();
+    navLinks.find(link => link.getAttribute('data-section') === 'referral').click();
+    showGamePopup('Arahkan ke Ajak Teman!');
+});
+
+safeAddEvent(infoIcon, 'click', () => {
+    showGamePopup('Konversi poin otomatis setiap jam 00:00 WIB, maks. 100.000 poin/hari. Tingkatkan limit dengan KYC!');
 });
 
 // Tambah fungsi untuk kirim pesan satu arah
@@ -168,118 +285,287 @@ safeAddEvent(messageIcon, 'click', () => {
     }
 });
 
-// Load user data
+// Firebase Logic
+let user = null;
+let userData = null;
+
+onAuthStateChanged(auth, async (currentUser) => {
+    if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+    }
+    user = currentUser;
+    await loadUserData();
+    await loadLeaderboard();
+    setupMissionSessionUI();
+    setupClaimListeners();
+    startPointConversion();
+    setInterval(setupMissionSessionUI, 1000);
+});
+
 async function loadUserData() {
     if (!user) return;
     const userRef = doc(db, 'users', user.uid);
     const docSnap = await getDoc(userRef);
     if (docSnap.exists()) {
-        const data = docSnap.data();
-        userName.textContent = data.name || 'Tamu';
-        userEmail.textContent = data.email || '-';
-        pointsBalance.textContent = data.points || 0;
-        pointsRupiah.textContent = `Rp${convertPointsToRupiah(data.points || 0).toLocaleString('id-ID')}`;
-        refCount.textContent = data.referrals?.length || 0;
-        recentActivity.innerHTML = data.recentActivity?.map(act => `<li>${act}</li>`).join('') || '<li>Tidak ada aktivitas.</li>';
+        userData = docSnap.data();
+        userName.textContent = userData.name || user.displayName || 'Pengguna';
+        userEmail.textContent = userData.email || user.email || '-';
+        userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
+        pointsBalance.textContent = userData.points || 0;
+        pointsRupiah.textContent = `Rp${convertPointsToRupiah(userData.convertedPoints || 0).toLocaleString('id-ID')}`;
+        refCount.textContent = userData.referrals?.length || 0;
+        recentActivity.innerHTML = userData.recentActivity?.length ?
+            userData.recentActivity.map(act => `<li>${act}</li>`).join('') :
+            '<li>Tidak ada aktivitas.</li>';
+        totalBonusPercentage.textContent = `${(userData.referrals?.length || 0) * 2}%`;
+    } else {
+        userData = {};
+        userName.textContent = user.displayName || 'Pengguna';
+        userEmail.textContent = user.email || '-';
+        userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
     }
 }
 
-// Load leaderboard
 async function loadLeaderboard() {
-    const q = query(collection(db, 'users'), orderBy('points', 'desc'), limit(10));
-    const querySnapshot = await getDocs(q);
-    leaderboardList.innerHTML = querySnapshot.docs.map((doc, index) => {
-        const data = doc.data();
-        return `<tr><td>${index + 1}</td><td>${data.name}</td><td>${data.points}</td></tr>`;
-    }).join('');
+    if (!leaderboardList) return;
+    try {
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, orderBy('points', 'desc'), limit(5));
+        const snapshot = await getDocs(q);
+        let rank = 1;
+        leaderboardList.innerHTML = '';
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const li = document.createElement('li');
+            li.innerHTML = `<span>${rank}</span><span>${data.name || 'Pengguna Anonim'}</span><span>${data.points || 0}</span>`;
+            leaderboardList.appendChild(li);
+            rank++;
+        });
+    } catch (err) {
+        console.error('Error loading leaderboard:', err);
+        leaderboardList.innerHTML = `
+            <li><span>1</span><span>Ahmad</span><span>5000</span></li>
+            <li><span>2</span><span>Budi</span><span>4500</span></li>
+            <li><span>3</span><span>Citra</span><span>4000</span></li>
+            <li><span>4</span><span>Dedi</span><span>3500</span></li>
+            <li><span>5</span><span>Eka</span><span>3000</span></li>
+        `;
+    }
 }
 
-// Setup mission session UI (rekonstruksi dengan asumsi logika asli)
+async function getRegistrationId(uid) {
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, orderBy('createdAt'));
+    const snapshot = await getDocs(q);
+    let index = 0;
+    for (const doc of snapshot.docs) {
+        if (doc.id === uid) break;
+        index++;
+    }
+    return index + 1;
+}
+
 function setupMissionSessionUI() {
+    if (!user || !userData) return;
+
+    const wibTime = getWIBTime();
+    const todayDateString = wibTime.toISOString().slice(0, 10);
+
     missionSlots.forEach(slot => {
-        const timer = slot.querySelector('.timer');
-        const button = slot.querySelector('.btn-claim');
-        const mission = button.getAttribute('data-mission');
-        const [startStr, endStr] = mission.split(' - ')[1].split(' s/d ');
-        const startTime = parseTimeToday(startStr);
-        const endTime = parseTimeToday(endStr);
+        const missionId = slot.dataset.mission;
+        const startHour = parseInt(slot.dataset.start.split(':')[0]);
+        const endHour = parseInt(slot.dataset.end.split(':')[0]);
+        const countdownEl = slot.querySelector('.countdown');
+        const claimBtn = slot.querySelector('.btn-claim');
 
-        const updateTimer = () => {
-            const now = getWIBTime();
-            let msLeft;
-            if (now < startTime) {
-                msLeft = startTime - now;
-                timer.textContent = `Mulai dalam ${formatTime(msLeft)}`;
-                button.disabled = true;
-            } else if (now < endTime) {
-                msLeft = endTime - now;
-                timer.textContent = `Sisa ${formatTime(msLeft)}`;
-                button.disabled = false;
+        if (!claimBtn) return;
+
+        const sessionStatusToday = userData.missionSessionStatus?.[missionId]?.[todayDateString];
+        const isInProgress = sessionStatusToday && sessionStatusToday.status === 'in_progress';
+        const isCompleted = sessionStatusToday && sessionStatusToday.status === 'completed';
+        const isClaimed = sessionStatusToday && sessionStatusToday.status === 'claimed';
+        const isFailed = sessionStatusToday && sessionStatusToday.status === 'failed';
+        const earnedPoints = sessionStatusToday?.points || 0;
+
+        let sessionStartTime = new Date(wibTime);
+        sessionStartTime.setHours(startHour, 0, 0, 0);
+
+        let sessionEndTime = new Date(wibTime);
+        sessionEndTime.setHours(endHour, 59, 59, 999);
+
+        if (sessionEndTime.getTime() < sessionStartTime.getTime()) {
+            sessionEndTime.setDate(sessionEndTime.getDate() + 1);
+        }
+
+        const isCurrentSessionActive = wibTime >= sessionStartTime && wibTime <= sessionEndTime;
+        const isSessionUpcoming = wibTime < sessionStartTime;
+        const isSessionPassed = wibTime > sessionEndTime;
+
+        claimBtn.disabled = true;
+        claimBtn.classList.remove('active-mission');
+
+        if (isClaimed) {
+            claimBtn.textContent = `Misi Selesai`;
+            countdownEl.textContent = '✅ Diklaim';
+        } else if (isFailed) {
+            claimBtn.textContent = 'Misi Gagal';
+            countdownEl.textContent = '❌ Terlewat';
+        } else if (isSessionPassed && (isCompleted || isInProgress)) {
+            claimBtn.textContent = `Klaim ${earnedPoints} Poin`;
+            claimBtn.disabled = false;
+            claimBtn.classList.add('active-mission');
+            countdownEl.textContent = '⏳ Sesi Berakhir';
+        } else if (isSessionPassed) {
+            claimBtn.textContent = 'Misi Gagal';
+            countdownEl.textContent = '❌ Terlewat';
+        } else if (isCurrentSessionActive) {
+            claimBtn.disabled = false;
+            claimBtn.classList.add('active-mission');
+            if (isCompleted) {
+                claimBtn.textContent = `Klaim ${earnedPoints} Poin`;
+            } else if (isInProgress) {
+                claimBtn.textContent = 'Lanjutkan Misi';
             } else {
-                timer.textContent = 'Slot berakhir!';
-                button.disabled = true;
+                claimBtn.textContent = 'Kerjakan Misi';
             }
-        };
+            countdownEl.textContent = `⏳ Selesai ${formatTime(sessionEndTime - wibTime)}`;
+        } else if (isSessionUpcoming) {
+            claimBtn.textContent = 'Kerjakan Misi';
+            countdownEl.textContent = `⏳ Mulai ${formatTime(sessionStartTime - wibTime)}`;
+        }
+    });
 
-        updateTimer();
-        setInterval(updateTimer, 1000);
+    setupReferralCountdowns();
+}
 
-        // Asumsi logika klaim misi (dari setupClaimListeners, dipindah ke sini untuk konsistensi)
-        button.addEventListener('click', async () => {
-            if (!user || button.disabled) return;
+function setupReferralCountdowns() {
+    const wibTime = getWIBTime();
+
+    document.querySelectorAll('.referral-slot').forEach(slot => {
+        const startHour = parseInt(slot.dataset.start.split(':')[0]);
+        const endHour = parseInt(slot.dataset.end.split(':')[0]);
+        const countdownEl = slot.querySelector('.countdown');
+
+        let sessionStartTime = new Date(wibTime);
+        sessionStartTime.setHours(startHour, 0, 0, 0);
+
+        let sessionEndTime = new Date(wibTime);
+        sessionEndTime.setHours(endHour, 59, 59, 999);
+
+        if (sessionEndTime.getTime() < sessionStartTime.getTime()) {
+            sessionEndTime.setDate(sessionEndTime.getDate() + 1);
+        }
+
+        const isCurrentSessionActive = wibTime >= sessionStartTime && wibTime <= sessionEndTime;
+        const isSessionUpcoming = wibTime < sessionStartTime;
+        const isSessionPassed = wibTime > sessionEndTime;
+
+        if (isCurrentSessionActive) {
+            countdownEl.textContent = '⏳ Aktif sekarang';
+        } else if (isSessionUpcoming) {
+            countdownEl.textContent = `⏳ Mulai ${formatTime(sessionStartTime - wibTime)}`;
+        } else {
+            const nextDay = new Date(wibTime);
+            nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+            nextDay.setUTCHours(startHour, 0, 0, 0);
+            countdownEl.textContent = `⏳ Besok ${formatTime(nextDay - wibTime)}`;
+        }
+    });
+}
+
+function setupClaimListeners() {
+    missionSlots.forEach(slot => {
+        const claimBtn = slot.querySelector('.btn-claim');
+        safeAddEvent(claimBtn, 'click', async (e) => {
+            e.preventDefault();
+            if (!user || claimBtn.disabled) return;
+
+            const missionId = slot.dataset.mission;
+            const wibTime = getWIBTime();
+            const todayDateString = wibTime.toISOString().slice(0, 10);
             const userRef = doc(db, 'users', user.uid);
-            const docSnap = await getDoc(userRef);
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                const missionsCompleted = data.missionsCompleted || {};
-                if (missionsCompleted[mission]?.includes(new Date().toDateString())) {
-                    showGamePopup('Misi sudah diklaim hari ini!');
-                    return;
+
+            let currentMissionStatus = userData.missionSessionStatus || {};
+            let sessionStatusForToday = currentMissionStatus[missionId]?.[todayDateString];
+
+            if (claimBtn.textContent === 'Kerjakan Misi' || claimBtn.textContent === 'Lanjutkan Misi') {
+                const missionsSection = document.getElementById('section-missions');
+                if (missionsSection) {
+                    if (!missionsSection.classList.contains('active')) {
+                        missionsSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    const missionNavLink = navLinks.find(link => link.getAttribute('data-section') === 'missions');
+                    if (missionNavLink) missionNavLink.classList.add('active');
+                    document.querySelector('.page-title').textContent = '🎯 Misi Harian';
+                    if (window.innerWidth <= 900) closeSidebar();
                 }
 
-                const points = 100;
+                if (!sessionStatusForToday || (sessionStatusForToday.status !== 'completed' && sessionStatusForToday.status !== 'claimed')) {
+                    const pointsEarned = 100;
+                    currentMissionStatus = {
+                        ...currentMissionStatus,
+                        [missionId]: {
+                            ...(currentMissionStatus[missionId] || {}),
+                            [todayDateString]: {
+                                status: 'in_progress',
+                                points: pointsEarned,
+                                timestamp: new Date().toISOString()
+                            }
+                        }
+                    };
+
+                    await updateDoc(userRef, {
+                        missionSessionStatus: currentMissionStatus,
+                        recentActivity: arrayUnion(`Memulai misi ${missionId} - ${new Date().toLocaleString('id-ID')}`).slice(-5)
+                    });
+                    userData.missionSessionStatus = currentMissionStatus;
+                    showGamePopup('Misi dimulai!');
+                    showFloatingPoints(claimBtn, 0, 'Misi Dimulai!');
+                }
+            } else if (claimBtn.textContent.startsWith('Klaim') && (sessionStatusForToday?.status === 'completed' || sessionStatusForToday?.status === 'in_progress')) {
+                const pointsToClaim = sessionStatusForToday.points;
+
                 await updateDoc(userRef, {
-                    points: (data.points || 0) + points,
-                    missionsCompleted: {
-                        ...missionsCompleted,
-                        [mission]: [...(missionsCompleted[mission] || []), new Date().toDateString()]
+                    points: (userData.points || 0) + pointsToClaim,
+                    convertedPoints: (userData.convertedPoints || 0) + pointsToClaim,
+                    missionSessionStatus: {
+                        ...currentMissionStatus,
+                        [missionId]: {
+                            ...(currentMissionStatus[missionId] || {}),
+                            [todayDateString]: {
+                                ...sessionStatusForToday,
+                                status: 'claimed',
+                                claimTimestamp: new Date().toISOString()
+                            }
+                        }
                     },
-                    recentActivity: arrayUnion(`Klaim ${mission} - ${new Date().toLocaleString('id-ID')}`).slice(-5),
-                    completedMissionsCount: (data.completedMissionsCount || 0) + 1
+                    recentActivity: arrayUnion(`Klaim ${pointsToClaim} poin dari sesi ${missionId} - ${new Date().toLocaleString('id-ID')}`).slice(-5)
                 });
 
-                if (data.referredByUid) {
-                    const pendingRef = doc(db, `users/${data.referredByUid}/pendingReferrals`, user.uid);
-                    const pendingSnap = await getDoc(pendingRef);
-                    if (pendingSnap.exists()) {
-                        const pendingData = pendingSnap.data();
-                        await updateDoc(pendingRef, {
-                            completedMissions: (pendingData.completedMissions || 0) + 1
-                        });
-                    }
-                }
+                userData.points = (userData.points || 0) + pointsToClaim;
+                userData.convertedPoints = (userData.convertedPoints || 0) + pointsToClaim;
+                userData.missionSessionStatus[missionId][todayDateString].status = 'claimed';
+                userData.missionSessionStatus[missionId][todayDateString].claimTimestamp = new Date().toISOString();
 
                 await loadUserData();
                 await loadLeaderboard();
-                showGamePopup(`Berhasil klaim ${points} poin!`);
-                showFloatingPoints(button, points);
+                showGamePopup(`Berhasil klaim ${pointsToClaim} poin!`);
+                showFloatingPoints(claimBtn, pointsToClaim);
                 if (window.confetti) confetti({
                     particleCount: 100,
                     spread: 70,
                     origin: { y: 0.6 }
                 });
-                button.disabled = true;
             }
         });
     });
-}
 
-// Setup claim listeners (fokus pada referral dan progres)
-function setupClaimListeners() {
-    // Referral slots (jika ada)
     document.querySelectorAll('.referral-slot .btn-claim').forEach(button => {
         button.addEventListener('click', async () => {
             if (!user || button.disabled) return;
+
             const mission = button.getAttribute('data-mission');
             const userRef = doc(db, 'users', user.uid);
             const docSnap = await getDoc(userRef);
@@ -341,6 +627,8 @@ function setupClaimListeners() {
                     pendings.forEach(async (pendingDoc) => {
                         await updateDoc(pendingDoc.ref, { isCompleted: true, isClaimed: true });
                     });
+                    await loadUserData();
+                    await loadLeaderboard();
                     showGamePopup(`Berhasil klaim bonus ${bonus} poin!`);
                     showFloatingPoints(checkProgressBtn, bonus);
                     if (window.confetti) confetti({
@@ -393,57 +681,5 @@ function startPointConversion() {
     }, timeUntilNext + 1000);
 }
 
-// Additional listeners
-safeAddEvent(sidebarToggle, 'click', () => {
-    sidebar.classList.toggle('open');
-    sidebar.classList.toggle('closed');
-    overlay.classList.toggle('show');
-});
-
-safeAddEvent(overlay, 'click', () => {
-    sidebar.classList.remove('open');
-    sidebar.classList.add('closed');
-    overlay.classList.remove('show');
-});
-
-safeAddEvent(userPhoto, 'click', () => {
-    profileMenu.classList.toggle('show');
-});
-
-safeAddEvent(themeToggle, 'click', () => {
-    document.body.classList.toggle('dark');
-    themeToggle.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
-    localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-});
-
-safeAddEvent(btnCopyRef, 'click', async () => {
-    const userRef = doc(db, 'users', user.uid);
-    const docSnap = await getDoc(userRef);
-    if (docSnap.exists()) {
-        const referralCode = docSnap.data().referralCode;
-        navigator.clipboard.writeText(`https://mamanggim.github.io/cittafun/?ref=${referralCode}`);
-        showGamePopup('Link referral disalin!');
-    }
-});
-
-safeAddEvent(btnWithdraw, 'click', () => {
-    showGamePopup('Fitur penarikan belum tersedia. Hubungi dukungan!');
-});
-
 // Initialize
 setInitialSidebarState();
-let user = null;
-onAuthStateChanged(auth, (currentUser) => {
-    user = currentUser;
-    if (user) {
-        loadUserData();
-        loadLeaderboard();
-        setupMissionSessionUI();
-        setupClaimListeners();
-        startPointConversion();
-    } else {
-        window.location.href = 'login.html';
-    }
-});
-
-safeAddEvent(logoutBtn, 'click', () => signOut(auth));
