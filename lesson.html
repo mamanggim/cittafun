@@ -1,71 +1,62 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mata Pelajaran - CittaFun</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style/lesson.css">
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
-  <!-- Firebase config -->
-  <script src="js/firebase-config.js"></script>
-  <!-- Canvas Confetti -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pelajaran - CittaFun</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style/lesson.css">
 </head>
 <body>
-  <!-- Header Statis -->
-  <header class="dashboard-header">
-    <div class="header-container">
-      <div class="logo">
-        <h1>CittaFun</h1>
-      </div>
-      <nav class="nav-menu">
-        <a href="dashboard.html">Beranda</a>
-        <a href="dashboard.html#section-missions">Misi Harian</a>
-      </nav>
-      <div class="user-section">
-        <button id="theme-toggle" class="theme-toggle" aria-label="Ganti tema">🌙</button>
-        <div class="exit-dropdown">
-          <button id="exit-toggle" class="btn-icon" aria-label="Keluar">
-            <img id="user-photo" src="assets/icons/user-placeholder.png" alt="Pengguna" class="profile-photo">
-          </button>
-          <div id="exit-menu" class="exit-menu" aria-hidden="true">
-            <a href="dashboard.html">Profil</a>
-            <a href="logout.html">Keluar</a>
-          </div>
+    <!-- Header (Adopsi dari dashboard) -->
+    <header class="topbar">
+        <button class="btn-icon" id="menu-toggle">☰</button>
+        <h1 class="page-title">Pelajaran</h1>
+        <div class="topbar-right">
+            <div class="notif-icon" id="notification-bell">
+                <span class="badge">2</span>
+            </div>
+            <div class="profile" id="profile">
+                <img src="https://via.placeholder.com/40" alt="Profile Photo" class="profile-photo" id="profile-photo">
+                <div class="profile-info">
+                    <span id="user-name">Nama Pengguna</span>
+                    <small id="user-role">Pengguna</small>
+                </div>
+                <div class="profile-menu" id="profile-menu">
+                    <a href="dashboard.html">Beranda</a>
+                    <a href="missions.html">Kembali ke Misi Harian</a>
+                </div>
+            </div>
+            <button class="theme-toggle" id="theme-toggle">🌙</button>
         </div>
-      </div>
-    </div>
-  </header>
+    </header>
 
-  <!-- Content -->
-  <main class="content">
-    <section id="section-lessons" class="section active">
-      <h3>📚 Mata Pelajaran</h3>
-      <p>Pilih mata pelajaran untuk dibaca selama 10 menit (50 poin/menit, maks. 500 poin/sesi).</p>
-      <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Cari mata pelajaran...">
-        <div id="search-suggestions" class="search-suggestions"></div>
-        <select id="jenjang-filter">
-          <option value="">Semua Jenjang</option>
-          <option value="SD">SD</option>
-          <option value="SMP">SMP</option>
-          <option value="SMA">SMA</option>
-        </select>
-      </div>
-      <div id="error-message" style="color: red; display: none;"></div>
-      <div class="lessons-grid"></div>
-      <div class="pagination">
-        <button id="prev-page" class="btn-outline" disabled>Sebelumnya</button>
-        <span id="page-info">Halaman 1</span>
-        <button id="next-page" class="btn-outline">Selanjutnya</button>
-      </div>
-    </section>
-  </main>
+    <!-- Main Content -->
+    <main class="main">
+        <div class="content">
+            <div class="lessons-grid">
+                <div class="lesson-card">
+                    <h4>Pelajaran 1: Dasar-Dasar</h4>
+                    <p>Pelajari konsep dasar untuk memulai perjalananmu.</p>
+                    <button class="btn-lesson">Mulai</button>
+                </div>
+                <div class="lesson-card">
+                    <h4>Pelajaran 2: Lanjutan</h4>
+                    <p>Kembangkan keterampilan dengan topik lanjutan.</p>
+                    <button class="btn-lesson">Mulai</button>
+                </div>
+                <div class="lesson-card">
+                    <h4>Pelajaran 3: Praktik</h4>
+                    <p>Tingkatkan kemampuan dengan latihan praktis.</p>
+                    <button class="btn-lesson">Mulai</button>
+                </div>
+            </div>
+        </div>
+    </main>
 
-  <script src="js/lesson-ui.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
+    <script src="script/lesson.js"></script>
 </body>
 </html>
