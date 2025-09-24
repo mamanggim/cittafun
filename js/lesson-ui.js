@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   import { auth } from './firebase-config.js';
 
   function updateUI(user) {
-    const profilePhoto = document.getElementById('profile-photo');
+    const profilePhoto = document.getElementById('user-photo');
     if (user) {
       profilePhoto.src = user.photoURL || 'https://via.placeholder.com/40';
     } else {
@@ -44,14 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadLessons() {
     try {
-      const response = await fetch('data/lessons.json');
+      const response = await fetch('/data/lessons.json'); // Pastikan path relatif dari root
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       lessonsData = await response.json();
+      console.log('Lessons loaded:', lessonsData); // Debug
       errorMessage.style.display = 'none';
       renderLessons();
     } catch (err) {
       console.error('[Lessons] Failed to load lessons:', err.message);
-      errorMessage.textContent = 'Gagal memuat pelajaran. Pastikan file data/lessons.json ada.';
+      errorMessage.textContent = 'Gagal memuat pelajaran. Pastikan file data/lessons.json ada di direktori /data/. Error: ' + err.message;
       errorMessage.style.display = 'block';
       lessonsGrid.innerHTML = '';
     }
