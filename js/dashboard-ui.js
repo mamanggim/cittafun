@@ -194,7 +194,7 @@ async function loadLeaderboard() {
     }).join('');
 }
 
-// Setup mission session UI (rekonstruksi berdasarkan konteks)
+// Setup mission session UI (rekonstruksi dengan asumsi logika asli)
 function setupMissionSessionUI() {
     missionSlots.forEach(slot => {
         const timer = slot.querySelector('.timer');
@@ -223,15 +223,8 @@ function setupMissionSessionUI() {
 
         updateTimer();
         setInterval(updateTimer, 1000);
-    });
-}
 
-// Setup claim listeners
-function setupClaimListeners() {
-    missionSlots.forEach(slot => {
-        const button = slot.querySelector('.btn-claim');
-        const mission = button.getAttribute('data-mission');
-
+        // Asumsi logika klaim misi (dari setupClaimListeners, dipindah ke sini untuk konsistensi)
         button.addEventListener('click', async () => {
             if (!user || button.disabled) return;
             const userRef = doc(db, 'users', user.uid);
@@ -279,11 +272,14 @@ function setupClaimListeners() {
             }
         });
     });
+}
 
+// Setup claim listeners (fokus pada referral dan progres)
+function setupClaimListeners() {
+    // Referral slots (jika ada)
     document.querySelectorAll('.referral-slot .btn-claim').forEach(button => {
         button.addEventListener('click', async () => {
             if (!user || button.disabled) return;
-
             const mission = button.getAttribute('data-mission');
             const userRef = doc(db, 'users', user.uid);
             const docSnap = await getDoc(userRef);
@@ -397,7 +393,7 @@ function startPointConversion() {
     }, timeUntilNext + 1000);
 }
 
-// Additional listeners (rekonstruksi berdasarkan konteks)
+// Additional listeners
 safeAddEvent(sidebarToggle, 'click', () => {
     sidebar.classList.toggle('open');
     sidebar.classList.toggle('closed');
@@ -425,7 +421,7 @@ safeAddEvent(btnCopyRef, 'click', async () => {
     const docSnap = await getDoc(userRef);
     if (docSnap.exists()) {
         const referralCode = docSnap.data().referralCode;
-        navigator.clipboard.write(`https://mamanggim.github.io/cittafun/?ref=${referralCode}`);
+        navigator.clipboard.writeText(`https://mamanggim.github.io/cittafun/?ref=${referralCode}`);
         showGamePopup('Link referral disalin!');
     }
 });
