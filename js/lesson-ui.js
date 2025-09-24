@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const pageInfo = document.getElementById('page-info');
   const errorMessage = document.getElementById('error-message');
   const themeToggle = document.getElementById('theme-toggle');
+  const userPhoto = document.getElementById('user-photo');
 
   let lessonsData = [];
   let currentPage = 1;
@@ -20,6 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme') || 'light';
   document.body.classList.toggle('dark', savedTheme === 'dark');
   themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+  // Load User Photo from Firebase Auth
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      userPhoto.src = user.photoURL || 'assets/icons/user-placeholder.png';
+    } else {
+      userPhoto.src = 'assets/icons/user-placeholder.png';
+    }
+  });
 
   themeToggle.addEventListener('click', () => {
     const isDark = document.body.classList.toggle('dark');
