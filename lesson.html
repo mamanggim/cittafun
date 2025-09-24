@@ -17,17 +17,25 @@
 </head>
 <body>
   <!-- Header Statis -->
-  <header class="header">
-    <div class="header-content">
-      <h1>CittaFun</h1>
-      <div class="exit-dropdown">
-        <button id="exit-toggle" class="btn-icon" aria-label="Keluar">
-          <img id="user-photo" src="assets/icons/user-placeholder.png" alt="Pengguna" class="profile-photo">
-        </button>
-        <div id="exit-menu" class="exit-menu" aria-hidden="true">
-          <a href="dashboard.html">Beranda</a>
-          <a href="dashboard.html#section-missions">Misi Harian</a>
-          <button id="theme-toggle" class="theme-toggle" aria-label="Ganti tema">🌙</button>
+  <header class="dashboard-header">
+    <div class="header-container">
+      <div class="logo">
+        <h1>CittaFun</h1>
+      </div>
+      <nav class="nav-menu">
+        <a href="dashboard.html">Beranda</a>
+        <a href="dashboard.html#section-missions">Misi Harian</a>
+      </nav>
+      <div class="user-section">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Ganti tema">🌙</button>
+        <div class="exit-dropdown">
+          <button id="exit-toggle" class="btn-icon" aria-label="Keluar">
+            <img id="user-photo" src="assets/icons/user-placeholder.png" alt="Pengguna" class="profile-photo">
+          </button>
+          <div id="exit-menu" class="exit-menu" aria-hidden="true">
+            <a href="dashboard.html">Profil</a>
+            <a href="logout.html">Keluar</a>
+          </div>
         </div>
       </div>
     </div>
