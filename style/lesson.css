@@ -62,27 +62,11 @@ body.dark {
   border: 2px solid white;
   box-shadow: var(--shadow);
   cursor: pointer;
+  transition: transform 0.3s;
 }
 
-.profile-info {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.profile-info #user-name {
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--text-light);
-}
-
-.profile-info small {
-  font-size: 0.8rem;
-  color: #6b7280;
-}
-
-body.dark .profile-info small {
-  color: #9ca3af;
+.profile-photo:hover {
+  transform: scale(1.1);
 }
 
 .profile-menu {
