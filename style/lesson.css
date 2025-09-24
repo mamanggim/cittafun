@@ -24,32 +24,28 @@ body.dark {
 
 /* Variabel Warna */
 :root {
-  --citta-blue: #0052cc;
-  --fun-orange: #ff6200;
-  --bg-light: linear-gradient(135deg, #eaf2ff, #f9fbff);
-  --bg-dark: linear-gradient(135deg, #1e1e2f, #2a2a3c);
-  --text-light: #333;
-  --text-dark: #fff; /* Diubah ke putih untuk dark mode */
-  --card-bg: #f1f5ff;
-  --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  --bonus-green: #22c55e;
+  --primary-blue: #1e40af;
+  --secondary-blue: #3b82f6;
+  --bg-light: #f3f4f6;
+  --bg-dark: #1f2937;
+  --text-light: #1f2937;
+  --text-dark: #f9fafb;
+  --card-bg: #ffffff;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --bonus-green: #10b981;
 }
 
-/* Header Statis */
-.header {
+/* Dashboard Header */
+.dashboard-header {
   position: sticky;
   top: 0;
-  background: var(--bg-light);
-  padding: 10px 20px;
+  background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
+  padding: 15px 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  z-index: 1000;
 }
 
-body.dark .header {
-  background: var(--bg-dark);
-}
-
-.header-content {
+.header-container {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
@@ -57,25 +53,47 @@ body.dark .header {
   align-items: center;
 }
 
-.header h1 {
+.logo h1 {
+  color: #ffffff;
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--citta-blue);
 }
 
-body.dark .header h1 {
-  color: #00d2ff;
+.nav-menu a {
+  color: #ffffff;
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: 600;
+  transition: color 0.3s;
 }
 
-/* Exit Dropdown */
-.exit-dropdown {
-  position: relative;
+.nav-menu a:hover {
+  color: #bbf7d0;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.theme-toggle:hover {
+  color: #bbf7d0;
 }
 
 .btn-icon {
-  background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
+  background: #ffffff;
   border: none;
-  padding: 10px;
+  padding: 8px;
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
@@ -85,66 +103,54 @@ body.dark .header h1 {
 }
 
 .btn-icon:hover {
-  transform: scale(1.15);
-  box-shadow: 0 5px 15px rgba(0, 82, 204, 0.3);
-}
-
-body.dark .btn-icon {
-  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+  transform: scale(1.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .profile-photo {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid white;
 }
 
 .exit-menu {
   position: absolute;
-  top: 60px;
+  top: 50px;
   right: 0;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
   padding: 5px 0;
-  min-width: 150px;
+  min-width: 120px;
   display: none;
-  z-index: 10;
+  z-index: 100;
 }
 
 body.dark .exit-menu {
-  background: #2d2d44;
+  background: #374151;
 }
 
 .exit-menu.show {
   display: block;
 }
 
-.exit-menu a,
-.exit-menu button {
+.exit-menu a {
   display: block;
   padding: 10px 20px;
   color: var(--text-light);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   text-decoration: none;
   transition: background 0.3s;
-  width: 100;
-  text-align: left;
-  border: none;
-  background: none;
 }
 
-.exit-menu a:hover,
-.exit-menu button:hover {
-  background: var(--citta-blue);
-  color: white;
+.exit-menu a:hover {
+  background: var(--primary-blue);
+  color: #ffffff;
 }
 
-body.dark .exit-menu a,
-body.dark .exit-menu button {
+body.dark .exit-menu a {
   color: var(--text-dark);
 }
 
@@ -153,7 +159,7 @@ body.dark .exit-menu button {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
-  margin-top: 70px; /* Memberi ruang di bawah header statis */
+  margin-top: 80px;
 }
 
 .section h3 {
@@ -185,36 +191,36 @@ body.dark .section p {
   flex: 1;
   padding: 12px;
   border: 1px solid #d1d5db;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 0.9rem;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .search-bar input:focus {
   outline: none;
-  border-color: var(--citta-blue);
-  box-shadow: 0 0 8px rgba(0, 82, 204, 0.2);
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 8px rgba(30, 64, 175, 0.2);
 }
 
 .search-bar select {
   padding: 12px;
   border: 1px solid #d1d5db;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 0.9rem;
-  background: white;
+  background: #ffffff;
   cursor: pointer;
   transition: border-color 0.3s;
 }
 
 .search-bar select:focus {
   outline: none;
-  border-color: var(--citta-blue);
+  border-color: var(--primary-blue);
 }
 
 body.dark .search-bar input,
 body.dark .search-bar select {
-  background: #35354f;
-  border-color: #4b4b6b;
+  background: #374151;
+  border-color: #4b5563;
   color: var(--text-dark);
 }
 
@@ -223,8 +229,8 @@ body.dark .search-bar select {
   top: 100%;
   left: 0;
   right: 0;
-  background: white;
-  border-radius: 10px;
+  background: #ffffff;
+  border-radius: 8px;
   box-shadow: var(--shadow);
   max-height: 200px;
   overflow-y: auto;
@@ -244,12 +250,12 @@ body.dark .search-bar select {
 }
 
 .search-suggestions div:hover {
-  background: var(--citta-blue);
-  color: white;
+  background: var(--primary-blue);
+  color: #ffffff;
 }
 
 body.dark .search-suggestions {
-  background: #35354f;
+  background: #374151;
 }
 
 /* Lessons Grid */
@@ -263,7 +269,7 @@ body.dark .search-suggestions {
 .lesson-card {
   background: var(--card-bg);
   padding: 20px;
-  border-radius: 16px;
+  border-radius: 12px;
   text-align: center;
   box-shadow: var(--shadow);
   transition: transform 0.3s, box-shadow 0.3s;
@@ -272,8 +278,8 @@ body.dark .search-suggestions {
 }
 
 .lesson-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .lesson-card h4 {
@@ -289,7 +295,7 @@ body.dark .search-suggestions {
 }
 
 body.dark .lesson-card {
-  background: #35354f;
+  background: #374151;
 }
 
 body.dark .lesson-card p {
@@ -298,11 +304,11 @@ body.dark .lesson-card p {
 
 .lesson-card .btn {
   display: inline-block;
-  padding: 12px 20px;
-  background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
-  color: white;
+  padding: 10px 20px;
+  background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
+  color: #ffffff;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
@@ -311,8 +317,8 @@ body.dark .lesson-card p {
 }
 
 .lesson-card .btn:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 10px 20px rgba(0, 82, 204, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(30, 64, 175, 0.3);
 }
 
 /* Pagination */
@@ -324,27 +330,27 @@ body.dark .lesson-card p {
   margin-top: 24px;
 }
 
-.pagination .btn-outline {
+.btn-outline {
   padding: 10px 20px;
-  border: 1px solid var(--citta-blue);
+  border: 1px solid var(--primary-blue);
   background: none;
-  color: var(--citta-blue);
-  border-radius: 10px;
-  font-weight: 700;
+  color: var(--primary-blue);
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
   transition: background 0.3s, color 0.3s, transform 0.2s;
   text-decoration: none;
 }
 
-.pagination .btn-outline:hover {
-  background: var(--citta-blue);
-  color: white;
+.btn-outline:hover {
+  background: var(--primary-blue);
+  color: #ffffff;
   transform: translateY(-2px);
 }
 
-.pagination .btn-outline:disabled {
-  border-color: #ccc;
-  color: #ccc;
+.btn-outline:disabled {
+  border-color: #9ca3af;
+  color: #9ca3af;
   cursor: not-allowed;
 }
 
@@ -358,55 +364,9 @@ body.dark .pagination span {
   color: var(--text-dark);
 }
 
-/* Game Popup */
-.game-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.8);
-  background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
-  color: white;
-  padding: 20px 30px;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  font-size: 1rem;
-  font-weight: 700;
-  text-align: center;
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
-  z-index: 1000;
-}
-
-.game-popup.show {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-}
-
-body.dark .game-popup {
-  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
-}
-
-/* Floating Points */
-.floating-points {
-  position: absolute;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--bonus-green);
-  z-index: 1000;
-}
-
-body.dark .floating-points {
-  color: #4ade80;
-}
-
 /* Animations */
 @keyframes fadeInCard {
   from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -428,6 +388,16 @@ body.dark .floating-points {
   .search-bar select {
     width: 100%;
   }
+  .header-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .nav-menu {
+    display: none; /* Sembunyikan nav di mobile, gunakan toggle jika diperlukan */
+  }
+  .logo h1 {
+    font-size: 1.2rem;
+  }
   .lesson-card {
     padding: 16px;
   }
@@ -439,16 +409,9 @@ body.dark .floating-points {
   }
   .lesson-card .btn {
     font-size: 0.85rem;
-    padding: 10px 16px;
-  }
-  .pagination .btn-outline {
     padding: 8px 16px;
   }
-  .header-content {
-    flex-direction: column;
-    gap: 10px;
-  }
-  .header h1 {
-    font-size: 1.2rem;
+  .btn-outline {
+    padding: 8px 16px;
   }
 }
