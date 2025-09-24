@@ -1,4 +1,6 @@
 /* style/lesson.css */
+
+/* Reset minimal */
 * {
   margin: 0;
   padding: 0;
@@ -12,406 +14,315 @@ html {
 body {
   font-family: 'Nunito', sans-serif;
   line-height: 1.6;
-  color: var(--text-light);
-  background: var(--bg-light);
+  color: #000; /* Teks hitam */
+  background: linear-gradient(135deg, #eaf2ff, #f9fbff);
   transition: background 0.3s, color 0.3s;
 }
 
+/* Variabel Warna (disesuaikan menjadi hitam putih) */
+:root {
+  --black: #000;
+  --white: #fff;
+  --gray: #ddd;
+  --bg-light: linear-gradient(135deg, #eaf2ff, #f9fbff);
+  --bg-dark: linear-gradient(135deg, #1e1e2f, #2a2a3c);
+  --sidebar-bg: rgba(255, 255, 255, 0.8);
+  --topbar-bg: rgba(255, 255, 255, 0.8);
+  --card-bg: #f1f5ff;
+  --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark Mode */
 body.dark {
   background: var(--bg-dark);
-  color: var(--text-dark);
+  color: var(--white);
 }
 
-/* Variabel Warna */
-:root {
-  --primary-blue: #1e40af;
-  --secondary-blue: #3b82f6;
-  --bg-light: #f3f4f6;
-  --bg-dark: #1f2937;
-  --text-light: #1f2937;
-  --text-dark: #f9fafb;
-  --card-bg: #ffffff;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --bonus-green: #10b981;
+body.dark .topbar {
+  background: rgba(30, 30, 45, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Dashboard Header */
-.dashboard-header {
+body.dark .lesson-card {
+  background: #35354f;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .btn-lesson {
+  color: var(--white);
+}
+
+/* Utility */
+h1, h2, h3, h4 {
+  font-weight: 800;
+  color: #000; /* Teks hitam */
+}
+
+h1 { font-size: 1.8rem; }
+h2 { font-size: 1.6rem; }
+h3 { font-size: 1.1rem; }
+h4 { font-size: 1rem; }
+
+p {
+  font-size: 0.9rem !important;
+  margin-bottom: 10px;
+  color: #333; /* Teks abu-abu gelap */
+}
+
+body.dark p {
+  color: #bbb; /* Teks abu-abu terang di mode gelap */
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Header (Adopsi dari dashboard) */
+.topbar {
+  height: 64px;
+  background: var(--topbar-bg);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
   position: sticky;
   top: 0;
-  background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
-  padding: 15px 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  z-index: 30;
 }
 
-.header-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.btn-icon {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #000; /* Teks hitam */
+  transition: transform 0.3s;
 }
 
-.logo h1 {
-  color: #ffffff;
-  font-size: 1.5rem;
+.btn-icon:hover {
+  transform: scale(1.2);
+}
+
+.page-title {
+  font-size: 1.6rem;
   font-weight: 800;
+  margin: 0;
+  color: #000; /* Teks hitam */
 }
 
-.nav-menu a {
-  color: #ffffff;
-  text-decoration: none;
-  margin-left: 20px;
-  font-weight: 600;
-  transition: color 0.3s;
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-.nav-menu a:hover {
-  color: #bbf7d0;
+.notif-icon {
+  position: relative;
+  font-size: 1.2rem;
+  color: #000; /* Teks hitam */
 }
 
-.user-section {
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #ff6200;
+  color: var(--white);
+  padding: 2px 6px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+}
+
+.profile {
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
+}
+
+.profile-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.profile-info #user-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #000; /* Teks hitam */
+}
+
+.profile-info small {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+body.dark .profile-info small {
+  color: #9ca3af;
+}
+
+.profile-menu {
+  position: absolute;
+  right: 0;
+  top: 60px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 8px;
+  display: none;
+  min-width: 160px;
+  z-index: 10;
+}
+
+.profile-menu.show {
+  display: block;
+}
+
+.profile-menu a {
+  display: block;
+  padding: 8px 12px;
+  color: #000; /* Teks hitam */
+  font-size: 0.9rem;
+  border: none;
+  background: none;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+  text-decoration: none; /* Hilangkan garis bawah */
+}
+
+.profile-menu a:hover {
+  background: #f0f0f0;
+  color: #000; /* Teks hitam */
+}
+
+body.dark .profile-menu {
+  background: #35354f;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark .profile-menu a {
+  color: #fff; /* Teks putih di mode gelap */
+}
+
+body.dark .profile-menu a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff; /* Teks putih */
 }
 
 .theme-toggle {
   background: none;
   border: none;
-  color: #ffffff;
   font-size: 1.2rem;
+  padding: 8px;
   cursor: pointer;
-  transition: color 0.3s;
+  transition: transform 0.3s;
+  color: #000; /* Teks hitam */
 }
 
 .theme-toggle:hover {
-  color: #bbf7d0;
+  transform: scale(1.2);
 }
 
-.btn-icon {
-  background: #ffffff;
-  border: none;
-  padding: 8px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
+/* Main Content */
+.main {
+  margin-left: 0; /* Tidak ada sidebar di lesson.html */
+  min-height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
 }
 
-.btn-icon:hover {
-  transform: scale(1.1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.profile-photo {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.exit-menu {
-  position: absolute;
-  top: 50px;
-  right: 0;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-  padding: 5px 0;
-  min-width: 120px;
-  display: none;
-  z-index: 100;
-}
-
-body.dark .exit-menu {
-  background: #374151;
-}
-
-.exit-menu.show {
-  display: block;
-}
-
-.exit-menu a {
-  display: block;
-  padding: 10px 20px;
-  color: var(--text-light);
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background 0.3s;
-}
-
-.exit-menu a:hover {
-  background: var(--primary-blue);
-  color: #ffffff;
-}
-
-body.dark .exit-menu a {
-  color: var(--text-dark);
-}
-
-/* Content */
 .content {
   padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  margin-top: 80px;
-}
-
-.section h3 {
-  font-size: 1.8rem;
-  font-weight: 800;
-  margin-bottom: 12px;
-  color: var(--text-light);
-}
-
-.section p {
-  font-size: 0.9rem;
-  color: #6b7280;
-  margin-bottom: 20px;
-}
-
-body.dark .section p {
-  color: #9ca3af;
-}
-
-/* Search Bar */
-.search-bar {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-  position: relative;
-}
-
-.search-bar input {
   flex: 1;
-  padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.search-bar input:focus {
-  outline: none;
-  border-color: var(--primary-blue);
-  box-shadow: 0 0 8px rgba(30, 64, 175, 0.2);
-}
-
-.search-bar select {
-  padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  background: #ffffff;
-  cursor: pointer;
-  transition: border-color 0.3s;
-}
-
-.search-bar select:focus {
-  outline: none;
-  border-color: var(--primary-blue);
-}
-
-body.dark .search-bar input,
-body.dark .search-bar select {
-  background: #374151;
-  border-color: #4b5563;
-  color: var(--text-dark);
-}
-
-.search-suggestions {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-  max-height: 200px;
-  overflow-y: auto;
-  display: none;
-  z-index: 10;
-}
-
-.search-suggestions.show {
-  display: block;
-}
-
-.search-suggestions div {
-  padding: 10px 14px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.3s, color 0.3s;
-}
-
-.search-suggestions div:hover {
-  background: var(--primary-blue);
-  color: #ffffff;
-}
-
-body.dark .search-suggestions {
-  background: #374151;
 }
 
 /* Lessons Grid */
 .lessons-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 24px;
-  padding: 20px 0;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
 }
 
 .lesson-card {
   background: var(--card-bg);
   padding: 20px;
-  border-radius: 12px;
-  text-align: center;
+  border-radius: 16px;
   box-shadow: var(--shadow);
+  text-align: center;
   transition: transform 0.3s, box-shadow 0.3s;
-  animation: fadeInCard 0.5s ease forwards;
-  animation-delay: calc(var(--index) * 0.1s);
 }
 
 .lesson-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .lesson-card h4 {
-  font-size: 1.1rem;
-  margin: 0 0 12px;
-  color: var(--text-light);
+  font-size: 1rem;
+  margin: 0 0 10px;
+  color: #000; /* Teks hitam */
 }
 
 .lesson-card p {
-  font-size: 0.85rem;
-  color: #6b7280;
-  margin-bottom: 16px;
-}
-
-body.dark .lesson-card {
-  background: #374151;
+  font-size: 0.9rem !important;
+  color: #333; /* Teks abu-abu gelap */
 }
 
 body.dark .lesson-card p {
-  color: #9ca3af;
+  color: #bbb; /* Teks abu-abu terang */
 }
 
-.lesson-card .btn {
-  display: inline-block;
-  padding: 10px 20px;
-  background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
-  color: #ffffff;
+.btn-lesson {
+  background: linear-gradient(45deg, #000, #666); /* Gradient hitam ke abu-abu */
+  color: #fff; /* Teks putih */
   border: none;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
   font-weight: 700;
   font-size: 0.9rem;
+  width: 100%;
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
-  text-decoration: none;
+  text-decoration: none; /* Hilangkan garis bawah */
 }
 
-.lesson-card .btn:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 12px rgba(30, 64, 175, 0.3);
-}
-
-/* Pagination */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin-top: 24px;
-}
-
-.btn-outline {
-  padding: 10px 20px;
-  border: 1px solid var(--primary-blue);
-  background: none;
-  color: var(--primary-blue);
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s, color 0.3s, transform 0.2s;
-  text-decoration: none;
-}
-
-.btn-outline:hover {
-  background: var(--primary-blue);
-  color: #ffffff;
-  transform: translateY(-2px);
-}
-
-.btn-outline:disabled {
-  border-color: #9ca3af;
-  color: #9ca3af;
-  cursor: not-allowed;
-}
-
-.pagination span {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-light);
-}
-
-body.dark .pagination span {
-  color: var(--text-dark);
-}
-
-/* Animations */
-@keyframes fadeInCard {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+.btn-lesson:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-  .content {
-    padding: 15px;
+@media (max-width: 900px) {
+  .page-title {
+    font-size: 1.1rem;
   }
-  .section h3 {
-    font-size: 1.5rem;
-  }
-  .section p {
-    font-size: 0.85rem;
-  }
-  .search-bar {
-    flex-direction: column;
-  }
-  .search-bar input,
-  .search-bar select {
-    width: 100%;
-  }
-  .header-container {
-    flex-direction: column;
-    gap: 10px;
-  }
-  .nav-menu {
-    display: none; /* Sembunyikan nav di mobile, gunakan toggle jika diperlukan */
-  }
-  .logo h1 {
-    font-size: 1.2rem;
-  }
-  .lesson-card {
-    padding: 16px;
-  }
-  .lesson-card h4 {
-    font-size: 1rem;
-  }
-  .lesson-card p {
-    font-size: 0.8rem;
-  }
-  .lesson-card .btn {
-    font-size: 0.85rem;
-    padding: 8px 16px;
-  }
-  .btn-outline {
-    padding: 8px 16px;
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.4rem; }
+  h3 { font-size: 0.85rem; }
+  h4 { font-size: 0.9rem; }
+  p { font-size: 0.85rem !important; }
+  .btn-lesson { font-size: 0.85rem; }
+}
+
+@media (max-width: 600px) {
+  .lessons-grid {
+    grid-template-columns: 1fr;
   }
 }
