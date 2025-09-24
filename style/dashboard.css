@@ -76,6 +76,7 @@ body.dark .list-muted li {
 
 body.dark .btn-icon,
 body.dark .notif-icon,
+body.dark .message-icon,
 body.dark .profile-menu a,
 body.dark .profile-menu button,
 body.dark .search-suggestions div {
@@ -296,6 +297,17 @@ body.dark .sidebar-footer {
     color: var(--text-light);
 }
 
+.message-icon {
+    font-size: 1.2rem;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.message-icon:hover {
+    transform: scale(1.2);
+}
+
 .badge {
     position: absolute;
     top: -6px;
@@ -432,11 +444,11 @@ body.dark .profile-info small {
     box-shadow: var(--shadow);
     transition: transform 0.3s, box-shadow 0.3s;
     min-width: 0;
-    word-wrap: break-word; /* Memastikan teks panjang pecah kata */
-    min-height: 100px; /* Memberikan tinggi minimum untuk card */
-    display: flex; /* Menggunakan flex untuk alignment konten */
+    word-wrap: break-word;
+    min-height: 100px;
+    display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Menjaga konten terdistribusi */
+    justify-content: space-between;
 }
 
 .card:hover {
@@ -517,8 +529,8 @@ body.dark .card.balance-card .info-icon {
 .actions {
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Memberikan jarak antar tombol */
-    margin-top: auto; /* Mendorong tombol ke bawah jika card lebih tinggi */
+    gap: 8px;
+    margin-top: auto;
 }
 
 .actions .btn {
@@ -532,8 +544,8 @@ body.dark .card.balance-card .info-icon {
     cursor: pointer;
     font-size: 0.8rem;
     transition: transform 0.3s, box-shadow 0.3s;
-    text-align: center; /* Memastikan teks tombol di tengah */
-    width: 100%; /* Memastikan tombol selebar mungkin di mobile */
+    text-align: center;
+    width: 100%;
 }
 
 .actions .btn:hover {
@@ -551,8 +563,8 @@ body.dark .card.balance-card .info-icon {
     cursor: pointer;
     font-size: 0.8rem;
     transition: background 0.3s, color 0.3s;
-    text-align: center; /* Memastikan teks tombol di tengah */
-    width: 100%; /* Memastikan tombol selebar mungkin di mobile */
+    text-align: center;
+    width: 100%;
 }
 
 .actions .btn-outline:hover {
@@ -713,12 +725,12 @@ body.dark .lesson-card p {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
-    flex-wrap: wrap; /* Memungkinkan wrap pada teks jika terlalu panjang */
+    flex-wrap: wrap;
 }
 
 .slot-head strong {
     font-size: 1rem;
-    word-break: break-word; /* Memastikan teks panjang pecah kata */
+    word-break: break-word;
 }
 
 .slot-head small {
@@ -735,8 +747,8 @@ body.dark .slot-head small {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap; /* Memungkinkan wrap pada elemen jika terlalu banyak */
-    gap: 10px; /* Jarak antar elemen di slot-body */
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .btn-claim {
@@ -797,7 +809,7 @@ body.dark .slot-head small {
 }
 
 .referral-slot .btn-claim {
-    width: auto; /* Agar tidak selalu 100% seperti di actions */
+    width: auto;
 }
 
 .referral-slot .btn-claim:disabled {
@@ -1130,17 +1142,16 @@ body.dark #leaderboard-list li span {
     }
 
     .cards-row {
-        /* Menggunakan flexbox untuk responsivitas card yang lebih baik */
         display: flex;
         flex-wrap: wrap;
-        justify-content: center; /* Pusatkan card jika ada ruang */
-        gap: 16px; /* Konsisten dengan gap desktop */
+        justify-content: center;
+        gap: 16px;
     }
 
     .card {
-        flex: 1 1 calc(100% - 32px); /* Mengambil lebar penuh dikurangi gap */
-        max-width: 350px; /* Batasi lebar maksimum agar tidak terlalu lebar di tablet */
-        min-width: 280px; /* Lebar minimum untuk setiap card */
+        flex: 1 1 calc(100% - 32px);
+        max-width: 350px;
+        min-width: 280px;
     }
 
     .missions-grid,
@@ -1152,8 +1163,6 @@ body.dark #leaderboard-list li span {
         font-size: 1.1rem;
     }
     .section.active h3 {
-        /* Jika h3 section ingin disembunyikan di mobile, atur di sini */
-        /* display: none; */
     }
     h1 {
         font-size: 1.6rem;
@@ -1162,7 +1171,7 @@ body.dark #leaderboard-list li span {
         font-size: 1.4rem;
     }
     h3 {
-        font-size: 0.9rem; /* Sedikit lebih besar dari 0.85rem agar lebih mudah dibaca */
+        font-size: 0.9rem;
     }
     h4 {
         font-size: 0.95rem;
@@ -1223,21 +1232,19 @@ body.dark #leaderboard-list li span {
         font-size: 0.8rem;
     }
 
-    /* Memastikan teks slot misi/referral tidak terlalu panjang */
-    .slot-head strong, .referral-slot h4 {
-        white-space: normal; /* Kembali ke perilaku normal */
-        overflow-wrap: break-word; /* Memastikan kata pecah jika terlalu panjang */
+    .slot-head strong,
+    .referral-slot h4 {
+        white-space: normal;
+        overflow-wrap: break-word;
         word-break: break-word;
     }
 }
 
 @media (min-width: 901px) {
-    /* Sidebar always open on desktop */
     .sidebar {
         transform: translateX(0) !important;
         opacity: 1 !important;
     }
-    /* Hide hamburger button on desktop */
     .btn-icon {
         display: none;
     }
