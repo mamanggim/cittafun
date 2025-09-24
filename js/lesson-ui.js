@@ -20,17 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateUI(user) {
     const profilePhoto = document.getElementById('profile-photo');
-    const userName = document.getElementById('user-name');
-    const userRole = document.getElementById('user-role');
-
     if (user) {
       profilePhoto.src = user.photoURL || 'https://via.placeholder.com/40';
-      userName.textContent = user.displayName || 'Pengguna';
-      userRole.textContent = 'Pengguna';
     } else {
       profilePhoto.src = 'https://via.placeholder.com/40';
-      userName.textContent = 'Nama Pengguna';
-      userRole.textContent = 'Pengguna';
       window.location.href = 'index.html'; // Redirect ke login jika tidak ada user
     }
   }
