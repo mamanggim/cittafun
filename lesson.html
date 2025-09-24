@@ -16,23 +16,28 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-  <!-- Exit Dropdown -->
-  <div class="exit-dropdown">
-    <button id="exit-toggle" class="btn-icon" aria-label="Keluar">
-      <img id="user-photo" src="assets/icons/user-placeholder.png" alt="Pengguna" class="profile-photo">
-    </button>
-    <div id="exit-menu" class="exit-menu" aria-hidden="true">
-      <a href="dashboard.html">Beranda</a>
-      <a href="dashboard.html#section-missions">Misi Harian</a>
-      <button id="theme-toggle" class="theme-toggle" aria-label="Ganti tema">🌙</button>
+  <!-- Header Statis -->
+  <header class="header">
+    <div class="header-content">
+      <h1>CittaFun</h1>
+      <div class="exit-dropdown">
+        <button id="exit-toggle" class="btn-icon" aria-label="Keluar">
+          <img id="user-photo" src="assets/icons/user-placeholder.png" alt="Pengguna" class="profile-photo">
+        </button>
+        <div id="exit-menu" class="exit-menu" aria-hidden="true">
+          <a href="dashboard.html">Beranda</a>
+          <a href="dashboard.html#section-missions">Misi Harian</a>
+          <button id="theme-toggle" class="theme-toggle" aria-label="Ganti tema">🌙</button>
+        </div>
+      </div>
     </div>
-  </div>
+  </header>
 
   <!-- Content -->
   <main class="content">
     <section id="section-lessons" class="section active">
       <h3>📚 Mata Pelajaran</h3>
-      <p>Pilih mata pelajaran untuk dibaca selama 10 menit (50 poin/menit, maks. 500 poin).</p>
+      <p>Pilih mata pelajaran untuk dibaca selama 10 menit (50 poin/menit, maks. 500 poin/sesi).</p>
       <div class="search-bar">
         <input type="text" id="search-input" placeholder="Cari mata pelajaran...">
         <div id="search-suggestions" class="search-suggestions"></div>
