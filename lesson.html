@@ -16,16 +16,26 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-  <!-- Profile Dropdown (Ganti exit-dropdown dengan foto profil) -->
-  <div class="topbar-right">
-    <div class="profile" id="profile">
-      <img src="https://via.placeholder.com/40" alt="Profile Photo" class="profile-photo" id="profile-photo">
-      <div class="profile-menu" id="profile-menu">
-        <a href="dashboard.html">Beranda</a>
-        <a href="dashboard.html#section-missions">Misi Harian</a>
+  <!-- Header seperti dashboard (sticky) -->
+  <header class="topbar">
+    <button id="sidebar-toggle" class="btn-icon" aria-label="Buka/tutup menu">☰</button>
+
+    <div class="topbar-left">
+      <h2 class="page-title">Mata Pelajaran</h2>
+    </div>
+
+    <div class="topbar-right">
+      <div class="notif-icon" title="Notifikasi">🔔<span class="badge" id="notif-count">0</span></div>
+
+      <div class="profile" id="profile">
+        <img id="user-photo" src="https://via.placeholder.com/40" alt="Pengguna" class="profile-photo" aria-label="Buka menu profil">
+        <div id="profile-menu" class="profile-menu" aria-hidden="true">
+          <a href="dashboard.html">Beranda</a>
+          <a href="dashboard.html#section-missions">Misi Harian</a>
+        </div>
       </div>
     </div>
-  </div>
+  </header>
 
   <!-- Content -->
   <main class="content">
