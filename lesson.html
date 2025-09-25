@@ -16,13 +16,12 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-  <!-- Exit Dropdown (Ganti panah dengan photoURL) -->
+  <!-- Exit Dropdown -->
   <div class="exit-dropdown">
-    <img id="user-photo" src="https://via.placeholder.com/40" alt="Pengguna" class="profile-photo" aria-label="Buka menu profil">
-    <div id="exit-menu" class="exit-menu" aria-hidden="true">
-      <a href="dashboard.html">Beranda</a>
-      <a href="dashboard.html#section-missions">Misi Harian</a>
-    </div>
+    <button id="exit-toggle" class="btn-icon" aria-label="Keluar">
+      <img id="user-photo" src="assets/icons/user-placeholder.png" alt="Pengguna" class="profile-photo">
+    </button>
+    <div id="exit-menu" class="exit-menu" aria-hidden="true"></div>
   </div>
 
   <!-- Content -->
