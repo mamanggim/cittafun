@@ -6,17 +6,31 @@
   <title>Mata Pelajaran - CittaFun</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style/lesson.css">
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
-  <!-- Firebase config -->
-  <script src="js/firebase-config.js"></script>
+  <!-- Firebase SDKs sebagai modul -->
+  <script type="module">
+    // Impor langsung dari CDN sebagai modul
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
+    import { getAuth } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+    import { getFirestore } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkgqAz5OrTZgYoU_8LEH6WMhdOz_dy1sM",
+      authDomain: "cittafun.firebaseapp.com",
+      projectId: "cittafun",
+      storageBucket: "cittafun.appspot.com", // Sesuaikan dengan Firebase Console
+      messagingSenderId: "419661983255",
+      appId: "1:419661983255:web:382aaa98136e13f1a9b652"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    window.auth = getAuth(app); // Ekspor auth ke global untuk digunakan di lesson-ui.js
+    window.db = getFirestore(app); // Ekspor db ke global
+  </script>
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <link rel="icon" type="image/x-icon" href="assets/ico16px.ico" sizes="16x16">
-  <link rel="icon" type="image/x-xicon" href="assets/ico32px.ico" sizes="32x32">
+  <link rel="icon" type="image/x-icon" href="assets/ico32px.ico" sizes="32x32">
   <link rel="icon" type="image/x-icon" href="assets/ico48px.ico" sizes="48x48">
   <link rel="icon" type="image/x-icon" href="assets/ico64px.ico" sizes="64x64">
   <link rel="icon" type="image/x-icon" href="assets/ico128px.ico" sizes="128x128">
@@ -35,8 +49,6 @@
   <link rel="icon" type="image/png" sizes="144x144" href="assets/aos144px.png">
   <link rel="icon" type="image/png" sizes="192x192" href="assets/aos192px.png">
   <link rel="icon" type="image/png" sizes="512x512" href="assets/aos512px.png">
-
-  <link rel="icon" type="image/x-icon" href="assets/ico256px.ico">
 </head>
 <body>
   <div class="main">
@@ -72,7 +84,7 @@
           </select>
         </div>
         <div id="error-message" style="color: red; display: none;"></div>
-        <div class="lessons-grid"></div>
+        <div class="lessons-grid" id="lessons-grid"></div>
         <div class="pagination">
           <button id="prev-page" class="btn-outline" disabled>Sebelumnya</button>
           <span id="page-info">Halaman 1</span>
@@ -82,6 +94,7 @@
     </main>
   </div>
 
-  <script src="js/lesson-ui.js"></script>
+  <!-- Impor script utama sebagai modul -->
+  <script type="module" src="js/lesson-ui.js"></script>
 </body>
 </html>
