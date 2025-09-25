@@ -16,6 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
   loading.textContent = 'Memuat data...';
   document.body.appendChild(loading);
 
+  // Validasi elemen HTML
+  if (!lessonsGrid || !searchInput || !jenjangFilter || !searchSuggestions || !prevPage || !nextPage || !pageInfo || !errorMessage || !profile || !profileMenu || !userPhoto) {
+    console.error('Salah satu elemen HTML tidak ditemukan. Periksa ID/class di lesson.html.');
+    return;
+  }
+
   let lessonsData = [];
   let currentPage = 1;
   const itemsPerPage = 10;
@@ -34,10 +40,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Load User Photo from Firebase Auth with Redirect
+  if (typeof firebase === 'undefined') {
+    console.error('Firebase tidak dimuat. Periksa impor firebase-config.js.');
+    return;
+  }
   firebase.auth().onAuthStateChanged((user) => {
+    console.log('Auth State Changed:', user ? 'Logged In' : 'Not Logged In');
     if (!user) {
-      window.location.href = 'login.html'; // Redirect ke login jika belum login
+      console.log('Redirecting to login.html...');
+      window.location.href = 'login.html';
     } else {
+      console.log('User Photo URL:', user.photoURL);
       const photoUrl = user.photoURL || 'assets/icons/user-placeholder.png';
       userPhoto.src = photoUrl;
       userPhoto.onerror = () => {
@@ -45,6 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
         userPhoto.src = 'assets/icons/user-placeholder.png';
       };
     }
+  }, (error) => {
+    console.error('Auth Error:', error.message);
   });
 
   // Toggle Profile Menu
@@ -64,11 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadLessons() {
     loading.style.display = 'block';
     try {
-      const response = await fetch('data/lessons.json'); // Pastikan path sesuai
+      const response = await fetch('data/lessons.json');
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data = await response.json();
       if (!Array.isArray(data) || !data.length) throw new Error('Data lessons.json kosong atau tidak valid');
-      lessonsData = data; // Gunakan 'lessons' sebagai array
+      lessonsData = data;
       errorMessage.style.display = 'none';
       renderLessons();
     } catch (err) {
