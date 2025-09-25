@@ -12,45 +12,97 @@ html {
 body {
   font-family: 'Nunito', sans-serif;
   line-height: 1.6;
-  color: #333;
-  background: linear-gradient(135deg, #eaf2ff, #f9fbff);
+  color: var(--text-light);
+  background: var(--bg-light);
   transition: background 0.3s, color 0.3s;
-}
-
-body.dark {
-  background: linear-gradient(135deg, #1e1e2f, #2a2a3c);
-  color: #ddd;
 }
 
 /* Variabel Warna */
 :root {
   --citta-blue: #0052cc;
+  --citta-blue-dark: #003d99;
   --fun-orange: #ff6200;
+  --bonus-green: #22c55e;
   --bg-light: linear-gradient(135deg, #eaf2ff, #f9fbff);
   --bg-dark: linear-gradient(135deg, #1e1e2f, #2a2a3c);
   --text-light: #333;
   --text-dark: #ddd;
+  --sidebar-bg: rgba(255, 255, 255, 0.8);
+  --topbar-bg: rgba(255, 255, 255, 0.8);
   --card-bg: #f1f5ff;
   --shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  --bonus-green: #22c55e;
+}
+
+/* Dark Mode */
+body.dark {
+  background: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+body.dark .topbar {
+  background: rgba(30, 30, 45, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark .profile-menu {
+  background: #35354f;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark .profile-menu a {
+  color: var(--text-dark);
+}
+
+body.dark .profile-menu a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+body.dark .search-suggestions {
+  background: #35354f;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark .search-suggestions div {
+  color: var(--text-dark);
+}
+
+body.dark .lesson-card,
+body.dark .search-bar input,
+body.dark .search-bar select {
+  background: #35354f;
+}
+
+body.dark .lesson-card h4 {
+  color: #3b82f6;
+}
+
+body.dark .lesson-card p,
+body.dark .section p {
+  color: #9ca3af;
+}
+
+body.dark .pagination span {
+  color: var(--text-dark);
 }
 
 /* Header */
 .topbar {
+  height: 64px;
+  background: var(--topbar-bg);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
-  background: linear-gradient(90deg, #1e40af, #3b82f6);
-  color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
+  padding: 0 20px;
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 30;
 }
 
-.topbar-left .page-title {
-  font-size: 1.5rem;
+.page-title {
+  font-size: 1.6rem;
   font-weight: 800;
   margin: 0;
 }
@@ -58,54 +110,64 @@ body.dark {
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 16px;
 }
 
-.notif-icon, .message-icon {
-  font-size: 1.5rem;
-  cursor: pointer;
+.notif-icon {
   position: relative;
+  font-size: 1.2rem;
+  color: var(--text-light);
 }
 
-.notif-icon .badge {
+.message-icon {
+  font-size: 1.2rem;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.message-icon:hover {
+  transform: scale(1.2);
+}
+
+.badge {
   position: absolute;
-  top: -5px;
-  right: -5px;
-  background: #ef4444;
-  color: #ffffff;
-  border-radius: 50%;
+  top: -6px;
+  right: -8px;
+  background: var(--fun-orange);
+  color: white;
   padding: 2px 6px;
-  font-size: 0.75rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
 }
 
 .profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   position: relative;
 }
 
 .profile-photo {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  cursor: pointer;
-  border: 2px solid #ffffff;
+  border: 2px solid white;
+  box-shadow: var(--shadow);
 }
 
 .profile-menu {
-  display: none;
   position: absolute;
-  top: 45px;
   right: 0;
-  background: #ffffff;
-  border-radius: 8px;
+  top: 60px;
+  background: white;
+  border-radius: 10px;
   box-shadow: var(--shadow);
-  padding: 10px 0;
-  min-width: 150px;
-  z-index: 100;
-}
-
-body.dark .profile-menu {
-  background: #35354f;
+  padding: 8px;
+  display: none;
+  min-width: 160px;
+  z-index: 10;
 }
 
 .profile-menu.show {
@@ -114,39 +176,33 @@ body.dark .profile-menu {
 
 .profile-menu a {
   display: block;
-  padding: 10px 20px;
+  padding: 8px 12px;
   color: var(--text-light);
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background 0.3s;
+  font-size: 0.9rem;
+  border: none;
+  background: none;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
 }
 
 .profile-menu a:hover {
   background: var(--citta-blue);
-  color: #ffffff;
-}
-
-body.dark .profile-menu a {
-  color: var(--text-dark);
+  color: white;
 }
 
 /* Content */
 .content {
   padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  margin-top: 70px; /* Memberi ruang di bawah header sticky */
+  flex: 1;
+  margin-top: 64px; /* Sesuai tinggi topbar */
 }
 
 .section p {
   font-size: 0.9rem;
   color: #6b7280;
   margin-bottom: 20px;
-}
-
-body.dark .section p {
-  color: #9ca3af;
 }
 
 /* Search Bar */
@@ -159,11 +215,11 @@ body.dark .section p {
 
 .search-bar input {
   flex: 1;
-  padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
   font-size: 0.9rem;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  font-family: 'Nunito', sans-serif;
 }
 
 .search-bar input:focus {
@@ -173,13 +229,13 @@ body.dark .section p {
 }
 
 .search-bar select {
-  padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
   font-size: 0.9rem;
+  font-family: 'Nunito', sans-serif;
   background: white;
   cursor: pointer;
-  transition: border-color 0.3s;
 }
 
 .search-bar select:focus {
@@ -190,22 +246,24 @@ body.dark .section p {
 body.dark .search-bar input,
 body.dark .search-bar select {
   background: #35354f;
-  border-color: #4b4b6b;
   color: var(--text-dark);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .search-suggestions {
   position: absolute;
   top: 100%;
   left: 0;
-  right: 0;
-  background: white;
-  border-radius: 10px;
+  width: 100%;
+  max-width: 300px;
+  background: var(--card-bg);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
   box-shadow: var(--shadow);
   max-height: 200px;
   overflow-y: auto;
-  display: none;
   z-index: 10;
+  display: none;
 }
 
 .search-suggestions.show {
@@ -213,10 +271,9 @@ body.dark .search-bar select {
 }
 
 .search-suggestions div {
-  padding: 10px 14px;
+  padding: 10px;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.3s, color 0.3s;
+  transition: background 0.3s;
 }
 
 .search-suggestions div:hover {
@@ -224,15 +281,11 @@ body.dark .search-bar select {
   color: white;
 }
 
-body.dark .search-suggestions {
-  background: #35354f;
-}
-
 /* Lessons Grid */
 .lessons-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 24px;
+  gap: 20px;
   padding: 20px 0;
 }
 
@@ -248,41 +301,29 @@ body.dark .search-suggestions {
 }
 
 .lesson-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .lesson-card h4 {
-  font-size: 1.1rem;
-  margin: 0 0 12px;
+  font-size: 1rem;
+  margin: 0 0 10px;
   color: var(--citta-blue);
 }
 
 .lesson-card p {
-  font-size: 0.85rem !important;
+  font-size: 0.9rem !important;
   color: #6b7280;
   margin-bottom: 16px;
 }
 
-body.dark .lesson-card {
-  background: #35354f;
-}
-
-body.dark .lesson-card h4 {
-  color: #3b82f6;
-}
-
-body.dark .lesson-card p {
-  color: #9ca3af;
-}
-
 .lesson-card .btn {
   display: inline-block;
-  padding: 12px 20px;
+  padding: 10px 16px;
   background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
@@ -290,50 +331,43 @@ body.dark .lesson-card p {
 }
 
 .lesson-card .btn:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 10px 20px rgba(0, 82, 204, 0.3);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 82, 204, 0.3);
 }
 
 /* Pagination */
 .pagination {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 12px;
-  margin-top: 24px;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 .pagination .btn-outline {
-  padding: 10px 20px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
   border: 1px solid var(--citta-blue);
   background: none;
   color: var(--citta-blue);
-  border-radius: 10px;
-  font-weight: 700;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.3s, color 0.3s, transform 0.2s;
+  transition: background 0.3s, color 0.3s;
 }
 
 .pagination .btn-outline:hover {
   background: var(--citta-blue);
   color: white;
-  transform: translateY(-2px);
 }
 
 .pagination .btn-outline:disabled {
-  border-color: #ccc;
-  color: #ccc;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .pagination span {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-light);
-}
-
-body.dark .pagination span {
-  color: var(--text-dark);
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 /* Game Popup */
@@ -342,16 +376,17 @@ body.dark .pagination span {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.8);
-  background: linear-gradient(45deg, var(--citta-blue), #00d2ff);
+  background: linear-gradient(135deg, var(--citta-blue), #00d2ff);
   color: white;
-  padding: 20px 30px;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  font-size: 1rem;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.1rem;
   font-weight: 700;
   text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
+  transition: opacity 0.3s ease, transform 0.3s ease;
   z-index: 1000;
 }
 
@@ -361,15 +396,19 @@ body.dark .pagination span {
 }
 
 body.dark .game-popup {
-  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
 }
 
 /* Floating Points */
 .floating-points {
   position: absolute;
+  color: var(--bonus-green);
   font-size: 1rem;
   font-weight: 700;
-  color: var(--bonus-green);
+  font-family: 'Nunito', sans-serif;
+  transform: translateX(-50%);
+  transition: none;
+  pointer-events: none;
   z-index: 1000;
 }
 
@@ -383,18 +422,26 @@ body.dark .floating-points {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+  .page-title {
+    font-size: 1.1rem;
+  }
+  .topbar {
+    padding: 0 15px;
+  }
+  .topbar-right {
+    gap: 12px;
+  }
+  .notif-icon, .message-icon {
+    font-size: 1rem;
+  }
+  .profile-photo {
+    width: 32px;
+    height: 32px;
+  }
   .content {
     padding: 15px;
-  }
-  .section p {
-    font-size: 0.85rem;
   }
   .search-bar {
     flex-direction: column;
@@ -407,32 +454,24 @@ body.dark .floating-points {
     padding: 16px;
   }
   .lesson-card h4 {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
   .lesson-card p {
-    font-size: 0.8rem !important;
+    font-size: 0.85rem !important;
   }
   .lesson-card .btn {
     font-size: 0.85rem;
-    padding: 10px 16px;
+    padding: 8px 12px;
   }
   .pagination .btn-outline {
-    padding: 8px 16px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
   }
-  .topbar {
-    padding: 10px 15px;
-  }
-  .topbar-left .page-title {
-    font-size: 1.2rem;
-  }
-  .topbar-right {
-    gap: 10px;
-  }
-  .notif-icon, .message-icon {
-    font-size: 1.2rem;
-  }
-  .profile-photo {
-    width: 28px;
-    height: 28px;
+}
+
+@media (min-width: 901px) {
+  .content {
+    max-width: 1200px;
+    margin: 0 auto;
   }
 }
