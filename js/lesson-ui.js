@@ -33,17 +33,17 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('theme', theme);
   }
 
-  // Load User Photo from Firebase Auth
+  // Load User Photo from Firebase Auth with Redirect
   firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
+    if (!user) {
+      window.location.href = 'login.html'; // Redirect ke login jika belum login
+    } else {
       const photoUrl = user.photoURL || 'assets/icons/user-placeholder.png';
       userPhoto.src = photoUrl;
       userPhoto.onerror = () => {
         console.warn('Gagal memuat photo profile, menggunakan placeholder.');
         userPhoto.src = 'assets/icons/user-placeholder.png';
       };
-    } else {
-      userPhoto.src = 'assets/icons/user-placeholder.png';
     }
   });
 
