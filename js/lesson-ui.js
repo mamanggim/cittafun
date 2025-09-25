@@ -1,7 +1,5 @@
 // js/lesson-ui.js
 document.addEventListener('DOMContentLoaded', () => {
-  const exitToggle = document.getElementById('exit-toggle');
-  const exitMenu = document.getElementById('exit-menu');
   const lessonsGrid = document.querySelector('.lessons-grid');
   const searchInput = document.getElementById('search-input');
   const jenjangFilter = document.getElementById('jenjang-filter');
@@ -10,21 +8,35 @@ document.addEventListener('DOMContentLoaded', () => {
   const nextPage = document.getElementById('next-page');
   const pageInfo = document.getElementById('page-info');
   const errorMessage = document.getElementById('error-message');
-  const themeToggle = document.getElementById('theme-toggle');
+  const profile = document.getElementById('profile');
+  const profileMenu = document.getElementById('profile-menu');
+  const userPhoto = document.getElementById('user-photo');
 
   let lessonsData = [];
   let currentPage = 1;
   const itemsPerPage = 10;
 
-  // Dark/Light Mode
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  document.body.classList.toggle('dark', savedTheme === 'dark');
-  themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+  // Load User Photo from Firebase Auth
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      userPhoto.src = user.photoURL || 'assets/icons/user-placeholder.png';
+    } else {
+      userPhoto.src = 'assets/icons/user-placeholder.png';
+    }
+  });
 
-  themeToggle.addEventListener('click', () => {
-    const isDark = document.body.classList.toggle('dark');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    themeToggle.textContent = isDark ? '☀️' : '🌙';
+  // Toggle Profile Menu
+  profile.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isShown = profileMenu.classList.toggle('show');
+    profileMenu.setAttribute('aria-hidden', !isShown);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!profile.contains(e.target)) {
+      profileMenu.classList.remove('show');
+      profileMenu.setAttribute('aria-hidden', 'true');
+    }
   });
 
   async function loadLessons() {
@@ -135,19 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', (e) => {
     if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
       searchSuggestions.classList.remove('show');
-    }
-  });
-
-  exitToggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isShown = exitMenu.classList.toggle('show');
-    exitMenu.setAttribute('aria-hidden', !isShown);
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!exitMenu.contains(e.target) && e.target !== exitToggle) {
-      exitMenu.classList.remove('show');
-      exitMenu.setAttribute('aria-hidden', 'true');
     }
   });
 
