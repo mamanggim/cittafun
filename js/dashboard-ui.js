@@ -44,15 +44,13 @@ const totalTemanLink = document.getElementById('total-teman-link');
 const infoIcon = document.querySelector('.info-icon');
 const leaderboardList = document.getElementById('leaderboard-list');
 const missionSlots = document.querySelectorAll('.mission-slot');
+const notifIcon = document.getElementById('notif-icon'); // Tambahkan untuk notifikasi
 
-// Tambah DOM untuk pesan
-const messageIcon = document.createElement('div');
-messageIcon.className = 'btn-icon message-icon';
-messageIcon.innerHTML = '💬';
+// Hapus DOM untuk pesan (sudah dihapus dari HTML, jadi hapus logika ini)
 const topbarRight = document.querySelector('.topbar-right');
-if (topbarRight) {
-    topbarRight.insertBefore(messageIcon, document.querySelector('.notif-icon'));
-}
+// if (topbarRight) {
+//     topbarRight.insertBefore(messageIcon, document.querySelector('.notif-icon'));
+// }
 
 // Helper Functions
 function safeAddEvent(el, ev, fn) {
@@ -264,216 +262,33 @@ safeAddEvent(infoIcon, 'click', () => {
     showGamePopup('Konversi poin otomatis setiap jam 00:00 WIB, maks. 100.000 poin/hari. Tingkatkan limit dengan KYC!');
 });
 
-// Tambah fungsi untuk kirim pesan satu arah
-async function sendMessageToReferral(referredUid, messageText) {
-    if (!user) return;
-    const messageRef = doc(collection(db, `users/${referredUid}/messages`));
-    await setDoc(messageRef, {
-        fromUid: user.uid,
-        text: messageText,
-        timestamp: serverTimestamp()
-    });
-    showGamePopup('Pesan terkirim!');
-}
-
-// Tambah listener untuk ikon pesan
-safeAddEvent(messageIcon, 'click', () => {
-    const referredUid = prompt('Masukkan UID referral:');
-    const messageText = prompt('Pesan motivasi:');
-    if (referredUid && messageText) {
-        sendMessageToReferral(referredUid, messageText);
-    }
+// Arahkan klik notif-icon ke notification.html
+safeAddEvent(notifIcon, 'click', (e) => {
+    e.preventDefault();
+    window.location.href = 'notification.html';
 });
 
-// Firebase Logic
-let user = null;
-let userData = null;
-
-onAuthStateChanged(auth, async (currentUser) => {
-    if (!currentUser) {
-        window.location.href = 'login.html';
-        return;
-    }
-    user = currentUser;
-    await loadUserData();
-    await loadLeaderboard();
-    setupMissionSessionUI();
-    setupClaimListeners();
-    startPointConversion();
-    setInterval(setupMissionSessionUI, 1000);
-});
-
-async function loadUserData() {
-    if (!user) return;
-    const userRef = doc(db, 'users', user.uid);
-    const docSnap = await getDoc(userRef);
-    if (docSnap.exists()) {
-        userData = docSnap.data();
-        userName.textContent = userData.name || user.displayName || 'Pengguna';
-        userEmail.textContent = userData.email || user.email || '-';
-        userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
-        pointsBalance.textContent = userData.points || 0;
-        pointsRupiah.textContent = `Rp${convertPointsToRupiah(userData.convertedPoints || 0).toLocaleString('id-ID')}`;
-        refCount.textContent = userData.referrals?.length || 0;
-        recentActivity.innerHTML = userData.recentActivity?.length ?
-            userData.recentActivity.map(act => `<li>${act}</li>`).join('') :
-            '<li>Tidak ada aktivitas.</li>';
-        totalBonusPercentage.textContent = `${(userData.referrals?.length || 0) * 2}%`;
-    } else {
-        userData = {};
-        userName.textContent = user.displayName || 'Pengguna';
-        userEmail.textContent = user.email || '-';
-        userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
+// Tambahkan animasi popup untuk notifikasi
+function updateNotificationPopup() {
+    if (!notifIcon || !userData) return;
+    const notifCount = document.getElementById('notif-count');
+    if (notifCount && userData.notifications && userData.notifications.length > 0) {
+        notifCount.textContent = userData.notifications.length;
+        const popup = document.createElement('div');
+        popup.className = 'notif-popup';
+        popup.textContent = `${userData.notifications.length} notifikasi baru`;
+        notifIcon.appendChild(popup);
+        notifIcon.classList.add('active');
+        setTimeout(() => {
+            popup.remove();
+            notifIcon.classList.remove('active');
+        }, 3000);
+    } else if (notifCount) {
+        notifCount.textContent = '0';
     }
 }
 
-async function loadLeaderboard() {
-    if (!leaderboardList) return;
-    try {
-        const usersRef = collection(db, 'users');
-        const q = query(usersRef, orderBy('points', 'desc'), limit(5));
-        const snapshot = await getDocs(q);
-        let rank = 1;
-        leaderboardList.innerHTML = '';
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            const li = document.createElement('li');
-            li.innerHTML = `<span>${rank}</span><span>${data.name || 'Pengguna Anonim'}</span><span>${data.points || 0}</span>`;
-            leaderboardList.appendChild(li);
-            rank++;
-        });
-    } catch (err) {
-        console.error('Error loading leaderboard:', err);
-        leaderboardList.innerHTML = `
-            <li><span>1</span><span>Ahmad</span><span>5000</span></li>
-            <li><span>2</span><span>Budi</span><span>4500</span></li>
-            <li><span>3</span><span>Citra</span><span>4000</span></li>
-            <li><span>4</span><span>Dedi</span><span>3500</span></li>
-            <li><span>5</span><span>Eka</span><span>3000</span></li>
-        `;
-    }
-}
-
-async function getRegistrationId(uid) {
-    const usersRef = collection(db, 'users');
-    const q = query(usersRef, orderBy('createdAt'));
-    const snapshot = await getDocs(q);
-    let index = 0;
-    for (const doc of snapshot.docs) {
-        if (doc.id === uid) break;
-        index++;
-    }
-    return index + 1;
-}
-
-function setupMissionSessionUI() {
-    if (!user || !userData) return;
-
-    const wibTime = getWIBTime();
-    const todayDateString = wibTime.toISOString().slice(0, 10);
-
-    missionSlots.forEach(slot => {
-        const missionId = slot.dataset.mission;
-        const startHour = parseInt(slot.dataset.start.split(':')[0]);
-        const endHour = parseInt(slot.dataset.end.split(':')[0]);
-        const countdownEl = slot.querySelector('.countdown');
-        const claimBtn = slot.querySelector('.btn-claim');
-
-        if (!claimBtn) return;
-
-        const sessionStatusToday = userData.missionSessionStatus?.[missionId]?.[todayDateString];
-        const isInProgress = sessionStatusToday && sessionStatusToday.status === 'in_progress';
-        const isCompleted = sessionStatusToday && sessionStatusToday.status === 'completed';
-        const isClaimed = sessionStatusToday && sessionStatusToday.status === 'claimed';
-        const isFailed = sessionStatusToday && sessionStatusToday.status === 'failed';
-        const earnedPoints = sessionStatusToday?.points || 0;
-
-        let sessionStartTime = new Date(wibTime);
-        sessionStartTime.setHours(startHour, 0, 0, 0);
-
-        let sessionEndTime = new Date(wibTime);
-        sessionEndTime.setHours(endHour, 59, 59, 999);
-
-        if (sessionEndTime.getTime() < sessionStartTime.getTime()) {
-            sessionEndTime.setDate(sessionEndTime.getDate() + 1);
-        }
-
-        const isCurrentSessionActive = wibTime >= sessionStartTime && wibTime <= sessionEndTime;
-        const isSessionUpcoming = wibTime < sessionStartTime;
-        const isSessionPassed = wibTime > sessionEndTime;
-
-        claimBtn.disabled = true;
-        claimBtn.classList.remove('active-mission');
-
-        if (isClaimed) {
-            claimBtn.textContent = `Misi Selesai`;
-            countdownEl.textContent = '✅ Diklaim';
-        } else if (isFailed) {
-            claimBtn.textContent = 'Misi Gagal';
-            countdownEl.textContent = '❌ Terlewat';
-        } else if (isSessionPassed && (isCompleted || isInProgress)) {
-            claimBtn.textContent = `Klaim ${earnedPoints} Poin`;
-            claimBtn.disabled = false;
-            claimBtn.classList.add('active-mission');
-            countdownEl.textContent = '⏳ Sesi Berakhir';
-        } else if (isSessionPassed) {
-            claimBtn.textContent = 'Misi Gagal';
-            countdownEl.textContent = '❌ Terlewat';
-        } else if (isCurrentSessionActive) {
-            claimBtn.disabled = false;
-            claimBtn.classList.add('active-mission');
-            if (isCompleted) {
-                claimBtn.textContent = `Klaim ${earnedPoints} Poin`;
-            } else if (isInProgress) {
-                claimBtn.textContent = 'Lanjutkan Misi';
-            } else {
-                claimBtn.textContent = 'Kerjakan Misi';
-            }
-            countdownEl.textContent = `⏳ Selesai ${formatTime(sessionEndTime - wibTime)}`;
-        } else if (isSessionUpcoming) {
-            claimBtn.textContent = 'Kerjakan Misi';
-            countdownEl.textContent = `⏳ Mulai ${formatTime(sessionStartTime - wibTime)}`;
-        }
-    });
-
-    setupReferralCountdowns();
-}
-
-function setupReferralCountdowns() {
-    const wibTime = getWIBTime();
-
-    document.querySelectorAll('.referral-slot').forEach(slot => {
-        const startHour = parseInt(slot.dataset.start.split(':')[0]);
-        const endHour = parseInt(slot.dataset.end.split(':')[0]);
-        const countdownEl = slot.querySelector('.countdown');
-
-        let sessionStartTime = new Date(wibTime);
-        sessionStartTime.setHours(startHour, 0, 0, 0);
-
-        let sessionEndTime = new Date(wibTime);
-        sessionEndTime.setHours(endHour, 59, 59, 999);
-
-        if (sessionEndTime.getTime() < sessionStartTime.getTime()) {
-            sessionEndTime.setDate(sessionEndTime.getDate() + 1);
-        }
-
-        const isCurrentSessionActive = wibTime >= sessionStartTime && wibTime <= sessionEndTime;
-        const isSessionUpcoming = wibTime < sessionStartTime;
-        const isSessionPassed = wibTime > sessionEndTime;
-
-        if (isCurrentSessionActive) {
-            countdownEl.textContent = '⏳ Aktif sekarang';
-        } else if (isSessionUpcoming) {
-            countdownEl.textContent = `⏳ Mulai ${formatTime(sessionStartTime - wibTime)}`;
-        } else {
-            const nextDay = new Date(wibTime);
-            nextDay.setUTCDate(nextDay.getUTCDate() + 1);
-            nextDay.setUTCHours(startHour, 0, 0, 0);
-            countdownEl.textContent = `⏳ Besok ${formatTime(nextDay - wibTime)}`;
-        }
-    });
-}
-
+// Setup Claim Listeners
 function setupClaimListeners() {
     missionSlots.forEach(slot => {
         const claimBtn = slot.querySelector('.btn-claim');
@@ -492,9 +307,7 @@ function setupClaimListeners() {
             if (claimBtn.textContent === 'Kerjakan Misi' || claimBtn.textContent === 'Lanjutkan Misi') {
                 const missionsSection = document.getElementById('section-missions');
                 if (missionsSection) {
-                    if (!missionsSection.classList.contains('active')) {
-                        missionsSection.scrollIntoView({ behavior: 'smooth' });
-                    }
+                    missionsSection.scrollIntoView({ behavior: 'smooth' });
                     navLinks.forEach(l => l.classList.remove('active'));
                     const missionNavLink = navLinks.find(link => link.getAttribute('data-section') === 'missions');
                     if (missionNavLink) missionNavLink.classList.add('active');
@@ -642,6 +455,200 @@ function setupClaimListeners() {
             } else {
                 showGamePopup('Belum ada referral aktif 7 hari!');
             }
+        }
+    });
+}
+
+// Firebase Logic
+let user = null;
+let userData = null;
+
+onAuthStateChanged(auth, async (currentUser) => {
+    if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+    }
+    user = currentUser;
+    await loadUserData();
+    await loadLeaderboard();
+    setupMissionSessionUI();
+    setupClaimListeners();
+    startPointConversion();
+    setInterval(setupMissionSessionUI, 1000);
+    updateNotificationPopup(); // Panggil fungsi untuk notifikasi
+});
+
+async function loadUserData() {
+    if (!user) return;
+    const userRef = doc(db, 'users', user.uid);
+    const docSnap = await getDoc(userRef);
+    if (docSnap.exists()) {
+        userData = docSnap.data();
+        userName.textContent = userData.name || user.displayName || 'Pengguna';
+        userEmail.textContent = userData.email || user.email || '-';
+        userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
+        pointsBalance.textContent = userData.points || 0;
+        pointsRupiah.textContent = `Rp${convertPointsToRupiah(userData.convertedPoints || 0).toLocaleString('id-ID')}`;
+        refCount.textContent = userData.referrals?.length || 0;
+        recentActivity.innerHTML = userData.recentActivity?.length ?
+            userData.recentActivity.map(act => `<li>${act}</li>`).join('') :
+            '<li>Tidak ada aktivitas.</li>';
+        totalBonusPercentage.textContent = `${(userData.referrals?.length || 0) * 2}%`;
+    } else {
+        userData = {};
+        userName.textContent = user.displayName || 'Pengguna';
+        userEmail.textContent = user.email || '-';
+        userPhoto.src = user.photoURL || 'https://via.placeholder.com/50';
+    }
+}
+
+async function loadLeaderboard() {
+    if (!leaderboardList) return;
+    try {
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, orderBy('points', 'desc'), limit(5));
+        const snapshot = await getDocs(q);
+        let rank = 1;
+        leaderboardList.innerHTML = '';
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const li = document.createElement('li');
+            let rankClass = '';
+            if (rank === 1) rankClass = 'rank-1';
+            else if (rank === 2) rankClass = 'rank-2';
+            else if (rank === 3) rankClass = 'rank-3';
+            li.innerHTML = `<span class="${rankClass}">${rank}</span><span>${data.name || 'Pengguna Anonim'}</span><span>${data.points || 0}</span>`;
+            leaderboardList.appendChild(li);
+            rank++;
+        });
+    } catch (err) {
+        console.error('Error loading leaderboard:', err);
+        leaderboardList.innerHTML = `
+            <li><span class="rank-1">1</span><span>Ahmad</span><span>5000</span></li>
+            <li><span class="rank-2">2</span><span>Budi</span><span>4500</span></li>
+            <li><span class="rank-3">3</span><span>Citra</span><span>4000</span></li>
+            <li><span>4</span><span>Dedi</span><span>3500</span></li>
+            <li><span>5</span><span>Eka</span><span>3000</span></li>
+        `;
+    }
+}
+
+async function getRegistrationId(uid) {
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, orderBy('createdAt'));
+    const snapshot = await getDocs(q);
+    let index = 0;
+    for (const doc of snapshot.docs) {
+        if (doc.id === uid) break;
+        index++;
+    }
+    return index + 1;
+}
+
+function setupMissionSessionUI() {
+    if (!user || !userData) return;
+
+    const wibTime = getWIBTime();
+    const todayDateString = wibTime.toISOString().slice(0, 10);
+
+    missionSlots.forEach(slot => {
+        const missionId = slot.dataset.mission;
+        const startHour = parseInt(slot.dataset.start.split(':')[0]);
+        const endHour = parseInt(slot.dataset.end.split(':')[0]);
+        const countdownEl = slot.querySelector('.countdown');
+        const claimBtn = slot.querySelector('.btn-claim');
+
+        if (!claimBtn) return;
+
+        const sessionStatusToday = userData.missionSessionStatus?.[missionId]?.[todayDateString];
+        const isInProgress = sessionStatusToday && sessionStatusToday.status === 'in_progress';
+        const isCompleted = sessionStatusToday && sessionStatusToday.status === 'completed';
+        const isClaimed = sessionStatusToday && sessionStatusToday.status === 'claimed';
+        const isFailed = sessionStatusToday && sessionStatusToday.status === 'failed';
+        const earnedPoints = sessionStatusToday?.points || 0;
+
+        let sessionStartTime = new Date(wibTime);
+        sessionStartTime.setHours(startHour, 0, 0, 0);
+
+        let sessionEndTime = new Date(wibTime);
+        sessionEndTime.setHours(endHour, 59, 59, 999);
+
+        if (sessionEndTime.getTime() < sessionStartTime.getTime()) {
+            sessionEndTime.setDate(sessionEndTime.getDate() + 1);
+        }
+
+        const isCurrentSessionActive = wibTime >= sessionStartTime && wibTime <= sessionEndTime;
+        const isSessionUpcoming = wibTime < sessionStartTime;
+        const isSessionPassed = wibTime > sessionEndTime;
+
+        claimBtn.disabled = true;
+        claimBtn.classList.remove('active-mission');
+
+        if (isClaimed) {
+            claimBtn.textContent = `Misi Selesai`;
+            countdownEl.textContent = '✅ Diklaim';
+        } else if (isFailed) {
+            claimBtn.textContent = 'Misi Gagal';
+            countdownEl.textContent = '❌ Terlewat';
+        } else if (isSessionPassed && (isCompleted || isInProgress)) {
+            claimBtn.textContent = `Klaim ${earnedPoints} Poin`;
+            claimBtn.disabled = false;
+            claimBtn.classList.add('active-mission');
+            countdownEl.textContent = '⏳ Sesi Berakhir';
+        } else if (isSessionPassed) {
+            claimBtn.textContent = 'Misi Gagal';
+            countdownEl.textContent = '❌ Terlewat';
+        } else if (isCurrentSessionActive) {
+            claimBtn.disabled = false;
+            claimBtn.classList.add('active-mission');
+            if (isCompleted) {
+                claimBtn.textContent = `Klaim ${earnedPoints} Poin`;
+            } else if (isInProgress) {
+                claimBtn.textContent = 'Lanjutkan Misi';
+            } else {
+                claimBtn.textContent = 'Kerjakan Misi';
+            }
+            countdownEl.textContent = `⏳ Selesai ${formatTime(sessionEndTime - wibTime)}`;
+        } else if (isSessionUpcoming) {
+            claimBtn.textContent = 'Kerjakan Misi';
+            countdownEl.textContent = `⏳ Mulai ${formatTime(sessionStartTime - wibTime)}`;
+        }
+    });
+
+    setupReferralCountdowns();
+}
+
+function setupReferralCountdowns() {
+    const wibTime = getWIBTime();
+
+    document.querySelectorAll('.referral-slot').forEach(slot => {
+        const startHour = parseInt(slot.dataset.start.split(':')[0]);
+        const endHour = parseInt(slot.dataset.end.split(':')[0]);
+        const countdownEl = slot.querySelector('.countdown');
+
+        let sessionStartTime = new Date(wibTime);
+        sessionStartTime.setHours(startHour, 0, 0, 0);
+
+        let sessionEndTime = new Date(wibTime);
+        sessionEndTime.setHours(endHour, 59, 59, 999);
+
+        if (sessionEndTime.getTime() < sessionStartTime.getTime()) {
+            sessionEndTime.setDate(sessionEndTime.getDate() + 1);
+        }
+
+        const isCurrentSessionActive = wibTime >= sessionStartTime && wibTime <= sessionEndTime;
+        const isSessionUpcoming = wibTime < sessionStartTime;
+        const isSessionPassed = wibTime > sessionEndTime;
+
+        if (isCurrentSessionActive) {
+            countdownEl.textContent = '⏳ Aktif sekarang';
+        } else if (isSessionUpcoming) {
+            countdownEl.textContent = `⏳ Mulai ${formatTime(sessionStartTime - wibTime)}`;
+        } else {
+            const nextDay = new Date(wibTime);
+            nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+            nextDay.setUTCHours(startHour, 0, 0, 0);
+            countdownEl.textContent = `⏳ Besok ${formatTime(nextDay - wibTime)}`;
         }
     });
 }
