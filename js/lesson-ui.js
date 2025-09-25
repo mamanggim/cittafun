@@ -11,10 +11,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const profile = document.getElementById('profile');
   const profileMenu = document.getElementById('profile-menu');
   const userPhoto = document.getElementById('user-photo');
+  const loading = document.createElement('div');
+  loading.id = 'loading';
+  loading.textContent = 'Memuat data...';
+  document.body.appendChild(loading);
 
   let lessonsData = [];
   let currentPage = 1;
   const itemsPerPage = 10;
+
+  // Load Theme from localStorage
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    document.body.classList.add(savedTheme);
+  }
+
+  // Sync Theme with Dashboard
+  function setTheme(theme) {
+    document.body.classList.remove('dark', 'light');
+    document.body.classList.add(theme);
+    localStorage.setItem('theme', theme);
+  }
 
   // Load User Photo from Firebase Auth
   firebase.auth().onAuthStateChanged((user) => {
@@ -40,17 +57,21 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   async function loadLessons() {
+    loading.style.display = 'block';
     try {
       const response = await fetch('data/lessons.json');
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       lessonsData = await response.json();
+      if (!Array.isArray(lessonsData)) throw new Error('Data lessons.json tidak valid');
       errorMessage.style.display = 'none';
       renderLessons();
     } catch (err) {
       console.error('[Lessons] Failed to load lessons:', err.message);
-      errorMessage.textContent = 'Gagal memuat pelajaran. Pastikan file data/lessons.json ada.';
+      errorMessage.textContent = 'Gagal memuat pelajaran. Pastikan file data/lessons.json ada atau coba lagi nanti.';
       errorMessage.style.display = 'block';
       lessonsGrid.innerHTML = '';
+    } finally {
+      loading.style.display = 'none';
     }
   }
 
