@@ -1,4 +1,4 @@
-/* style/dashboard.css */
+/* style/dashboard.css (Dimodifikasi) */
 
 /* Reset minimal */
 * {
@@ -76,7 +76,6 @@ body.dark .list-muted li {
 
 body.dark .btn-icon,
 body.dark .notif-icon,
-body.dark .message-icon,
 body.dark .profile-menu a,
 body.dark .profile-menu button,
 body.dark .search-suggestions div {
@@ -295,19 +294,15 @@ body.dark .sidebar-footer {
     position: relative;
     font-size: 1.2rem;
     color: var(--text-light);
-}
-
-.message-icon {
-    font-size: 1.2rem;
-    color: var(--text-light);
     cursor: pointer;
     transition: transform 0.3s;
 }
 
-.message-icon:hover {
+.notif-icon:hover {
     transform: scale(1.2);
 }
 
+/* Hapus .message-icon karena sudah dihilangkan di HTML */
 .badge {
     position: absolute;
     top: -6px;
@@ -317,6 +312,30 @@ body.dark .sidebar-footer {
     padding: 2px 6px;
     border-radius: 20px;
     font-size: 0.7rem;
+}
+
+/* Animasi Popup untuk Notifikasi */
+.notif-popup {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--fun-orange);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 20;
+}
+
+.notif-icon:hover .notif-popup,
+.notif-icon.active .notif-popup {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-10px);
 }
 
 /* Profile */
@@ -1095,6 +1114,20 @@ body.dark .info-icon {
     padding: 0 10px;
 }
 
+/* Tambahan Badge untuk Peringkat */
+.rank-1 {
+    color: #ffd700; /* Emas */
+    font-weight: 800;
+}
+.rank-2 {
+    color: #c0c0c0; /* Perak */
+    font-weight: 800;
+}
+.rank-3 {
+    color: #cd7f32; /* Perunggu */
+    font-weight: 800;
+}
+
 #leaderboard-list {
     list-style: none;
     padding: 0;
@@ -1230,6 +1263,12 @@ body.dark #leaderboard-list li span {
     }
     .actions .btn-outline {
         font-size: 0.8rem;
+    }
+
+    /* Sesuaikan Topbar untuk Mobile */
+    .topbar {
+        padding: 8px 12px; /* Sesuaikan dengan lesson.css */
+        height: auto; /* Biarkan fleksibel */
     }
 
     .slot-head strong,
