@@ -1,7 +1,7 @@
 // js/lesson-ui.js
 document.addEventListener('DOMContentLoaded', () => {
-  const profile = document.getElementById('profile');
-  const profileMenu = document.getElementById('exit-menu'); // Ubah ke exit-menu
+  const exitToggle = document.getElementById('exit-toggle');
+  const exitMenu = document.getElementById('exit-menu');
   const lessonsGrid = document.querySelector('.lessons-grid');
   const searchInput = document.getElementById('search-input');
   const jenjangFilter = document.getElementById('jenjang-filter');
@@ -10,49 +10,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const nextPage = document.getElementById('next-page');
   const pageInfo = document.getElementById('page-info');
   const errorMessage = document.getElementById('error-message');
+  const themeToggle = document.getElementById('theme-toggle');
 
   let lessonsData = [];
   let currentPage = 1;
   const itemsPerPage = 10;
 
-  // Update UI berdasarkan autentikasi Firebase
-  import { auth } from './firebase-config.js';
+  // Dark/Light Mode
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.body.classList.toggle('dark', savedTheme === 'dark');
+  themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 
-  function updateUI(user) {
-    const profilePhoto = document.getElementById('user-photo');
-    if (user) {
-      profilePhoto.src = user.photoURL || 'https://via.placeholder.com/40';
-    } else {
-      profilePhoto.src = 'https://via.placeholder.com/40';
-      window.location.href = 'index.html'; // Redirect ke login jika tidak ada user
-    }
-  }
-
-  auth.onAuthStateChanged(updateUI);
-
-  // Toggle Profile Menu
-  profile.addEventListener('click', (e) => {
-    e.stopPropagation();
-    profileMenu.classList.toggle('show');
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!profile.contains(e.target)) {
-      profileMenu.classList.remove('show');
-    }
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    themeToggle.textContent = isDark ? '☀️' : '🌙';
   });
 
   async function loadLessons() {
     try {
-      const response = await fetch('/data/lessons.json'); // Pastikan path relatif dari root
+      const response = await fetch('data/lessons.json');
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       lessonsData = await response.json();
-      console.log('Lessons loaded:', lessonsData); // Debug
       errorMessage.style.display = 'none';
       renderLessons();
     } catch (err) {
       console.error('[Lessons] Failed to load lessons:', err.message);
-      errorMessage.textContent = 'Gagal memuat pelajaran. Pastikan file data/lessons.json ada di direktori /data/. Error: ' + err.message;
+      errorMessage.textContent = 'Gagal memuat pelajaran. Pastikan file data/lessons.json ada.';
       errorMessage.style.display = 'block';
       lessonsGrid.innerHTML = '';
     }
@@ -151,6 +135,19 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', (e) => {
     if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
       searchSuggestions.classList.remove('show');
+    }
+  });
+
+  exitToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isShown = exitMenu.classList.toggle('show');
+    exitMenu.setAttribute('aria-hidden', !isShown);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!exitMenu.contains(e.target) && e.target !== exitToggle) {
+      exitMenu.classList.remove('show');
+      exitMenu.setAttribute('aria-hidden', 'true');
     }
   });
 
