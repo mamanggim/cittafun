@@ -14,40 +14,96 @@
   <script src="js/firebase-config.js"></script>
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <link rel="icon" type="image/x-icon" href="assets/ico16px.ico" sizes="16x16">
+  <link rel="icon" type="image/x-xicon" href="assets/ico32px.ico" sizes="32x32">
+  <link rel="icon" type="image/x-icon" href="assets/ico48px.ico" sizes="48x48">
+  <link rel="icon" type="image/x-icon" href="assets/ico64px.ico" sizes="64x64">
+  <link rel="icon" type="image/x-icon" href="assets/ico128px.ico" sizes="128x128">
+  <link rel="icon" type="image/x-icon" href="assets/ico256px.ico" sizes="256x256">
+
+  <link rel="apple-touch-icon" sizes="57x57" href="assets/ios57px.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="assets/ios76px.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="assets/ios120px.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="assets/ios152px.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="assets/ios167px.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/ios180px.png">
+
+  <link rel="icon" type="image/png" sizes="48x48" href="assets/aos48px.png">
+  <link rel="icon" type="image/png" sizes="72x72" href="assets/aos72px.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/aos96px.png">
+  <link rel="icon" type="image/png" sizes="144x144" href="assets/aos144px.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/aos192px.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/aos512px.png">
+
+  <link rel="icon" type="image/x-icon" href="assets/ico256px.ico">
 </head>
 <body>
-  <!-- Exit Dropdown -->
-  <div class="exit-dropdown">
-    <button id="exit-toggle" class="btn-icon" aria-label="Keluar">
-      <img id="user-photo" src="assets/icons/user-placeholder.png" alt="Pengguna" class="profile-photo">
-    </button>
-    <div id="exit-menu" class="exit-menu" aria-hidden="true"></div>
-  </div>
+  <div id="sidebar-overlay" class="overlay" aria-hidden="true"></div>
 
-  <!-- Content -->
-  <main class="content">
-    <section id="section-lessons" class="section active">
-      <h3>📚 Mata Pelajaran</h3>
-      <p>Pilih mata pelajaran untuk dibaca selama 10 menit (50 poin/menit, maks. 500 poin).</p>
-      <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Cari mata pelajaran...">
-        <div id="search-suggestions" class="search-suggestions"></div>
-        <select id="jenjang-filter">
-          <option value="">Semua Jenjang</option>
-          <option value="SD">SD</option>
-          <option value="SMP">SMP</option>
-          <option value="SMA">SMA</option>
-        </select>
+  <aside class="sidebar closed" id="sidebar" aria-label="sidebar">
+    <div class="sidebar-top">
+      <img src="assets/logo.png" alt="Logo" class="sidebar-logo">
+      <div class="brand"><span class="citta blue">Citta</span><span class="fun orange">Fun</span></div>
+    </div>
+
+    <nav class="sidebar-nav" role="navigation">
+      <ul>
+        <li><a href="#" data-section="overview" class="nav-link active">🏠 Beranda</a></li>
+        <li><a href="#" data-section="missions" class="nav-link">🎯 Misi Harian</a></li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <small>Versi: 0.3 • <span class="citta blue">Citta</span><span class="fun orange">Fun</span></small>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button id="sidebar-toggle" class="btn-icon" aria-label="Buka/tutup menu">☰</button>
+
+      <div class="topbar-left">
+        <h2 class="page-title">📚 Mata Pelajaran</h2>
       </div>
-      <div id="error-message" style="color: red; display: none;"></div>
-      <div class="lessons-grid"></div>
-      <div class="pagination">
-        <button id="prev-page" class="btn-outline" disabled>Sebelumnya</button>
-        <span id="page-info">Halaman 1</span>
-        <button id="next-page" class="btn-outline">Selanjutnya</button>
+
+      <div class="topbar-right">
+        <div class="notif-icon" title="Notifikasi">🔔<span class="badge" id="notif-count">0</span></div>
+        <div class="message-icon" title="Kirim Pesan">💬</div>
+        <div class="profile" id="profile">
+          <img id="user-photo" src="assets/icons/user-placeholder.png" alt="Pengguna" class="profile-photo" aria-label="Buka menu profil">
+          <div id="profile-menu" class="profile-menu" aria-hidden="true">
+            <a href="dashboard.html">Beranda</a>
+            <a href="dashboard.html#section-missions">Misi Harian</a>
+          </div>
+        </div>
       </div>
-    </section>
-  </main>
+    </header>
+
+    <main class="content" id="content">
+      <section id="section-lessons" class="section active">
+        <h3>📚 Mata Pelajaran</h3>
+        <p>Pilih mata pelajaran untuk dibaca selama 10 menit (50 poin/menit, maks. 500 poin).</p>
+        <div class="search-bar">
+          <input type="text" id="search-input" placeholder="Cari mata pelajaran...">
+          <div id="search-suggestions" class="search-suggestions"></div>
+          <select id="jenjang-filter">
+            <option value="">Semua Jenjang</option>
+            <option value="SD">SD</option>
+            <option value="SMP">SMP</option>
+            <option value="SMA">SMA</option>
+          </select>
+        </div>
+        <div id="error-message" style="color: red; display: none;"></div>
+        <div class="lessons-grid"></div>
+        <div class="pagination">
+          <button id="prev-page" class="btn-outline" disabled>Sebelumnya</button>
+          <span id="page-info">Halaman 1</span>
+          <button id="next-page" class="btn-outline">Selanjutnya</button>
+        </div>
+      </section>
+    </main>
+  </div>
 
   <script src="js/lesson-ui.js"></script>
 </body>
