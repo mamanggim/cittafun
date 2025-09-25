@@ -36,7 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load User Photo from Firebase Auth
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
-      userPhoto.src = user.photoURL || 'assets/icons/user-placeholder.png';
+      const photoUrl = user.photoURL || 'assets/icons/user-placeholder.png';
+      userPhoto.src = photoUrl;
+      userPhoto.onerror = () => {
+        console.warn('Gagal memuat photo profile, menggunakan placeholder.');
+        userPhoto.src = 'assets/icons/user-placeholder.png';
+      };
     } else {
       userPhoto.src = 'assets/icons/user-placeholder.png';
     }
@@ -59,15 +64,16 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadLessons() {
     loading.style.display = 'block';
     try {
-      const response = await fetch('data/lessons.json');
+      const response = await fetch('data/lessons.json'); // Pastikan path sesuai
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-      lessonsData = await response.json();
-      if (!Array.isArray(lessonsData)) throw new Error('Data lessons.json tidak valid');
+      const data = await response.json();
+      if (!Array.isArray(data) || !data.length) throw new Error('Data lessons.json kosong atau tidak valid');
+      lessonsData = data; // Gunakan 'lessons' sebagai array
       errorMessage.style.display = 'none';
       renderLessons();
     } catch (err) {
       console.error('[Lessons] Failed to load lessons:', err.message);
-      errorMessage.textContent = 'Gagal memuat pelajaran. Pastikan file data/lessons.json ada atau coba lagi nanti.';
+      errorMessage.textContent = 'Gagal memuat pelajaran. Pastikan file data/lessons.json ada di folder /data/ atau coba lagi nanti.';
       errorMessage.style.display = 'block';
       lessonsGrid.innerHTML = '';
     } finally {
