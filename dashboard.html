@@ -31,6 +31,8 @@
   <link rel="icon" type="image/x-icon" href="assets/ico256px.ico">
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Impor Firebase Config -->
+  <script type="module" src="js/firebase-config.js"></script>
 </head>
 <body>
   <div id="sidebar-overlay" class="overlay" aria-hidden="true"></div>
@@ -69,7 +71,6 @@
 
       <div class="topbar-right">
         <div class="notif-icon" title="Notifikasi" id="notif-icon">🔔<span class="badge" id="notif-count">0</span></div>
-        <!-- Hilangkan .message-icon -->
         <div class="profile" id="profile">
           <img id="user-photo" src="assets/icons/user-placeholder.png" alt="Pengguna" class="profile-photo" aria-label="Buka menu profil">
           <div id="profile-menu" class="profile-menu" aria-hidden="true">
@@ -291,24 +292,6 @@
     </main>
   </div>
 
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
-    import { getAuth } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
-    import { getFirestore } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkgqAz5OrTZgYoU_8LEH6WMhdOz_dy1sM",
-      authDomain: "cittafun.firebaseapp.com",
-      projectId: "cittafun",
-      storageBucket: "cittafun.appspot.com",
-      messagingSenderId: "419661983255",
-      appId: "1:419661983255:web:382aaa98136e13f1a9b652"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    window.auth = getAuth(app);
-    window.db = getFirestore(app);
-  </script>
   <script type="module" src="js/dashboard-ui.js"></script>
 </body>
 </html>
