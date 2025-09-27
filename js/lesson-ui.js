@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Load User Photo from Firebase Auth with Redirect
   if (typeof window.auth === 'undefined') {
-    console.error('Firebase Auth tidak dimuat. Periksa impor firebase-config.js.');
+    console.error('Firebase Auth tidak dimuat. Periksa konfigurasi di <head>.');
     return;
   }
   window.auth.onAuthStateChanged((user) => {
