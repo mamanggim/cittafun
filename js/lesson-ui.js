@@ -41,21 +41,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Load User Photo from Firebase Auth with Redirect
   if (typeof window.auth === 'undefined') {
-    console.error('Firebase Auth tidak dimuat. Periksa konfigurasi di <head>.');
+    console.error('Firebase Auth tidak dimuat. Periksa impor firebase-config.js.');
     return;
   }
   window.auth.onAuthStateChanged((user) => {
     console.log('Auth State Changed:', user ? 'Logged In' : 'Not Logged In');
     if (!user) {
-      console.log('Redirecting to login.html...');
+      console.log('Redirecting to login.html karena tidak ada pengguna...');
       window.location.href = 'login.html';
     } else {
+      console.log('User Data:', user);
       console.log('User Photo URL:', user.photoURL);
       const photoUrl = user.photoURL || 'assets/icons/user-placeholder.png';
       userPhoto.src = photoUrl;
+      userPhoto.alt = `Foto Profil ${user.displayName || 'Pengguna'}`;
       userPhoto.onerror = () => {
         console.warn('Gagal memuat photo profile, menggunakan placeholder.');
         userPhoto.src = 'assets/icons/user-placeholder.png';
+        userPhoto.alt = 'Foto Profil Placeholder';
       };
     }
   }, (error) => {
@@ -79,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadLessons() {
     loading.style.display = 'block';
     try {
-      const response = await fetch('data/lessons.json');
+      const response = await fetch('/cittafun/data/lessons.json'); // Path absolut relatif ke GitHub Pages
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data = await response.json();
       if (!Array.isArray(data) || !data.length) throw new Error('Data lessons.json kosong atau tidak valid');
@@ -88,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
       renderLessons();
     } catch (err) {
       console.error('[Lessons] Failed to load lessons:', err.message);
-      errorMessage.textContent = 'Gagal memuat pelajaran. Pastikan file data/lessons.json ada di folder /data/ atau coba lagi nanti.';
+      errorMessage.textContent = `Gagal memuat pelajaran. Pastikan file data/lessons.json ada di /data/ atau coba lagi nanti. Detail: ${err.message}`;
       errorMessage.style.display = 'block';
       lessonsGrid.innerHTML = '';
     } finally {
